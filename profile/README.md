@@ -1,6 +1,7 @@
 # Smartway
 
-![Smartway logo](profile/SMARTWAY-LOGO.png "Smartway")
+![Smartway logo](profile/SMARTWAY-LOGO.png#gh-light-mode-only "Smartway")
+![Smartway logo](profile/SMARTWAY-LOGO-blanc.png#gh-dark-mode-only "Smartway")
 
 Un magasin alimentaire jette autant que ce qu’il gagne ! Alors que de plus en plus de consommateurs sont dans le besoin, lutter contre ce gaspillage doit être une priorité : les magasins peuvent aujourd’hui y remédier, tout en augmentant leur rentabilité.
 Entreprise engagée depuis 2012, à l’origine des rayons « Zéro Gâchis », Smartway a créé le premier Food Waste Management System pour optimiser le parcours des produits alimentaires en fin de vie.
