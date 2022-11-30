@@ -1,0 +1,139 @@
+name: "Terraform"
+
+on:
+  workflow_call:
+    inputs:
+      terraform_check_only:
+        required: false
+        type: boolean
+        default: true
+      environment_name: 
+        required: false
+        type: string
+      terraform_workspace:
+        required: false
+        type: string
+        default: ${{ github.ref_name }}
+      terraform_args:
+        required: false
+        type: string
+        
+jobs:
+  terraform:
+    name: "Terraform"
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{ inputs.environment_name }}
+    steps:
+      - uses: hashicorp/setup-terraform@v2
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+          
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+        continue-on-error: true
+
+      - name: Terraform Workspace
+        id: workspace
+        run: terraform workspace select ${{ inputs.terraform_workspace }} || terraform workspace new ${{ inputs.terraform_workspace }}
+      
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -out=tfplan -no-color -input=false -var "access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" -var "secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" ${{ inputs.terraform_args }}
+        continue-on-error: true
+
+      - name: Publish Terraform summary 
+        run: |
+            echo "#### Terraform Format and Style 🖌\'${{ steps.fmt.outcome }}\'" >> $GITHUB_STEP_SUMMARY
+            echo "#### Terraform Initialization ⚙️\'${{ steps.init.outcome }}\'" >> $GITHUB_STEP_SUMMARY
+            echo "#### Terraform Validation 🤖\'${{ steps.validate.outcome }}\'" >> $GITHUB_STEP_SUMMARY
+            echo "#### Terraform Plan 📖\'${{ steps.plan.outcome }}\'" >> $GITHUB_STEP_SUMMARY
+            echo "<details><summary>Show Plan</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "Format : ${{ steps.fmt.outputs.stdout }}\n" >> $GITHUB_STEP_SUMMARY
+            echo "Validate : ${{ steps.validate.outputs.stdout }}\n" >> $GITHUB_STEP_SUMMARY
+            echo "Plan : ${{ steps.plan.outputs.stdout }}\n" >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+
+      - name: PR comment Terraform
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
+            })
+
+            // 2. Prepare format of the comment
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            <details><summary>Validation Output</summary>
+
+            \`\`\`\n
+            ${{ steps.validate.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            }
+
+      - name: Terraform Status
+        if: steps.plan.outcome == 'failure' || steps.validate.outcome == 'failure' || steps.fmt.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        if: ${{ inputs.terraform_check_only == false }}
+        run: terraform apply -auto-approve -input=false tfplan
