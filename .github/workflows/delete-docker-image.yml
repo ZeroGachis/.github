@@ -1,0 +1,25 @@
+name: 'Delete-Docker-Image'
+
+on:
+  workflow_call:
+    inputs:
+      image_version:
+        required: true
+        type: string
+      image_name:
+        required: false
+        type: string
+        default: ${{ github.event.repository.name }}
+
+
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: smartsquaregmbh/delete-old-packages@v0.6.0
+        with:
+          token: ${{ secrets.GH_ORG_PACKAGES_TOKEN }}
+          type: container
+          organization: ${{ github.repository_owner }}
+          names: |
+            ${{ inputs.image_name }}

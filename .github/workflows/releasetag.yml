@@ -1,0 +1,16 @@
+name: 'ReleaseTag-Def'
+
+on:
+  workflow_call:
+    outputs: 
+      releasetag:
+        value: ${{ jobs.releasetag.outputs.releasetag }}
+jobs:
+  releasetag:
+    runs-on: ubuntu-latest
+    outputs:
+      releasetag: ${{ steps.releasetag.outputs.releasetag }}
+    steps:      
+      - name: ReleaseTag definition
+        id: releasetag
+        run: echo "releasetag=`date +%d-%m-%Y_%H-%M-%S`" >> $GITHUB_OUTPUT
