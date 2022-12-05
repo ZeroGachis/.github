@@ -16,15 +16,12 @@ on:
         required: true
         type: string
       environment_name: 
-        required: false
+        required: true
         type: string
-        default: "default"
 
 jobs:
   push-image:
     runs-on: ubuntu-latest
-    environment: 
-      name: ${{ inputs.environment_name }}
     steps:
       - name: Login to ECR
         uses: docker/login-action@v2
@@ -43,5 +40,5 @@ jobs:
       - name: Manipulate Image
         run:  |
           docker pull ${{ inputs.image_url}} 
-          docker tag ${{ inputs.image_url}} ${{ inputs.ecr_url }}/develop/${{ inputs.image_name }}:${{ inputs.releasetag }}
-          docker push ${{ inputs.ecr_url }}/develop/${{ inputs.image_name }}:${{ inputs.releasetag }}
+          docker tag ${{ inputs.image_url}} ${{ inputs.ecr_url }}/${{ inputs.environment_name }}/${{ inputs.image_name }}:${{ inputs.releasetag }}
+          docker push ${{ inputs.ecr_url }}/${{ inputs.environment_name }}/${{ inputs.image_name }}:${{ inputs.releasetag }}
