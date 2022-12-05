@@ -9,3 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Init Github Action template for Terraform and Docker steps
+
+## [1.0.1] - 2022-12-05
+
+### Fixed
+- Variabilize repo for ECR push github template
