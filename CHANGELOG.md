@@ -14,3 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Variabilize repo for ECR push github template
+
+## [1.1.0] - 2022-12-08
+
+### Added
+- Create template workflow to run docker command and upload artifact
