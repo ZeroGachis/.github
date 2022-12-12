@@ -15,20 +15,33 @@ on:
       run_command:
         required: true
         type: string
-      aws_credentials_enabled: 
+      aws_credentials_enabled:
         required: false
         type: boolean
         default: false
+      enable_test_report:
+        required: false
+        type: boolean
+        default: false
+      test_report_name:
+        required: false
+        type: string
+      test_report_path:
+        required: false
+        type: string
+      test_report_format:
+        required: false
+        type: string
 
 jobs:
   run-docker:
     runs-on: ubuntu-latest
-    container: 
+    container:
       image: ${{ inputs.image_url }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
-      env: 
+      env:
         DJANGO_SETTINGS_MODULE: ${{ inputs.env_django_settings_module }}
     steps:
       - name: Checkout
@@ -45,3 +58,13 @@ jobs:
       - name: run-command
         working-directory: ${{ inputs.workdir }}
         run: ${{ inputs.run_command }}
+
+      - name: Test Report
+        uses: phoenix-actions/test-reporting@v10
+        id: test-report
+        if: ${{ always() && inputs.enable_test_report == true }}
+        with:
+          name: '${{ inputs.test_report_name }}'
+          path: ${{ inputs.workdir }}/${{ inputs.test_report_path }}
+          reporter: ${{ inputs.test_report_format }}
+          working-directory: ${{ inputs.workdir }}
