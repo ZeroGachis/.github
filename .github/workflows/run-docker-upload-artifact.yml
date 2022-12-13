@@ -25,6 +25,10 @@ on:
       artifact_path: 
         required: true
         type: string
+      checkout_enabled:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   run-docker:
@@ -38,6 +42,7 @@ jobs:
         DJANGO_SETTINGS_MODULE: ${{ inputs.env_django_settings_module }}
     steps:
       - name: Checkout
+        if: ${{ inputs.checkout_enabled }}
         uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
