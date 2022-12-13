@@ -47,6 +47,7 @@ jobs:
         password: ${{ secrets.github_token }}
       env:
         DJANGO_SETTINGS_MODULE: ${{ inputs.env_django_settings_module }}
+        GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
     steps:
       - name: Checkout
         if: ${{ inputs.checkout_enabled }}
@@ -70,6 +71,7 @@ jobs:
         if: ${{ always() && inputs.enable_test_report == true }}
         with:
           name: '${{ inputs.test_report_name }}'
+          output-to: step-summary
           path: ${{ inputs.workdir }}/${{ inputs.test_report_path }}
           reporter: ${{ inputs.test_report_format }}
           working-directory: ${{ inputs.workdir }}
