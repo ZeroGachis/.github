@@ -20,7 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Create template workflow to run docker command and upload artifact
 
-## [1.2.0] - 2022-12-13
+## [1.2.0] - 2022-12-12
+
+### Added
+- Add capability to enable test report to docker workflows
+
+## [1.3.0] - 2022-12-13
 
 ### Added
 - Add capability to disable github checkout for docker workflows
