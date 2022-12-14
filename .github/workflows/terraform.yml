@@ -65,11 +65,6 @@ jobs:
             echo "#### Terraform Initialization ⚙️\'${{ steps.init.outcome }}\'" >> $GITHUB_STEP_SUMMARY
             echo "#### Terraform Validation 🤖\'${{ steps.validate.outcome }}\'" >> $GITHUB_STEP_SUMMARY
             echo "#### Terraform Plan 📖\'${{ steps.plan.outcome }}\'" >> $GITHUB_STEP_SUMMARY
-            echo "<details><summary>Show Plan</summary>" >> $GITHUB_STEP_SUMMARY
-            echo "Format : ${{ steps.fmt.outputs.stdout }}\n" >> $GITHUB_STEP_SUMMARY
-            echo "Validate : ${{ steps.validate.outputs.stdout }}\n" >> $GITHUB_STEP_SUMMARY
-            echo "Plan : ${{ steps.plan.outputs.stdout }}\n" >> $GITHUB_STEP_SUMMARY
-            echo "</details>" >> $GITHUB_STEP_SUMMARY
 
       - name: PR comment Terraform
         uses: actions/github-script@v6
