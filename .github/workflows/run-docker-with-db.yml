@@ -77,7 +77,7 @@ jobs:
         run: ${{ inputs.run_command }}
 
       - name: Test Report
-        uses: phoenix-actions/test-reporting@v10
+        uses: dorny/test-reporter@e9fa2f582c0ebbe2e263fd18fad744d52e0b0203
         id: test-report               
         if: ${{ always() && inputs.enable_test_report == true }}
         with:
@@ -85,3 +85,4 @@ jobs:
           path: ${{ inputs.workdir }}/${{ inputs.test_report_path }}
           working-directory: ${{ inputs.workdir }}
           reporter: ${{ inputs.test_report_format }}
+          max-annotations: 0
