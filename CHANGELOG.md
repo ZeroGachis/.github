@@ -29,3 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add capability to disable github checkout for docker workflows
+
+## [1.3.1] - 2022-12-14
+
+### Fixed
+- Test Report actions issue with git repository

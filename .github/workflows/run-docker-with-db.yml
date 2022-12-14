@@ -47,6 +47,7 @@ jobs:
         password: ${{ secrets.github_token }}
       env: 
         DJANGO_SETTINGS_MODULE: ${{ inputs.env_django_settings_module }}
+        GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
     services: 
       postgres:
         image: postgres:12
@@ -59,7 +60,7 @@ jobs:
       - name: Checkout
         if: ${{ inputs.checkout_enabled }}
         uses: actions/checkout@v3
-
+        
       - name: Configure AWS Credentials
         if: ${{ inputs.aws_credentials_enabled }}
         uses: aws-actions/configure-aws-credentials@v1
@@ -82,4 +83,5 @@ jobs:
         with:
           name: '${{ inputs.test_report_name }}'         
           path: ${{ inputs.workdir }}/${{ inputs.test_report_path }}
+          working-directory: ${{ inputs.workdir }}
           reporter: ${{ inputs.test_report_format }}
