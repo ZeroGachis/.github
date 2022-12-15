@@ -40,3 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Test Report actions issue with git repository - workdir
 - Terraform summary issue in some usecase
+
+## [1.4.0] - 2022-12-15
+
+### Fixed
+- Use legacy Test report plugin to disable git ls command
