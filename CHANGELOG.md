@@ -45,3 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Use legacy Test report plugin to disable git ls command
+
+## [1.5.0] - 2022-12-16
+
+### Added
+- Push on Pypi repository with poetry workflow
