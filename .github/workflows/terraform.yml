@@ -7,22 +7,26 @@ on:
         required: false
         type: boolean
         default: true
-      environment_name: 
+      environment_name:
         required: false
         type: string
       terraform_workspace:
         required: false
         type: string
         default: ${{ github.ref_name }}
+      terraform_dir:
+        required: false
+        type: string
+        default: '.'
       terraform_args:
         required: false
         type: string
-        
+
 jobs:
   terraform:
     name: "Terraform"
     runs-on: ubuntu-latest
-    environment: 
+    environment:
       name: ${{ inputs.environment_name }}
     steps:
       - uses: hashicorp/setup-terraform@v2
@@ -35,31 +39,31 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
-          
+
       - name: Terraform Format
         id: fmt
-        run: terraform fmt -check
+        run: terraform -chdir=${{ inputs.terraform_dir }} fmt -check
         continue-on-error: true
 
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: terraform -chdir=${{ inputs.terraform_dir }} init
 
       - name: Terraform Validate
         id: validate
-        run: terraform validate
+        run: terraform -chdir=${{ inputs.terraform_dir }} validate
         continue-on-error: true
 
       - name: Terraform Workspace
         id: workspace
-        run: terraform workspace select ${{ inputs.terraform_workspace }} || terraform workspace new ${{ inputs.terraform_workspace }}
-      
+        run: terraform -chdir=${{ inputs.terraform_dir }} workspace select ${{ inputs.terraform_workspace }} || terraform -chdir=${{ inputs.terraform_dir }} workspace new ${{ inputs.terraform_workspace }}
+
       - name: Terraform Plan
         id: plan
-        run: terraform plan -out=tfplan -no-color -input=false -var "access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" -var "secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" ${{ inputs.terraform_args }}
+        run: terraform -chdir=${{ inputs.terraform_dir }} plan -out=tfplan -no-color -input=false -var "access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" -var "secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" ${{ inputs.terraform_args }}
         continue-on-error: true
 
-      - name: Publish Terraform summary 
+      - name: Publish Terraform summary
         run: |
             echo "#### Terraform Format and Style 🖌\'${{ steps.fmt.outcome }}\'" >> $GITHUB_STEP_SUMMARY
             echo "#### Terraform Initialization ⚙️\'${{ steps.init.outcome }}\'" >> $GITHUB_STEP_SUMMARY
@@ -136,4 +140,4 @@ jobs:
 
       - name: Terraform Apply
         if: ${{ inputs.terraform_check_only == false }}
-        run: terraform apply -auto-approve -input=false tfplan
+        run: terraform -chdir=${{ inputs.terraform_dir }} apply -auto-approve -input=false tfplan
