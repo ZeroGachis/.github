@@ -45,3 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Use legacy Test report plugin to disable git ls command
+
+## [2.0.0] - 2023-02-03
+
+### Added
+- Use Hashicorp Vault to store AWS secret for Terraform workflow
