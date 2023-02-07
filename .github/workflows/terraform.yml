@@ -27,6 +27,13 @@ on:
       vault_github_actions_role:
         required: true 
         type: string
+      workdir: 
+        required: false
+        type: string
+      terraform_substep_name:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   terraform:
@@ -73,24 +80,29 @@ jobs:
 
       - name: Terraform Format
         id: fmt
+        working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform -chdir=${{ inputs.terraform_dir }} fmt -check
         continue-on-error: true
 
       - name: Terraform Init
         id: init
+        working-directory: ${{ inputs.workdir || github.workspace }}
         run: terraform -chdir=${{ inputs.terraform_dir }} init
 
       - name: Terraform Validate
         id: validate
+        working-directory: ${{ inputs.workdir || github.workspace }}
         run: terraform -chdir=${{ inputs.terraform_dir }} validate
         continue-on-error: true
 
       - name: Terraform Workspace
         id: workspace
+        working-directory: ${{ inputs.workdir || github.workspace }}
         run: terraform -chdir=${{ inputs.terraform_dir }} workspace select ${{ inputs.terraform_workspace }} || terraform -chdir=${{ inputs.terraform_dir }} workspace new ${{ inputs.terraform_workspace }}
 
       - name: Terraform Plan
         id: plan
+        working-directory: ${{ inputs.workdir || github.workspace }}
         run: |
           terraform -chdir=${{ inputs.terraform_dir }} plan -out=tfplan -no-color -input=false -var "access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" -var "secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" ${{ inputs.terraform_args }}
         continue-on-error: true
@@ -117,11 +129,11 @@ jobs:
               issue_number: context.issue.number,
             })
             const botComment = comments.find(comment => {
-              return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
+              return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style ${{ inputs.terraform_substep_name }}')
             })
 
             // 2. Prepare format of the comment
-            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            const output = `#### Terraform Format and Style ${{ inputs.terraform_substep_name }} 🖌\`${{ steps.fmt.outcome }}\`
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
             #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
             <details><summary>Validation Output</summary>
@@ -167,5 +179,6 @@ jobs:
 
       - name: Terraform Apply
         if: ${{ inputs.terraform_check_only == false }}
+        working-directory: ${{ inputs.workdir || github.workspace }}
         run: |
           terraform -chdir=${{ inputs.terraform_dir }} apply -auto-approve -input=false tfplan

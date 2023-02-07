@@ -50,3 +50,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Use Hashicorp Vault to store AWS secret for Terraform workflow
+
+## [2.1.0] - 2023-02-07
+
+### Added
+- Add Terraform substep name input
+- Add working dir in terraform workflow
