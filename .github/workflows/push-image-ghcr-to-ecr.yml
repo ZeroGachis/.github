@@ -52,7 +52,7 @@ jobs:
           secrets: |
               secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
               secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
-              secret/data/github-actions-common/github/github-packages-token | GH_ORG_PACKAGES_TOKEN ; 
+              secret/data/github-actions-common/github/github-packages-token PASSWORD | GH_ORG_PACKAGES_TOKEN ; 
 
       - name: Login to ECR
         uses: docker/login-action@v2

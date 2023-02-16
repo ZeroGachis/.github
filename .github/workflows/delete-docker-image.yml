@@ -45,7 +45,7 @@ jobs:
           method: jwt
           path: "github-actions"
           secrets: |
-              secret/data/github-actions-common/github/github-packages-token | GH_ORG_PACKAGES_TOKEN ; 
+              secret/data/github-actions-common/github/github-packages-token PASSWORD | GH_ORG_PACKAGES_TOKEN ; 
 
       - uses: smartsquaregmbh/delete-old-packages@v0.6.0
         with:
