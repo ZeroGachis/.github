@@ -56,3 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add Terraform substep name input
 - Add working dir in terraform workflow
+
+## [2.2.0] - 2023-02-16
+
+### Added
+- Add Vault secrets handle to all workflows

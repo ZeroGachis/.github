@@ -29,10 +29,25 @@ on:
         required: false
         type: boolean
         default: true
+      vault_url: 
+        required: false
+        type: string
+      vault_github_actions_role:
+        required: true 
+        type: string
+      environment_name:
+        required: false
+        type: string
 
 jobs:
   run-docker:
     runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        id-token: write
+        packages: read
+    environment:
+      name: ${{ inputs.environment_name }}
     container: 
       image: ${{ inputs.image_url }}
       credentials:
@@ -41,6 +56,26 @@ jobs:
       env: 
         DJANGO_SETTINGS_MODULE: ${{ inputs.env_django_settings_module }}
     steps:
+      - name: Tailscale
+        if: ${{ inputs.aws_credentials_enabled }}
+        uses: tailscale/github-action@v1
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          version: ${{ vars.TAILSCALE_VERSION }}
+
+      - name: Import Secrets
+        if: ${{ inputs.aws_credentials_enabled }}
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ inputs.VAULT_URL || vars.VAULT_URL }}
+          role: ${{ inputs.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          secrets: |
+              secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
+              secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
+              
       - name: Checkout
         if: ${{ inputs.checkout_enabled }}
         uses: actions/checkout@v3
@@ -49,8 +84,8 @@ jobs:
         if: ${{ inputs.aws_credentials_enabled }}
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ steps.secrets.outputs.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ steps.secrets.outputs.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
       - name: run-command

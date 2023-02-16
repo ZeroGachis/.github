@@ -25,22 +25,53 @@ on:
       build-args:
         required: false
         type: string
+      vault_url: 
+        required: false
+        type: string
+      vault_github_actions_role:
+        required: true 
+        type: string
+      environment_name:
+        required: false
+        type: string
     outputs: 
       image-url: 
         value: ${{ jobs.build-image.outputs.image-url }}
       image-version: 
         value: ${{ jobs.build-image.outputs.image-version }}
 
+
 jobs:
   build-image:
     runs-on: ubuntu-latest
     permissions:
-      packages: write
-      contents: read
+        contents: read
+        id-token: write
+        packages: write
+    environment:
+      name: ${{ inputs.environment_name }}
     outputs:
       image-url: ${{ steps.meta.outputs.tags }}
       image-version: ${{ steps.meta.outputs.version }}
     steps:
+      - name: Tailscale
+        uses: tailscale/github-action@v1
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          version: ${{ vars.TAILSCALE_VERSION }}
+
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ inputs.VAULT_URL || vars.VAULT_URL }}
+          role: ${{ inputs.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          secrets: |
+              secret/data/github-actions-common/github/read-repo-token USERNAME | GH_ORG_READ_REPO_USER ;
+              secret/data/github-actions-common/github/read-repo-token PASSWORD | GH_ORG_READ_REPO_TOKEN ;
+
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -72,5 +103,5 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             ${{ inputs.build-args }} 
-            GITHUB_USER=oauth2
-            GITHUB_TOKEN=${{ secrets.GH_ORG_READ_REPO_TOKEN }} 
+            GITHUB_USER=${{ steps.secrets.outputs.GH_ORG_READ_REPO_USER }} 
+            GITHUB_TOKEN=${{ steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }} 

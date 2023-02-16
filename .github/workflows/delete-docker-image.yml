@@ -10,15 +10,46 @@ on:
         required: false
         type: string
         default: ${{ github.event.repository.name }}
-
+      vault_url: 
+        required: false
+        type: string
+      vault_github_actions_role:
+        required: true 
+        type: string
+      environment_name:
+        required: false
+        type: string
 
 jobs:
   delete:
     runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        id-token: write
+        packages: write
+    environment:
+      name: ${{ inputs.environment_name }}
     steps:
+      - name: Tailscale
+        uses: tailscale/github-action@v1
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          version: ${{ vars.TAILSCALE_VERSION }}
+
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ inputs.VAULT_URL || vars.VAULT_URL }}
+          role: ${{ inputs.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          secrets: |
+              secret/data/github-actions-common/github/github-packages-token | GH_ORG_PACKAGES_TOKEN ; 
+
       - uses: smartsquaregmbh/delete-old-packages@v0.6.0
         with:
-          token: ${{ secrets.GH_ORG_PACKAGES_TOKEN }}
+          token: ${{ steps.secrets.outputs.GH_ORG_PACKAGES_TOKEN }}
           type: container
           organization: ${{ github.repository_owner }}
           names: |

@@ -18,24 +18,55 @@ on:
       environment_name: 
         required: true
         type: string
+      vault_url: 
+        required: false
+        type: string
+      vault_github_actions_role:
+        required: true 
+        type: string
 
 jobs:
   push-image:
     runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        id-token: write
+        packages: read
+    environment:
+      name: ${{ inputs.environment_name }}
     steps:
+      - name: Tailscale
+        uses: tailscale/github-action@v1
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          version: ${{ vars.TAILSCALE_VERSION }}
+
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ inputs.VAULT_URL || vars.VAULT_URL }}
+          role: ${{ inputs.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          secrets: |
+              secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
+              secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
+              secret/data/github-actions-common/github/github-packages-token | GH_ORG_PACKAGES_TOKEN ; 
+
       - name: Login to ECR
         uses: docker/login-action@v2
         with:
           registry: ${{ inputs.ecr_url }}
-          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          username: ${{ steps.secrets.outputs.AWS_ACCESS_KEY_ID }}
+          password: ${{ steps.secrets.outputs.AWS_SECRET_ACCESS_KEY }}
 
       - name: Login to Github Packages
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GH_ORG_PACKAGES_TOKEN }}
+          password: ${{ steps.secrets.outputs.GH_ORG_PACKAGES_TOKEN }}
 
       - name: Manipulate Image
         run:  |
