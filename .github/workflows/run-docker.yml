@@ -53,6 +53,8 @@ jobs:
         contents: read
         id-token: write
         packages: read
+        actions: write
+        checks: write
     environment:
       name: ${{ inputs.environment_name }}
     container:
