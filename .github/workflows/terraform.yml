@@ -27,6 +27,12 @@ on:
       vault_github_actions_role:
         required: true 
         type: string
+      vault_secrets:
+        required: false 
+        type: string
+        default: |
+          secret/data/github-actions-common/aws accessKey | TF_VAR_AWS_ACCESS_KEY_ID ;
+          secret/data/github-actions-common/aws secretKey | TF_VAR_AWS_SECRET_ACCESS_KEY ;
       workdir: 
         required: false
         type: string
@@ -63,8 +69,9 @@ jobs:
           path: "github-actions"
           exportToken: true
           secrets: |
-              secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
-              secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
+            ${{ inputs.vault_secrets }}
+            secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
+            secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
 
       - uses: hashicorp/setup-terraform@v2
 
@@ -104,7 +111,7 @@ jobs:
         id: plan
         working-directory: ${{ inputs.workdir || github.workspace }}
         run: |
-          terraform -chdir=${{ inputs.terraform_dir }} plan -out=tfplan -no-color -input=false -var "access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" -var "secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" ${{ inputs.terraform_args }}
+          terraform -chdir=${{ inputs.terraform_dir }} plan -out=tfplan -no-color -input=false ${{ inputs.terraform_args }}
         continue-on-error: true
 
       - name: Publish Terraform summary

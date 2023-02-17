@@ -66,3 +66,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Generic new workflows : Run python command and Run aws command
+- Simplify Terraform workflow (AWS Key as Env variable)
