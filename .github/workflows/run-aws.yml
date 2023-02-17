@@ -1,0 +1,64 @@
+name: "Run-AWS"
+
+on:
+  workflow_call:
+    inputs:
+      aws_region:
+        required: false
+        type: string
+        default: "eu-west-1"
+      environment_name:
+        required: false
+        type: string
+        default: ""
+      vault_url: 
+        required: false
+        type: string
+      vault_github_actions_role:
+        required: true 
+        type: string
+      vault_secrets:
+        required: true 
+        type: string
+      run_command: 
+        required: true
+        type: string
+        
+jobs:
+  run-aws:
+    permissions:
+        contents: read
+        id-token: write
+        packages: read
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Tailscale
+        uses: tailscale/github-action@v1
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          version: ${{ vars.TAILSCALE_VERSION }}
+
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ inputs.VAULT_URL || vars.VAULT_URL }}
+          role: ${{ inputs.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          secrets: |
+              secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
+              secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ inputs.aws_region }}
+
+      - name: run-command
+        run: ${{ inputs.run_command }}

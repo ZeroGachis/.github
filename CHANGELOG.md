@@ -61,3 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add Vault secrets handle to all workflows
+
+## [2.3.0] - 2023-02-17
+
+### Added
+- Generic new workflows : Run python command and Run aws command

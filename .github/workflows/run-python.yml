@@ -1,0 +1,62 @@
+name: "Run-Python"
+
+on:
+  workflow_call:
+    inputs:
+      python_version:
+        required: false
+        type: string
+        default: "3.x"
+      environment_name:
+        required: false
+        type: string
+        default: ""
+      vault_url: 
+        required: false
+        type: string
+      vault_github_actions_role:
+        required: true 
+        type: string
+      vault_secrets:
+        required: true 
+        type: string
+      run_command: 
+        required: true
+        type: string
+jobs:
+  run-python:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        id-token: write
+        packages: read
+    environment:
+      name: ${{ inputs.environment_name }}
+
+    steps:
+      - name: Tailscale
+        uses: tailscale/github-action@v1
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          version: ${{ vars.TAILSCALE_VERSION }}
+
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ inputs.VAULT_URL || vars.VAULT_URL }}
+          role: ${{ inputs.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          secrets: |
+              ${{ inputs.vault_secrets }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: run-command
+        run: ${{ inputs.run_command }}
