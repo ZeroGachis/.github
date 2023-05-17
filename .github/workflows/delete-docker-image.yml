@@ -47,7 +47,7 @@ jobs:
           secrets: |
               secret/data/github-actions-common/github/github-packages-token PASSWORD | GH_ORG_PACKAGES_TOKEN ; 
 
-      - uses: smartsquaregmbh/delete-old-packages@v0.6.0
+      - uses: smartsquaregmbh/delete-old-packages@v0.7.0
         with:
           token: ${{ steps.secrets.outputs.GH_ORG_PACKAGES_TOKEN }}
           type: container
