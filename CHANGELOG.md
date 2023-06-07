@@ -67,3 +67,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Generic new workflows : Run python command and Run aws command
 - Simplify Terraform workflow (AWS Key as Env variable)
+
+## [2.4.0] - 2023-05-17
+### Fixed
+- Dependabot bump versions
+ 
+## [2.5.0] - 2023-05-24 
+### Fixed
+- Terraform status
+ 
+## [2.6.0] - 2023-06-07
+### Added
+- Vault custom secret for Docker upload artifact workflow
