@@ -38,6 +38,12 @@ on:
       environment_name:
         required: false
         type: string
+      vault_secrets:
+        required: false 
+        type: string
+        default: |
+          secret/data/github-actions-common/aws accessKey | TF_VAR_AWS_ACCESS_KEY_ID ;
+          secret/data/github-actions-common/aws secretKey | TF_VAR_AWS_SECRET_ACCESS_KEY ;
 
 jobs:
   run-docker:
@@ -75,6 +81,7 @@ jobs:
           method: jwt
           path: "github-actions"
           secrets: |
+              ${{ inputs.vault_secrets }}
               secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
               secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
               
