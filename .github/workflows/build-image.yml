@@ -25,25 +25,29 @@ on:
       build-args:
         required: false
         type: string
-      vault_url: 
+      vault_url:
         required: false
         type: string
       vault_github_actions_role:
-        required: true 
+        required: true
         type: string
       environment_name:
         required: false
         type: string
-    outputs: 
-      image-url: 
+    outputs:
+      image-url:
         value: ${{ jobs.build-image.outputs.image-url }}
-      image-version: 
+      image-version:
         value: ${{ jobs.build-image.outputs.image-version }}
 
 
 jobs:
   build-image:
-    runs-on: ubuntu-latest
+    runs-on: [
+      self-hosted,
+      Linux,
+      terraform
+    ]
     permissions:
         contents: read
         id-token: write
@@ -92,7 +96,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build 
+      - name: Build
         uses: docker/build-push-action@v4
         with:
           push: true
@@ -102,6 +106,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            ${{ inputs.build-args }} 
-            GITHUB_USER=${{ steps.secrets.outputs.GH_ORG_READ_REPO_USER }} 
-            GITHUB_TOKEN=${{ steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }} 
+            ${{ inputs.build-args }}
+            GITHUB_USER=${{ steps.secrets.outputs.GH_ORG_READ_REPO_USER }}
+            GITHUB_TOKEN=${{ steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }}
