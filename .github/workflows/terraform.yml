@@ -117,4 +117,4 @@ jobs:
       - name: Terraform Apply
         if: ${{ inputs.terraform_check_only == false }}
         working-directory: ${{ inputs.workdir || github.workspace }}
-        run: terraform -chdir=${{ inputs.terraform_dir }} apply -auto-approve -input=false tfplan -parallelism=${{ inputs.terraform_parallelism }}
+        run: terraform -chdir=${{ inputs.terraform_dir }} apply -auto-approve -input=false -parallelism=${{ inputs.terraform_parallelism }} tfplan
