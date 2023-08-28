@@ -88,3 +88,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.8.0] - 2023-08-11
 ### Updated
 - Tailscale v1 to v2
+
+
+## [3.0.0] - 2023-08-11
+
+### Breaking Change
+- AWS auth change, be careful to declare all needed vars as inputs or envs vars to use this version
+### Updated
+- Github OIDC auth for AWS and multiaccount
+- Support for multi account on Datadog and AWS

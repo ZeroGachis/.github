@@ -29,6 +29,9 @@ jobs:
         packages: write
     environment:
       name: ${{ inputs.environment_name }}
+    env: 
+      VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
     steps:
       - name: Tailscale
         uses: tailscale/github-action@v2
@@ -42,8 +45,8 @@ jobs:
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
-          url: ${{ inputs.VAULT_URL || vars.VAULT_URL }}
-          role: ${{ inputs.VAULT_GITHUB_ACTIONS_ROLE }}
+          url: ${{ env.VAULT_URL }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
           method: jwt
           path: "github-actions"
           secrets: |
