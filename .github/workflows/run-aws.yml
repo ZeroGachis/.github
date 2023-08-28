@@ -58,7 +58,7 @@ jobs:
               secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2.2.0
+        uses: aws-actions/configure-aws-credentials@v3.0.1
         with:
           aws-region: ${{ inputs.aws_region }}
 
