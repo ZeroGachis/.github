@@ -25,9 +25,14 @@ on:
       build-args:
         required: false
         type: string
+      tailscale_enabled: 
+        required: false
+        type: boolean
+        default: true
       vault_enabled: 
         required: false
         type: boolean
+        default: true
       vault_url: 
         required: false
         type: string
