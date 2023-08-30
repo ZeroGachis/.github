@@ -15,10 +15,6 @@ on:
       run_command:
         required: true
         type: string
-      aws_credentials_enabled:
-        required: false
-        type: boolean
-        default: false
       enable_test_report:
         required: false
         type: boolean
@@ -36,12 +32,31 @@ on:
         required: false
         type: boolean
         default: true
+      aws_credentials_enabled:
+        required: false
+        type: boolean
+        default: false
+      aws_account_id:
+        required: false
+        type: string
+      aws_github_role_name:
+        required: false
+        type: string
+        default: "github_oidc_readonly"
+      vault_enabled:
+        required: false
+        type: boolean
+        default: true
       vault_url: 
         required: false
         type: string
       vault_github_actions_role:
         required: true 
         type: string
+      tailscale_enabled:
+        required: false 
+        type: boolean
+        default: true  
       environment_name:
         required: false
         type: string
@@ -65,9 +80,13 @@ jobs:
       env:
         DJANGO_SETTINGS_MODULE: ${{ inputs.env_django_settings_module }}
         GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+        VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+        VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
+        AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
+    
     steps:
       - name: Tailscale
-        if: ${{ inputs.aws_credentials_enabled }}
+        if: inputs.tailscale_enabled || inputs.vault_enabled
         uses: tailscale/github-action@v2
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
@@ -76,29 +95,29 @@ jobs:
           version: ${{ vars.TAILSCALE_VERSION }}
 
       - name: Import Secrets
-        if: ${{ inputs.aws_credentials_enabled }}
+        if: inputs.vault_enabled
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
-          url: ${{ inputs.VAULT_URL || vars.VAULT_URL }}
-          role: ${{ inputs.VAULT_GITHUB_ACTIONS_ROLE }}
+          url: ${{ env.VAULT_URL }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
           method: jwt
           path: "github-actions"
+          exportToken: true
           secrets: |
-              secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
-              secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
+            ${{ inputs.vault_secrets }}
 
       - name: Checkout
         if: ${{ inputs.checkout_enabled }}
         uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
-        if: ${{ inputs.aws_credentials_enabled }}
-        uses: aws-actions/configure-aws-credentials@v2.2.0
+        if: inputs.aws_credentials_enabled
+        uses: aws-actions/configure-aws-credentials@v3
         with:
-          aws-access-key-id: ${{ steps.secrets.outputs.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ steps.secrets.outputs.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
+
 
       - name: run-command
         working-directory: ${{ inputs.workdir }}

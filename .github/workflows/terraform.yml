@@ -7,57 +7,61 @@ on:
         required: false
         type: boolean
         default: true
-      environment_name:
+      environment_name: 
         required: false
         type: string
       terraform_workspace:
         required: false
         type: string
         default: ${{ github.ref_name }}
-      terraform_dir:
-        required: false
-        type: string
-        default: '.'
-      terraform_args:
-        required: false
-        type: string
       terraform_parallelism:
         required: false
         type: string
         default: "10"
+      terraform_args:
+        required: false
+        type: string
+      aws_account_id:
+          required: false
+          type: string
+      aws_github_role_name:
+        required: false
+        type: string
+        default: "github_oidc_readonly"
+      vault_enabled:
+        required: false
+        type: boolean
+        default: true
       vault_url: 
         required: false
         type: string
       vault_github_actions_role:
-        required: true 
+        required: false 
         type: string
       vault_secrets:
         required: false 
         type: string
-        default: |
-          secret/data/github-actions-common/aws accessKey | TF_VAR_AWS_ACCESS_KEY_ID ;
-          secret/data/github-actions-common/aws secretKey | TF_VAR_AWS_SECRET_ACCESS_KEY ;
-      workdir: 
-        required: false
-        type: string
-      terraform_substep_name:
-        required: false
-        type: string
-        default: ""
-
+      tailscale_enabled:
+        required: false 
+        type: boolean
+        default: true
+        
 jobs:
   terraform:
-    permissions:
-        contents: read
-        id-token: write
-        issues: read
-        pull-requests: write
     name: "Terraform"
+    permissions:
+      id-token: write
+      contents: read
     runs-on: ubuntu-latest
-    environment:
+    environment: 
       name: ${{ inputs.environment_name }}
+    env: 
+      VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
+      AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
     steps:
       - name: Tailscale
+        if: inputs.tailscale_enabled || inputs.vault_enabled
         uses: tailscale/github-action@v2
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
@@ -66,57 +70,58 @@ jobs:
           version: ${{ vars.TAILSCALE_VERSION }}
 
       - name: Import Secrets
+        if: inputs.vault_enabled
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
-          url: ${{ inputs.VAULT_URL || vars.VAULT_URL }}
-          role: ${{ inputs.VAULT_GITHUB_ACTIONS_ROLE }}
+          url: ${{ env.VAULT_URL }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
           method: jwt
           path: "github-actions"
           exportToken: true
           secrets: |
             ${{ inputs.vault_secrets }}
-            secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
-            secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
 
       - uses: hashicorp/setup-terraform@v2
-
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2.2.0
+        uses: aws-actions/configure-aws-credentials@v3
         with:
-          aws-access-key-id: ${{ steps.secrets.outputs.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ steps.secrets.outputs.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
+
+      - name: Get tiers Tools credentials
+        uses: aws-actions/aws-secretsmanager-get-secrets@v1
+        with:
+          secret-ids: |
+            DD_API_KEY,datadog/${{ env.AWS_ACCOUNT_ID }}/technical-account/api-key
+            DD_APP_KEY,datadog/${{ env.AWS_ACCOUNT_ID }}/technical-account/app-key
 
       - name: Terraform Format
         id: fmt
-        working-directory: ${{ inputs.workdir || github.workspace	}}
-        run: terraform -chdir=${{ inputs.terraform_dir }} fmt -check
+        run: terraform fmt -check
 
       - name: Terraform Init
         id: init
-        working-directory: ${{ inputs.workdir || github.workspace }}
-        run: terraform -chdir=${{ inputs.terraform_dir }} init
+        run: terraform init -backend-config="bucket=tfstate-${{ env.AWS_ACCOUNT_ID }}"
 
       - name: Terraform Validate
         id: validate
-        working-directory: ${{ inputs.workdir || github.workspace }}
-        run: terraform -chdir=${{ inputs.terraform_dir }} validate
+        run: terraform validate
 
       - name: Terraform Workspace
         id: workspace
-        working-directory: ${{ inputs.workdir || github.workspace }}
-        run: terraform -chdir=${{ inputs.terraform_dir }} workspace select ${{ inputs.terraform_workspace }} || terraform -chdir=${{ inputs.terraform_dir }} workspace new ${{ inputs.terraform_workspace }}
-
+        run: terraform workspace select ${{ inputs.terraform_workspace }} || terraform workspace new ${{ inputs.terraform_workspace }}
+      
       - name: Terraform Plan
         id: plan
-        working-directory: ${{ inputs.workdir || github.workspace }}
-        run: terraform -chdir=${{ inputs.terraform_dir }} plan -out=tfplan -no-color -input=false ${{ inputs.terraform_args }}
+        run: terraform plan -out=tfplan -no-color -input=false ${{ inputs.terraform_args }}
 
       - name: Terraform Apply
         if: ${{ inputs.terraform_check_only == false }}
-        working-directory: ${{ inputs.workdir || github.workspace }}
-        run: terraform -chdir=${{ inputs.terraform_dir }} apply -auto-approve -input=false -parallelism=${{ inputs.terraform_parallelism }} tfplan
+        run: terraform apply -auto-approve -input=false -parallelism=${{ inputs.terraform_parallelism }} tfplan

@@ -11,6 +11,10 @@ on:
         required: false
         type: string
         default: ""
+      vault_enabled:
+        required: false
+        type: boolean
+        default: true
       vault_url: 
         required: false
         type: string
@@ -20,6 +24,10 @@ on:
       vault_secrets:
         required: true 
         type: string
+      tailscale_enabled:
+        required: false 
+        type: boolean
+        default: true
       run_command: 
         required: true
         type: string
@@ -32,9 +40,14 @@ jobs:
         packages: read
     environment:
       name: ${{ inputs.environment_name }}
+    env: 
+      VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
+      AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
 
     steps:
       - name: Tailscale
+        if: inputs.tailscale_enabled || inputs.vault_enabled
         uses: tailscale/github-action@v2
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
@@ -43,15 +56,17 @@ jobs:
           version: ${{ vars.TAILSCALE_VERSION }}
 
       - name: Import Secrets
+        if: inputs.vault_enabled
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
-          url: ${{ inputs.VAULT_URL || vars.VAULT_URL }}
-          role: ${{ inputs.VAULT_GITHUB_ACTIONS_ROLE }}
+          url: ${{ env.VAULT_URL }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
           method: jwt
           path: "github-actions"
+          exportToken: true
           secrets: |
-              ${{ inputs.vault_secrets }}
+            ${{ inputs.vault_secrets }}
 
       - name: Checkout
         uses: actions/checkout@v3

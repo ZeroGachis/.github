@@ -24,6 +24,13 @@ on:
       vault_github_actions_role:
         required: true 
         type: string
+      aws_account_id:
+        required: false
+        type: string
+      aws_github_role_name:
+        required: false
+        type: string
+        default: "github_oidc_readonly"
 
 jobs:
   push-image:
@@ -34,6 +41,10 @@ jobs:
         packages: read
     environment:
       name: ${{ inputs.environment_name }}
+    env: 
+      VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
+      AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
     steps:
       - name: Tailscale
         uses: tailscale/github-action@v2
@@ -47,21 +58,23 @@ jobs:
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
-          url: ${{ inputs.VAULT_URL || vars.VAULT_URL }}
-          role: ${{ inputs.VAULT_GITHUB_ACTIONS_ROLE }}
+          url: ${{ env.VAULT_URL }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
           method: jwt
           path: "github-actions"
           secrets: |
-              secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
-              secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
               secret/data/github-actions-common/github/github-packages-token PASSWORD | GH_ORG_PACKAGES_TOKEN ; 
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
 
       - name: Login to ECR
         uses: docker/login-action@v2
         with:
           registry: ${{ inputs.ecr_url }}
-          username: ${{ steps.secrets.outputs.AWS_ACCESS_KEY_ID }}
-          password: ${{ steps.secrets.outputs.AWS_SECRET_ACCESS_KEY }}
 
       - name: Login to Github Packages
         uses: docker/login-action@v2
