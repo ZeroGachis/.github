@@ -14,6 +14,10 @@ on:
         required: false
         type: string
         default: ${{ github.ref_name }}
+      terraform_parallelism:
+        required: false
+        type: string
+        default: "10"
       terraform_args:
         required: false
         type: string
@@ -120,4 +124,4 @@ jobs:
 
       - name: Terraform Apply
         if: ${{ inputs.terraform_check_only == false }}
-        run: terraform apply -auto-approve -input=false tfplan
+        run: terraform apply -auto-approve -input=false -parallelism=${{ inputs.terraform_parallelism }} tfplan
