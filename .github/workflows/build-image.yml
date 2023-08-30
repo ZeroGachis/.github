@@ -25,11 +25,14 @@ on:
       build-args:
         required: false
         type: string
+      vault_enabled: 
+        required: false
+        type: boolean
       vault_url: 
         required: false
         type: string
       vault_github_actions_role:
-        required: true 
+        required: false 
         type: string
       environment_name:
         required: false
@@ -58,6 +61,7 @@ jobs:
       image-version: ${{ steps.meta.outputs.version }}
     steps:
       - name: Tailscale
+        if: inputs.tailscale_enabled || inputs.vault_enabled
         uses: tailscale/github-action@v2
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
@@ -66,6 +70,7 @@ jobs:
           version: ${{ vars.TAILSCALE_VERSION }}
 
       - name: Import Secrets
+        if: inputs.vault_enabled
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
@@ -73,6 +78,7 @@ jobs:
           role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
           method: jwt
           path: "github-actions"
+          exportToken: true
           secrets: |
               secret/data/github-actions-common/github/read-repo-token USERNAME | GH_ORG_READ_REPO_USER ;
               secret/data/github-actions-common/github/read-repo-token PASSWORD | GH_ORG_READ_REPO_TOKEN ;
