@@ -103,3 +103,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Terraform workflow have capabity to work on subdirectory
 - Terraform workflow - Variabilize AWS Secrets to be override
+
+## [3.2.0] - 2023-09-12
+
+### Added
+- Terraform backend configuration customization
