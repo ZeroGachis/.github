@@ -3,6 +3,10 @@ name: "Terraform"
 on:
   workflow_call:
     inputs:
+      workdir:
+        required: false
+        type: string
+        default: ${{ github.workspace }} 
       terraform_check_only:
         required: false
         type: boolean
@@ -41,6 +45,12 @@ on:
       vault_secrets:
         required: false 
         type: string
+      aws_secrets:
+          required: false 
+          type: string
+          default: |
+            DD_API_KEY,datadog/${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}/technical-account/api-key
+            DD_APP_KEY,datadog/${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}/technical-account/app-key
       tailscale_enabled:
         required: false 
         type: boolean
@@ -99,29 +109,34 @@ jobs:
         uses: aws-actions/aws-secretsmanager-get-secrets@v1
         with:
           secret-ids: |
-            DD_API_KEY,datadog/${{ env.AWS_ACCOUNT_ID }}/technical-account/api-key
-            DD_APP_KEY,datadog/${{ env.AWS_ACCOUNT_ID }}/technical-account/app-key
+            ${{ inputs.aws_secrets }}
 
       - name: Terraform Format
         id: fmt
+        working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform fmt -check
 
       - name: Terraform Init
         id: init
+        working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform init -backend-config="bucket=tfstate-${{ env.AWS_ACCOUNT_ID }}"
 
       - name: Terraform Validate
         id: validate
+        working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform validate
 
       - name: Terraform Workspace
         id: workspace
+        working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform workspace select ${{ inputs.terraform_workspace }} || terraform workspace new ${{ inputs.terraform_workspace }}
       
       - name: Terraform Plan
         id: plan
+        working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform plan -out=tfplan -no-color -input=false ${{ inputs.terraform_args }}
 
       - name: Terraform Apply
         if: ${{ inputs.terraform_check_only == false }}
+        working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform apply -auto-approve -input=false -parallelism=${{ inputs.terraform_parallelism }} tfplan

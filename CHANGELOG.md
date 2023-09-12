@@ -97,3 +97,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Updated
 - Github OIDC auth for AWS and multiaccount
 - Support for multi account on Datadog and AWS
+
+## [3.1.0] - 2023-09-12
+
+### Added
+- Terraform workflow have capabity to work on subdirectory
+- Terraform workflow - Variabilize AWS Secrets to be override
