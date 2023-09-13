@@ -1,0 +1,193 @@
+name: 'Create Apk Artifact'
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      java-version:
+        required: true
+        type: string
+      configuration:
+        required: true
+        type: string
+      package-name:
+        required: true
+        type: string
+      version-code:
+        required: true
+        type: string
+      vault-url:
+        required: true
+        type: string
+      vault-role:
+        default: github-actions-role
+        type: string
+      vault-path:
+        required: true
+        type: string
+      s3-path:
+        required: true
+        type: string
+      working-directory:
+        default: .
+        type: string
+      is-library-package:
+        default: false
+        type: boolean
+    outputs:
+      apk-name:
+        description: "Apk name"
+        value: app-${{ inputs.configuration }}.apk
+      apk-version:
+        description: "Apk version"
+        value: ${{ jobs.build.outputs.apk-version }}
+      apk-artifact-name:
+        description: "Apk artifact name"
+        value: Apk-${{ inputs.configuration }}
+      is-new-apk-version:
+        description: "Indicate if a new apk version was built"
+        value: ${{ jobs.build.outputs.is-new-apk-version }}
+
+env:
+  smartway_keystore_name: smartway.keystore
+  apk_name: app-${{ inputs.configuration }}.apk
+
+jobs:
+  build:
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    runs-on: ubuntu-latest
+    defaults:
+        run:
+            working-directory: ${{ inputs.working-directory }}
+    outputs:
+      apk-version: ${{ steps.get-apk-version.outputs.apk-version }}
+      is-new-apk-version: ${{ steps.get-existing-apk.outputs.need-new-apk}}
+    steps:
+      - name: Clean Workspace
+        uses: mickem/clean-after-action@v2
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          version: ${{ vars.TAILSCALE_VERSION }}
+
+      - name: Import Secrets
+        id: vault
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ inputs.vault-url }}
+          role: ${{ inputs.vault-role }}
+          method: jwt
+          path: "github-actions"
+          secrets: |
+              secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEYSTORE_PASSWORD ;
+              secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEY_PASSWORD ;
+              secret/data/smartapp/keystore KEY_ALIAS | SMARTWAY_KEY_ALIAS ;
+              secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
+              secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
+              secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY | CODE_PUSH_KEY ;
+              secret/data/${{ inputs.vault-path }} S3_APP_BUCKET | S3_APP_BUCKET ;
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ steps.vault.outputs.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ steps.vault.outputs.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Get APK version
+        id: get-apk-version
+        run: |
+          echo "apk-version=$(grep -oP "versionName \"\K[^\"]*" android/app/build.gradle)" >> $GITHUB_OUTPUT
+
+      - name: Get existing APK
+        id: get-existing-apk
+        run: |
+          aws s3 cp s3://${{ steps.vault.outputs.S3_APP_BUCKET }}/${{ inputs.s3-path }}/${{ steps.get-apk-version.outputs.apk-version }}/${{ env.apk_name }} android/app/build/outputs/apk/${{ inputs.configuration }}/${{ env.apk_name }} && {
+            echo "Apk already exist for that version"
+            echo "need-new-apk=false" >> $GITHUB_OUTPUT
+          } || {
+            echo "Apk does not exist for that version, need build a new one"
+            echo "need-new-apk=true" >> $GITHUB_OUTPUT
+          }
+
+      - uses: actions/setup-java@v3
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        with:
+          distribution: 'temurin'
+          java-version: ${{ inputs.java-version }}
+          cache: 'gradle'
+
+      - name: Validate Gradle wrapper
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        uses: gradle/wrapper-validation-action@v1
+
+      - uses: actions/setup-node@v3
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        with:
+          node-version: ${{ inputs.node-version }}
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@ZeroGachis'
+
+      - name: Get Smartway APK keystore
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        run: aws s3 cp s3://backup-zerogachis/github-actions/${{ env.smartway_keystore_name }} android/app/${{ env.smartway_keystore_name }}
+
+      - name: Update android versions
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        uses: mingjun97/file-regex-replace@v1
+        with:
+          regex: 'versionCode ([\d]+)'
+          replacement: 'versionCode ${{ inputs.version-code }}'
+          include: "^android/app/build.gradle"
+
+      - name: Modify Android applicationId
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        uses: mingjun97/file-regex-replace@v1
+        with:
+          regex: 'applicationId "([\w\.]+)"'
+          replacement: 'applicationId "${{ inputs.package-name }}"'
+          include: "^android/app/build.gradle"
+
+      - name: Set code push key
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        uses: mingjun97/file-regex-replace@v1
+        with:
+          regex: '<string moduleConfig="true" name="CodePushDeploymentKey">(.*)</string>'
+          replacement: '<string moduleConfig="true" name="CodePushDeploymentKey">${{ steps.vault.outputs.CODE_PUSH_KEY }}</string>'
+          include: "^android/app/src/main/res/values/strings.xml"
+
+      - name: Install lib dependencies
+        if: ${{ inputs.is-library-package == true && steps.get-existing-apk.outputs.need-new-apk == 'true' }}
+        working-directory: .
+        run: npm ci --ignore-scripts
+
+      - name: Install dependencies
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        run: npm install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Apk
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        working-directory: ${{ inputs.working-directory }}/android/
+        run: chmod +x ./gradlew && ./gradlew assemble${{ inputs.configuration }}
+        env:
+          SMARTWAY_KEYSTORE_NAME: ${{ env.smartway_keystore_name }}
+
+      - name: Upload Apk
+        uses: actions/upload-artifact@v3
+        with:
+          name: Apk-${{ inputs.configuration }}
+          path: ${{ inputs.working-directory }}/android/app/build/outputs/apk/${{ inputs.configuration }}/${{ env.apk_name }}
