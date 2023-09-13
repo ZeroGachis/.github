@@ -1,0 +1,79 @@
+name: Publish APK S3
+
+on:
+  workflow_call:
+    inputs:
+        apk-artifact-name:
+            required: true
+            type: string
+        apk-name:
+            required: true
+            type: string
+        apk-version:
+            required: true
+            type: string
+        vault-path:
+            required: true
+            type: string
+        vault-url:
+            required: true
+            type: string
+        vault-role:
+            default: github-actions-role
+            type: string
+        s3-path:
+            required: true
+            type: string
+jobs:
+  publish-s3:
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clean Workspace
+        uses: mickem/clean-after-action@v2
+
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          version: ${{ vars.TAILSCALE_VERSION }}
+
+      - name: Import Secrets
+        id: vault
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ inputs.vault-url }}
+          role: ${{ inputs.vault-role }}
+          method: jwt
+          path: "github-actions"
+          secrets: |
+              secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEYSTORE_PASSWORD ;
+              secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEY_PASSWORD ;
+              secret/data/smartapp/keystore KEY_ALIAS | SMARTWAY_KEY_ALIAS ;
+              secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
+              secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
+              secret/data/${{ inputs.vault-path }} S3_APP_BUCKET | S3_APP_BUCKET ;
+
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ steps.vault.outputs.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ steps.vault.outputs.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+
+      - name: Download APK
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.apk-artifact-name }}
+          path: ${{ github.workspace }}/artifact/
+
+      - name: Push Apk to S3
+        working-directory: 'artifact'
+        run: aws s3 cp ${{ inputs.apk-name }} s3://${{ steps.vault.outputs.S3_APP_BUCKET }}/${{ inputs.s3-path }}/${{ inputs.apk-version }}/${{ inputs.apk-name }}
