@@ -1,0 +1,20 @@
+name: Android Format Version Code
+
+on:
+  workflow_call:
+    outputs:
+      version-code:
+        description: "Version code generated"
+        value: ${{ jobs.format-version-code.outputs.version-code }}
+
+jobs:
+    format-version-code:
+      name: Format Version Code
+      runs-on: ubuntu-latest
+
+      outputs:
+        version-code: ${{ steps.version-code.outputs.value }}
+      steps:
+        - name: "Format build number for Android VersionCode"
+          id: version-code
+          run: echo "value=`printf '%04o\n' ${{ github.run_number }}`" >> $GITHUB_OUTPUT
