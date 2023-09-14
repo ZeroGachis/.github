@@ -1,0 +1,34 @@
+name: Publish APK Soti
+
+on:
+  workflow_call:
+    inputs:
+        apk-artifact-name:
+            required: true
+            type: string
+        apk-name:
+            required: true
+            type: string
+jobs:
+  publish-soti:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clean Workspace
+        uses: mickem/clean-after-action@v2
+
+
+      - name: Download APK
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.apk-artifact-name }}
+          path: ${{ github.workspace }}/artifact/
+
+      - name: Push Apk to soti
+        uses: ZeroGachis/soti-action-uploader@v1
+        with:
+          apk-path: artifact/${{ inputs.apk-name }}
+          soti-api-url: ${{ secrets.SOTI_API_URL }}
+          soti-api-key: ${{ secrets.SOTI_API_KEY }}
+          soti-api-secret: ${{ secrets.SOTI_API_SECRET }}
+          soti-username: ${{ secrets.SOTI_USERNAME }}
+          soti-password: ${{ secrets.SOTI_PASSWORD }}
