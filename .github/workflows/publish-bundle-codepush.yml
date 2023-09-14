@@ -1,0 +1,101 @@
+name: 'Publish Bundle to CodePush'
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      codepush-app:
+        required: true
+        type: string
+      apk-version:
+        required: true
+        type: string
+      is-library-package:
+        default: false
+        type: boolean
+      vault-path:
+          required: true
+          type: string
+      vault-url:
+          required: true
+          type: string
+      vault-role:
+          default: github-actions-role
+          type: string
+
+jobs:
+    bundle-js:
+        runs-on: ubuntu-latest
+        permissions:
+            id-token: write
+        defaults:
+            run:
+                working-directory: ./Storybook
+        steps:
+            - name: Clean Workspace
+              uses: mickem/clean-after-action@v2
+
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Tailscale
+              uses: tailscale/github-action@v2
+              with:
+                  oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+                  oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+                  tags: tag:ci
+                  version: ${{ vars.TAILSCALE_VERSION }}
+
+            - name: Import Secrets
+              id: imported-secrets
+              uses: hashicorp/vault-action@v2
+              with:
+                  url: ${{ inputs.vault-url }}
+                  role: ${{ inputs.vault-role }}
+                  method: jwt
+                  path: 'github-actions'
+                  secrets: |
+                      secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY_NAME | CODE_PUSH_KEY_NAME ;
+                      secret/data/${{ inputs.vault-path }} CODE_PUSH_TOKEN | CODE_PUSH_TOKEN ;
+
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ inputs.node-version }}
+                  registry-url: 'https://npm.pkg.github.com'
+                  scope: '@ZeroGachis'
+
+            - name: Install lib dependencies
+              if: ${{ inputs.is-library-package == true }}
+              working-directory: .
+              run: npm ci --ignore-scripts
+
+            - name: Install dependencies
+              run: npm ci --ignore-scripts
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Rebuild & Prepare dependencies
+              run: npm rebuild && npm run prepare --if-present
+
+            - name: Install App center
+              run: npm install -g appcenter-cli
+
+            - name: App center login
+              run: appcenter login --token ${{ steps.imported-secrets.outputs.CODE_PUSH_TOKEN }}
+
+            - name: Format Target binary version
+              id: target-binary-version
+              run: echo "value=\"$(echo ${{ inputs.apk-version }} | grep -oP "^\K[^\.]*").X.X\"" >> $GITHUB_OUTPUT
+
+            - name: Deploy code push
+              run: |
+                  appcenter codepush release-react -a ${{ inputs.codepush-app }} -d ${{ steps.imported-secrets.outputs.CODE_PUSH_KEY_NAME }} -t ${{ steps.target-binary-version.outputs.value }} || {
+                    if [[ $? -eq 3 ]] ; then
+                      echo "Code push deploy skipped."
+                      exit 0
+                    fi
+
+                    exit $?
+                  }
