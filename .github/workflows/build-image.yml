@@ -104,6 +104,9 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ inputs.regitry_url }}/${{ github.repository_owner	 }}/${{ inputs.image_name }}
+          labels: |
+            org.opencontainers.image.source=github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
