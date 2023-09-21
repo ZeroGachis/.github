@@ -160,13 +160,21 @@ jobs:
           replacement: 'applicationId "${{ inputs.package-name }}"'
           include: "^android/app/build.gradle"
 
-      - name: Set code push key
+      - name: Set code push key in string.xml
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
         uses: mingjun97/file-regex-replace@v1
         with:
           regex: '<string moduleConfig="true" name="CodePushDeploymentKey">(.*)</string>'
           replacement: '<string moduleConfig="true" name="CodePushDeploymentKey">${{ steps.vault.outputs.CODE_PUSH_KEY }}</string>'
           include: "^android/app/src/main/res/values/strings.xml"
+
+      - name: Set code push key when sync manually
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        uses: mingjun97/file-regex-replace@v1
+        with:
+          regex: "deploymentKey: 'CODE_PUSH_DEPLOYMENT_KEY'"
+          replacement: "deploymentKey: '${{ steps.vault.outputs.CODE_PUSH_KEY }}'"
+          include: "^src/"
 
       - name: Install lib dependencies
         if: ${{ inputs.is-library-package == true && steps.get-existing-apk.outputs.need-new-apk == 'true' }}
