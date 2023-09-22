@@ -97,6 +97,7 @@ jobs:
               secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
               secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
               secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY | CODE_PUSH_KEY ;
+              secret/data/${{ inputs.vault-path }} QA_CODE_PUSH_KEY | QA_CODE_PUSH_KEY ;
               secret/data/${{ inputs.vault-path }} S3_APP_BUCKET | S3_APP_BUCKET ;
 
       - name: Configure AWS Credentials
@@ -172,8 +173,16 @@ jobs:
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
         uses: mingjun97/file-regex-replace@v1
         with:
-          regex: "deploymentKey: 'CODE_PUSH_DEPLOYMENT_KEY'"
-          replacement: "deploymentKey: '${{ steps.vault.outputs.CODE_PUSH_KEY }}'"
+          regex: "'CODE_PUSH_KEY'"
+          replacement: "'${{ steps.vault.outputs.CODE_PUSH_KEY }}'"
+          include: "^src/"
+
+      - name: Set code push key when sync manually for QA env
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        uses: mingjun97/file-regex-replace@v1
+        with:
+          regex: "'QA_CODE_PUSH_KEY'"
+          replacement: "'${{ steps.vault.outputs.QA_CODE_PUSH_KEY }}'"
           include: "^src/"
 
       - name: Install lib dependencies
