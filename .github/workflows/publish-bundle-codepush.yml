@@ -102,8 +102,9 @@ jobs:
               id: code-push-key
               run: |
                 if [[ "${{ inputs.is-qa-package }}" == "false" ]]
-                  echo "value=${{ steps.imported-secrets.outputs.CODE_PUSH_KEY_NAME }}" >> $GITHUB_OUTPUT
                 then
+                  echo "value=${{ steps.imported-secrets.outputs.CODE_PUSH_KEY_NAME }}" >> $GITHUB_OUTPUT
+                else
                   echo "value=${{ steps.imported-secrets.outputs.QA_CODE_PUSH_KEY_NAME }}" >> $GITHUB_OUTPUT
                 fi
 
