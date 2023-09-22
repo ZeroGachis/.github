@@ -15,6 +15,9 @@ on:
       is-library-package:
         default: false
         type: boolean
+      is-qa-package:
+        default: false
+        type: boolean
       working-directory:
         default: .
         type: string
@@ -63,6 +66,7 @@ jobs:
                   path: 'github-actions'
                   secrets: |
                       secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY_NAME | CODE_PUSH_KEY_NAME ;
+                      secret/data/${{ inputs.vault-path }} QA_CODE_PUSH_KEY_NAME | QA_CODE_PUSH_KEY_NAME ;
                       secret/data/${{ inputs.vault-path }} CODE_PUSH_TOKEN | CODE_PUSH_TOKEN ;
 
             - uses: actions/setup-node@v3
@@ -94,9 +98,18 @@ jobs:
               id: target-binary-version
               run: echo "value=\"$(echo ${{ inputs.apk-version }} | grep -oP "^\K[^\.]*").X.X\"" >> $GITHUB_OUTPUT
 
+            - name: Determine CodePush key
+              id: code-push-key
+              run: |
+                if [[ ${{ inputs.is-qa-package }} -eq "false" ]]
+                  echo "value=${{ steps.imported-secrets.outputs.CODE_PUSH_KEY_NAME }}" >> $GITHUB_OUTPUT
+                then
+                  echo "value=${{ steps.imported-secrets.outputs.QA_CODE_PUSH_KEY_NAME }}" >> $GITHUB_OUTPUT
+                fi
+
             - name: Deploy code push
               run: |
-                  appcenter codepush release-react -a ${{ inputs.codepush-app }} -d ${{ steps.imported-secrets.outputs.CODE_PUSH_KEY_NAME }} -t ${{ steps.target-binary-version.outputs.value }} || {
+                  appcenter codepush release-react -a ${{ inputs.codepush-app }} -d ${{ steps.code-push-key.outputs.value }} -t ${{ steps.target-binary-version.outputs.value }} || {
                     if [[ $? -eq 3 ]] ; then
                       echo "Code push deploy skipped."
                       exit 0
