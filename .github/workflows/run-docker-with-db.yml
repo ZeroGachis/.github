@@ -120,7 +120,7 @@ jobs:
         
       - name: Configure AWS Credentials
         if: inputs.aws_credentials_enabled
-        uses: aws-actions/configure-aws-credentials@v4.0.0
+        uses: aws-actions/configure-aws-credentials@v4.0.1
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
