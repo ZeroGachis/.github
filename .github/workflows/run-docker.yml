@@ -124,7 +124,7 @@ jobs:
         run: ${{ inputs.run_command }}
 
       - name: Test Report
-        uses: dorny/test-reporter@e9fa2f582c0ebbe2e263fd18fad744d52e0b0203
+        uses: dorny/test-reporter@214173a332ac6fa30b09d7ff83f67c0ea343af50
         id: test-report
         if: ${{ always() && inputs.enable_test_report == true }}
         with:
