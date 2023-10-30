@@ -134,7 +134,7 @@ jobs:
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
         uses: gradle/wrapper-validation-action@v1
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
         with:
           node-version: ${{ inputs.node-version }}
