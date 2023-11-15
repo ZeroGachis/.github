@@ -94,6 +94,7 @@ jobs:
               secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEYSTORE_PASSWORD ;
               secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEY_PASSWORD ;
               secret/data/smartapp/keystore KEY_ALIAS | SMARTWAY_KEY_ALIAS ;
+              secret/data/smartapp/datadog DATADOG_CLIENT_TOKEN | DATADOG_CLIENT_TOKEN ;
               secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
               secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
               secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY | CODE_PUSH_KEY ;
