@@ -205,7 +205,7 @@ jobs:
           SMARTWAY_KEYSTORE_NAME: ${{ env.smartway_keystore_name }}
 
       - name: Upload Apk
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Apk-${{ inputs.configuration }}
           path: ${{ inputs.working-directory }}/android/app/build/outputs/apk/${{ inputs.configuration }}/${{ env.apk_name }}

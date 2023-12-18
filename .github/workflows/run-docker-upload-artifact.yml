@@ -117,7 +117,7 @@ jobs:
         run: ${{ inputs.run_command }}
       
       - name: upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
           path: ${{ inputs.workdir }}/${{ inputs.artifact_path }}     
