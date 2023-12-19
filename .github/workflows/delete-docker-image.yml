@@ -16,10 +16,4 @@ jobs:
   delete:
     runs-on: ubuntu-latest
     steps:
-      - uses: smartsquaregmbh/delete-old-packages@v0.6.0
-        with:
-          token: ${{ secrets.GH_ORG_PACKAGES_TOKEN }}
-          type: container
-          organization: ${{ github.repository_owner }}
-          names: |
-            ${{ inputs.image_name }}
+      - run: echo "disable deletion for this version on CI. Please upgrade to new one"
