@@ -1,0 +1,24 @@
+name: Send event to Datadog
+
+on:
+  workflow_call:
+    inputs:
+      application-name:
+        required: true
+        type: string
+
+jobs:
+  publish-soti:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Datadog Event
+        uses: masci/datadog@v1
+
+        with:
+          api-key: ${{ secrets.DD_API_KEY }}
+          events: |
+            - title: "New deployment of ${{ application-name }}"
+              text: "${{ application-name }} has been successfully deployed"
+              alert_type: "info"
+              tags:
+                - "application:${{ application-name }}"
