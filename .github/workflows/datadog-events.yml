@@ -8,7 +8,7 @@ on:
         type: string
 
 jobs:
-  publish-soti:
+  datadog-event:
     runs-on: ubuntu-latest
     steps:
       - name: Datadog Event
