@@ -25,7 +25,6 @@ on:
       terraform_backend:
         required: false
         type: string
-        default: "tfstate-${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}"
       terraform_args:
         required: false
         type: string
@@ -55,9 +54,6 @@ on:
       aws_secrets:
           required: false 
           type: string
-          default: |
-            DD_API_KEY,datadog/${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}/technical-account/api-key
-            DD_APP_KEY,datadog/${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}/technical-account/app-key
       tailscale_enabled:
         required: false 
         type: boolean
@@ -77,6 +73,10 @@ jobs:
       VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
       AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
       AWS_REGION: ${{ inputs.AWS_REGION || vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
+      AWS_DEFAULT_SECRETS: |
+        DD_API_KEY,datadog/${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}/technical-account/api-key
+        DD_APP_KEY,datadog/${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}/technical-account/app-key
+      TERRAFORM_DEFAULT_BACKEND: tfstate-${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
 
     steps:
       - name: Tailscale
@@ -118,7 +118,7 @@ jobs:
         uses: aws-actions/aws-secretsmanager-get-secrets@v1
         with:
           secret-ids: |
-            ${{ inputs.aws_secrets }}
+            ${{ inputs.aws_secrets || env.AWS_DEFAULT_SECRETS }}
 
       - name: Terraform Format
         id: fmt
@@ -128,7 +128,7 @@ jobs:
       - name: Terraform Init
         id: init
         working-directory: ${{ inputs.workdir || github.workspace	}}
-        run: terraform init -backend-config="bucket=${{ inputs.terraform_backend }}"
+        run: terraform init -backend-config="bucket=${{ inputs.terraform_backend || env.TERRAFORM_DEFAULT_BACKEND }}"
 
       - name: Terraform Validate
         id: validate
