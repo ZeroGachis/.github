@@ -1,0 +1,69 @@
+name: "Python-Publish-Package"
+
+on:
+  workflow_call:
+    inputs:
+      python_version:
+        required: false
+        type: string
+        default: 3.x
+      aws_account_id:
+        required: false
+        type: string
+      aws_region:
+        required: false
+        type: string
+      environment_name:
+        required: true
+        type: string
+
+jobs:
+  python-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+      id-token: write
+    environment: ${{ inputs.environment_name }}
+
+    env:
+      AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ inputs.AWS_REGION || vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
+      CODEARTIFACT_DOMAIN: smartway
+      CODEARTIFACT_REPOSITORY: py-release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with: 
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python_version }}
+          cache: 'pip'
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github_oidc
+
+      - name: Install Poetry
+        run: | 
+          pip install poetry 
+          poetry self add "poetry-dynamic-versioning[plugin]" 
+
+      - name: Connect to private repository
+        run: | 
+          export CODEARTIFACT_REPOSITORY_URL=`aws codeartifact get-repository-endpoint --domain ${{ env.CODEARTIFACT_DOMAIN }} --repository ${{ env.CODEARTIFACT_REPOSITORY }} --format pypi --query repositoryEndpoint --output text`
+          export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain ${{ env.CODEARTIFACT_DOMAIN }} --query authorizationToken --output text`
+          export CODEARTIFACT_USER=aws
+          poetry config repositories.smartway $CODEARTIFACT_REPOSITORY_URL
+          poetry config http-basic.smartway $CODEARTIFACT_USER $CODEARTIFACT_AUTH_TOKEN
+
+
+      - name: Build library
+        run: poetry build
+
+      - name: Push library
+        run: poetry publish -r smartway
