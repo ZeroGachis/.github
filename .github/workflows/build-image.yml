@@ -61,6 +61,8 @@ jobs:
     env: 
       VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
+      AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}    
     outputs:
       image-url: ${{ steps.meta.outputs.tags }}
       image-version: ${{ steps.meta.outputs.version }}
@@ -87,6 +89,13 @@ jobs:
           secrets: |
               secret/data/github-actions-common/github/read-repo-token USERNAME | GH_ORG_READ_REPO_USER ;
               secret/data/github-actions-common/github/read-repo-token PASSWORD | GH_ORG_READ_REPO_TOKEN ;
+
+      - name: Configure AWS Credentials
+        id: aws
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github_oidc
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -126,3 +135,7 @@ jobs:
             ${{ inputs.build-args }} 
             GITHUB_USER=${{ steps.secrets.outputs.GH_ORG_READ_REPO_USER }} 
             GITHUB_TOKEN=${{ steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }} 
+            AWS_ACCESS_KEY_ID=${{ steps.aws.outputs.aws-access-key-id }}
+            AWS_SECRET_ACCESS_KEY=${{ steps.aws.outputs.aws-secret-access-key }}
+            AWS_SESSION_TOKEN=${{ steps.aws.outputs.aws-session-token }}
+
