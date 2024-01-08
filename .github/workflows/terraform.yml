@@ -54,6 +54,9 @@ on:
       aws_secrets:
           required: false 
           type: string
+      aws_additional_secrets:
+        required: false 
+        type: string
       tailscale_enabled:
         required: false 
         type: boolean
@@ -119,6 +122,7 @@ jobs:
         with:
           secret-ids: |
             ${{ inputs.aws_secrets || env.AWS_DEFAULT_SECRETS }}
+            ${{ inputs.aws_additional_secrets }}
 
       - name: Terraform Format
         id: fmt
