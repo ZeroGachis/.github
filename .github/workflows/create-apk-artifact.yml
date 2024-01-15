@@ -36,6 +36,8 @@ on:
       is-library-package:
         default: false
         type: boolean
+      environment_name: 
+        type: string
     outputs:
       apk-name:
         description: "Apk name"
@@ -95,6 +97,7 @@ jobs:
               secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEY_PASSWORD ;
               secret/data/smartapp/keystore KEY_ALIAS | SMARTWAY_KEY_ALIAS ;
               secret/data/smartapp/datadog DATADOG_CLIENT_TOKEN | DATADOG_CLIENT_TOKEN ;
+              secret/data/smartapp/datadog DATADOG_APPLICATION_ID | DATADOG_APPLICATION_ID ;
               secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
               secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
               secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY | CODE_PUSH_KEY ;
@@ -197,6 +200,13 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Inject environment in .env file 
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        run:  |
+          echo "DATADOG_CLIENT_TOKEN=${{ steps.vault.outputs.DATADOG_CLIENT_TOKEN }}" >> .env
+          echo "DATADOG_APPLICATION_ID=${{ steps.vault.outputs.DATADOG_CLIENT_TOKEN }}" >> .env
+          echo "ENVIRONMENT=${{ inputs.environment_name || github.ref_name }}" >> .env
+  
       - name: Build Apk
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
         working-directory: ${{ inputs.working-directory }}/android/
