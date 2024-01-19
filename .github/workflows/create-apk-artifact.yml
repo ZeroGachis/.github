@@ -36,7 +36,8 @@ on:
       is-library-package:
         default: false
         type: boolean
-      environment_name: 
+      environment: 
+        required: true
         type: string
     outputs:
       apk-name:
@@ -204,8 +205,8 @@ jobs:
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
         run:  |
           echo "DATADOG_CLIENT_TOKEN=${{ steps.vault.outputs.DATADOG_CLIENT_TOKEN }}" >> .env
-          echo "DATADOG_APPLICATION_ID=${{ steps.vault.outputs.DATADOG_CLIENT_TOKEN }}" >> .env
-          echo "ENVIRONMENT=${{ inputs.environment_name || github.ref_name }}" >> .env
+          echo "DATADOG_APPLICATION_ID=${{ steps.vault.outputs.DATADOG_APPLICATION_ID }}" >> .env
+          echo "ENVIRONMENT=${{ inputs.environment }}" >> .env
   
       - name: Build Apk
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
