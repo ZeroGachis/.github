@@ -22,6 +22,9 @@ on:
         required: false
         type: string
         default: ${{ github.event.repository.name }}
+      image_target:
+        required: false
+        type: string
       build-args:
         required: false
         type: string
@@ -132,6 +135,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          target: ${{ inputs.image_target }}
           build-args: |
             ${{ inputs.build-args }} 
             GITHUB_USER=${{ steps.secrets.outputs.GH_ORG_READ_REPO_USER }} 
@@ -141,4 +145,3 @@ jobs:
             AWS_SESSION_TOKEN=${{ steps.aws.outputs.aws-session-token }}
             CODEARTIFACT_DOMAIN=smartway
             CODEARTIFACT_DOMAINOWNER=007065811408
-
