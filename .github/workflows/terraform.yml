@@ -94,7 +94,7 @@ jobs:
       - name: Import Secrets
         if: inputs.vault_enabled
         id: secrets
-        uses: hashicorp/vault-action@v2
+        uses: hashicorp/vault-action@00bce0da9c4b8be526718f7f5f20a88966f31022
         with:
           url: ${{ env.VAULT_URL }}
           role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
