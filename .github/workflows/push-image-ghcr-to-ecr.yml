@@ -1,4 +1,4 @@
-name: 'Push-Image-GHCR-To-ECR'
+name: "Push-Image-GHCR-To-ECR"
 
 on:
   workflow_call:
@@ -7,7 +7,7 @@ on:
         required: true
         type: string
       ecr_url:
-        required: true
+        required: false
         type: string
       image_name:
         required: true
@@ -15,14 +15,14 @@ on:
       releasetag:
         required: true
         type: string
-      environment_name: 
+      environment_name:
         required: true
         type: string
-      vault_url: 
+      vault_url:
         required: false
         type: string
       vault_github_actions_role:
-        required: false 
+        required: false
         type: string
       aws_account_id:
         required: false
@@ -39,12 +39,12 @@ jobs:
   push-image:
     runs-on: ubuntu-latest
     permissions:
-        contents: read
-        id-token: write
-        packages: read
+      contents: read
+      id-token: write
+      packages: read
     environment:
       name: ${{ inputs.environment_name }}
-    env: 
+    env:
       VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
       AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
@@ -68,7 +68,7 @@ jobs:
           method: jwt
           path: "github-actions"
           secrets: |
-              secret/data/github-actions-common/github/github-packages-token PASSWORD | GH_ORG_PACKAGES_TOKEN ; 
+            secret/data/github-actions-common/github/github-packages-token PASSWORD | GH_ORG_PACKAGES_TOKEN ;
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -89,7 +89,9 @@ jobs:
           password: ${{ steps.secrets.outputs.GH_ORG_PACKAGES_TOKEN }}
 
       - name: Manipulate Image
-        run:  |
+        env:
+          ECR_DEFAULT_URL: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+        run: |
           docker pull ${{ inputs.image_url}} 
-          docker tag ${{ inputs.image_url}} ${{ inputs.ecr_url }}/${{ inputs.environment_name }}/${{ inputs.image_name }}:${{ inputs.releasetag }}
-          docker push ${{ inputs.ecr_url }}/${{ inputs.environment_name }}/${{ inputs.image_name }}:${{ inputs.releasetag }}
+          docker tag ${{ inputs.image_url}} ${{ inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.environment_name }}/${{ inputs.image_name }}:${{ inputs.releasetag }}
+          docker push ${{  inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.environment_name }}/${{ inputs.image_name }}:${{ inputs.releasetag }}
