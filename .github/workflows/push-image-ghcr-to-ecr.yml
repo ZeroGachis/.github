@@ -18,12 +18,6 @@ on:
       environment_name:
         required: true
         type: string
-      vault_url:
-        required: false
-        type: string
-      vault_github_actions_role:
-        required: false
-        type: string
       aws_account_id:
         required: false
         type: string
@@ -45,31 +39,10 @@ jobs:
     environment:
       name: ${{ inputs.environment_name }}
     env:
-      VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
-      VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
       AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
       AWS_REGION: ${{ inputs.AWS_REGION || vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
       steps:
     steps:
-      - name: Tailscale
-        uses: tailscale/github-action@v2
-        with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-          version: ${{ vars.TAILSCALE_VERSION }}
-
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@00bce0da9c4b8be526718f7f5f20a88966f31022
-        with:
-          url: ${{ env.VAULT_URL }}
-          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-          method: jwt
-          path: "github-actions"
-          secrets: |
-            secret/data/github-actions-common/github/github-packages-token PASSWORD | GH_ORG_PACKAGES_TOKEN ;
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -86,7 +59,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ steps.secrets.outputs.GH_ORG_PACKAGES_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Manipulate Image
         env:
