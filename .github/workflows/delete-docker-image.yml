@@ -10,11 +10,11 @@ on:
         required: false
         type: string
         default: ${{ github.event.repository.name }}
-      vault_url: 
+      vault_url:
         required: false
         type: string
       vault_github_actions_role:
-        required: false 
+        required: false
         type: string
       environment_name:
         required: false
@@ -29,33 +29,12 @@ jobs:
         packages: write
     environment:
       name: ${{ inputs.environment_name }}
-    env: 
+    env:
       VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
     steps:
-      - name: Tailscale
-        uses: tailscale/github-action@v2
-        with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-          version: ${{ vars.TAILSCALE_VERSION }}
-
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@00bce0da9c4b8be526718f7f5f20a88966f31022
-        with:
-          url: ${{ env.VAULT_URL }}
-          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-          method: jwt
-          path: "github-actions"
-          secrets: |
-              secret/data/github-actions-common/github/github-packages-token PASSWORD | GH_ORG_PACKAGES_TOKEN ; 
-
-      - uses: smartsquaregmbh/delete-old-packages@v0.7.0
-        with:
-          token: ${{ steps.secrets.outputs.GH_ORG_PACKAGES_TOKEN }}
-          type: container
-          organization: ${{ github.repository_owner }}
-          names: |
-            ${{ inputs.image_name }}
+      # We keep this action as it is configure in lot of repo
+      # the legacy version did not work this is why we removed it
+      # TODO: find a way to delete images from github registry
+      - name: None
+        run: echo "Enjoy"
