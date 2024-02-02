@@ -28,27 +28,27 @@ on:
       build-args:
         required: false
         type: string
-      tailscale_enabled: 
+      tailscale_enabled:
         required: false
         type: boolean
         default: true
-      vault_enabled: 
+      vault_enabled:
         required: false
         type: boolean
         default: true
-      vault_url: 
+      vault_url:
         required: false
         type: string
       vault_github_actions_role:
-        required: false 
+        required: false
         type: string
       environment_name:
         required: false
         type: string
-    outputs: 
-      image-url: 
+    outputs:
+      image-url:
         value: ${{ jobs.build-image.outputs.image-url }}
-      image-version: 
+      image-version:
         value: ${{ jobs.build-image.outputs.image-version }}
 
 
@@ -61,11 +61,11 @@ jobs:
         packages: write
     environment:
       name: ${{ inputs.environment_name }}
-    env: 
+    env:
       VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
       AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
-      AWS_REGION: ${{ vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}    
+      AWS_REGION: ${{ vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
     outputs:
       image-url: ${{ steps.meta.outputs.tags }}
       image-version: ${{ steps.meta.outputs.version }}
@@ -78,6 +78,9 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Import Secrets
         if: inputs.vault_enabled
@@ -101,9 +104,6 @@ jobs:
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github_oidc_readonly
           output-credentials: true
 
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Login to Github Packages
         if: contains(inputs.regitry_url,'ghcr')
         uses: docker/login-action@v3
@@ -125,10 +125,10 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        with: 
+        with:
           version: "v0.11.2"
 
-      - name: Build 
+      - name: Build
         uses: docker/build-push-action@v5
         with:
           push: true
@@ -139,9 +139,9 @@ jobs:
           cache-to: type=gha,mode=max
           target: ${{ inputs.image_target }}
           build-args: |
-            ${{ inputs.build-args }} 
-            GITHUB_USER=${{ steps.secrets.outputs.GH_ORG_READ_REPO_USER }} 
-            GITHUB_TOKEN=${{ steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }} 
+            ${{ inputs.build-args }}
+            GITHUB_USER=${{ steps.secrets.outputs.GH_ORG_READ_REPO_USER }}
+            GITHUB_TOKEN=${{ steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }}
             AWS_ACCESS_KEY_ID=${{ steps.aws.outputs.aws-access-key-id }}
             AWS_SECRET_ACCESS_KEY=${{ steps.aws.outputs.aws-secret-access-key }}
             AWS_SESSION_TOKEN=${{ steps.aws.outputs.aws-session-token }}
