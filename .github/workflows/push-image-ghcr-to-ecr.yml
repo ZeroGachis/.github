@@ -9,6 +9,9 @@ on:
       ecr_url:
         required: false
         type: string
+      ecr_repository_name:
+        required: false
+        type: string
       image_name:
         required: true
         type: string
@@ -68,7 +71,8 @@ jobs:
       - name: Manipulate Image
         env:
           ECR_DEFAULT_URL: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          ECR_DEFAULT_REPOSITORY_NAME: ${{ inputs.environment_name }}/${{ inputs.image_name }}
         run: |
           docker pull ${{ inputs.image_url}} 
-          docker tag ${{ inputs.image_url}} ${{ inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.environment_name }}/${{ inputs.image_name }}:${{ inputs.releasetag }}
-          docker push ${{  inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.environment_name }}/${{ inputs.image_name }}:${{ inputs.releasetag }}
+          docker tag ${{ inputs.image_url}} ${{ inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:${{ inputs.releasetag }}
+          docker push ${{  inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:${{ inputs.releasetag }}
