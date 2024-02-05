@@ -65,6 +65,10 @@ jobs:
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
 
+      - name: Sleep for 10 seconds
+        run: sleep 10s
+        shell: bash
+
       - name: Import Secrets
         id: secrets
         if: inputs.vault_enabled
