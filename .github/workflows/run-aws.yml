@@ -18,26 +18,26 @@ on:
         type: string
         default: ""
       tailscale_enabled:
-        required: false 
+        required: false
         type: boolean
-        default: true  
+        default: true
       vault_enabled:
         required: false
         type: boolean
         default: true
-      vault_url: 
+      vault_url:
         required: false
         type: string
       vault_github_actions_role:
-        required: false 
+        required: false
         type: string
       vault_secrets:
-        required: false 
+        required: false
         type: string
-      run_command: 
+      run_command:
         required: true
         type: string
-        
+
 jobs:
   run-aws:
     permissions:
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment_name }}
-    env: 
+    env:
       VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
       AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}

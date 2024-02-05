@@ -36,7 +36,7 @@ on:
       is-library-package:
         default: false
         type: boolean
-      environment: 
+      environment:
         required: true
         type: string
     outputs:
@@ -201,13 +201,13 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Inject environment in .env file 
+      - name: Inject environment in .env file
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
         run:  |
           echo "DATADOG_CLIENT_TOKEN=${{ steps.vault.outputs.DATADOG_CLIENT_TOKEN }}" >> .env
           echo "DATADOG_APPLICATION_ID=${{ steps.vault.outputs.DATADOG_APPLICATION_ID }}" >> .env
           echo "ENVIRONMENT=${{ inputs.environment }}" >> .env
-  
+
       - name: Build Apk
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
         working-directory: ${{ inputs.working-directory }}/android/
