@@ -24,6 +24,7 @@ on:
         s3-path:
             required: true
             type: string
+
 jobs:
   publish-s3:
     permissions:
