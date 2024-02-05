@@ -6,12 +6,12 @@ on:
       workdir:
         required: false
         type: string
-        default: ${{ github.workspace }} 
+        default: ${{ github.workspace }}
       terraform_check_only:
         required: false
         type: boolean
         default: true
-      environment_name: 
+      environment_name:
         required: false
         type: string
       terraform_workspace:
@@ -42,26 +42,26 @@ on:
         required: false
         type: boolean
         default: true
-      vault_url: 
+      vault_url:
         required: false
         type: string
       vault_github_actions_role:
-        required: false 
+        required: false
         type: string
       vault_secrets:
-        required: false 
+        required: false
         type: string
       aws_secrets:
-          required: false 
+          required: false
           type: string
       aws_additional_secrets:
-        required: false 
+        required: false
         type: string
       tailscale_enabled:
-        required: false 
+        required: false
         type: boolean
         default: true
-        
+
 jobs:
   terraform:
     name: "Terraform"
@@ -69,9 +69,9 @@ jobs:
       id-token: write
       contents: read
     runs-on: ubuntu-latest
-    environment: 
+    environment:
       name: ${{ inputs.environment_name }}
-    env: 
+    env:
       VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
       AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
@@ -91,6 +91,10 @@ jobs:
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
 
+      - name: Sleep for 30 seconds
+        run: sleep 30s
+        shell: bash
+
       - name: Import Secrets
         if: inputs.vault_enabled
         id: secrets
@@ -107,7 +111,7 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-      
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -143,7 +147,7 @@ jobs:
         id: workspace
         working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform workspace select ${{ inputs.terraform_workspace }} || terraform workspace new ${{ inputs.terraform_workspace }}
-      
+
       - name: Terraform Plan
         id: plan
         working-directory: ${{ inputs.workdir || github.workspace	}}
