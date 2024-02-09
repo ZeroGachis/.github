@@ -115,6 +115,12 @@ jobs:
           registry: ${{ inputs.regitry_url }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to ECR
+        uses: docker/login-action@v2
+        with:
+          registry: 819313256810.dkr.ecr.eu-west-1.amazonaws.com
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
