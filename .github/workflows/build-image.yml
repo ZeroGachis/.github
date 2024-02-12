@@ -45,6 +45,9 @@ on:
       environment_name:
         required: false
         type: string
+      ecr_url:
+          required: false
+          type: string          
     outputs:
       image-url:
         value: ${{ jobs.build-image.outputs.image-url }}
@@ -116,11 +119,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Login to ECR
+        if: inputs.ecr_url
         uses: docker/login-action@v2
         with:
-          registry: 819313256810.dkr.ecr.eu-west-1.amazonaws.com
-          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          registry: ${{ inputs.ecr_url }}
+          username: ${{ steps.aws.outputs.aws-access-key-id }}
+          password: ${{ steps.aws.outputs.aws-secret-access-key }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
