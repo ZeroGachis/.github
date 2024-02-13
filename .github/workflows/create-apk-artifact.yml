@@ -103,6 +103,7 @@ jobs:
               secret/data/smartapp/keystore KEY_ALIAS | SMARTWAY_KEY_ALIAS ;
               secret/data/smartapp/datadog DATADOG_CLIENT_TOKEN | DATADOG_CLIENT_TOKEN ;
               secret/data/smartapp/datadog DATADOG_APPLICATION_ID | DATADOG_APPLICATION_ID ;
+              secret/data/smartapp/datadog DATADOG_API_REVERSEPROXY | DATADOG_API_REVERSEPROXY ;
               secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
               secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
               secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY | CODE_PUSH_KEY ;
@@ -210,6 +211,7 @@ jobs:
         run:  |
           echo "DATADOG_CLIENT_TOKEN=${{ steps.vault.outputs.DATADOG_CLIENT_TOKEN }}" >> .env
           echo "DATADOG_APPLICATION_ID=${{ steps.vault.outputs.DATADOG_APPLICATION_ID }}" >> .env
+          echo "DATADOG_API_REVERSEPROXY=${{ steps.vault.outputs.DATADOG_API_REVERSEPROXY }}" >> .env
           echo "ENVIRONMENT=${{ inputs.environment }}" >> .env
 
       - name: Build Apk
