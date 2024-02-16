@@ -75,5 +75,6 @@ jobs:
         run: |
           docker pull ${{ inputs.image_url}} 
           docker tag ${{ inputs.image_url}} ${{ inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:${{ inputs.releasetag }}
+          docker tag ${{ inputs.image_url}} ${{ inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:latest
           docker push ${{  inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:${{ inputs.releasetag }}
           docker push ${{  inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:latest
