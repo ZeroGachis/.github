@@ -153,10 +153,13 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           target: ${{ inputs.image_target }}
+          
           build-args: |
             ${{ inputs.build-args }}
             GITHUB_USER=${{ steps.secrets.outputs.GH_ORG_READ_REPO_USER }}
             GITHUB_TOKEN=${{ steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }}
+            AWS_ACCOUNT_ID=007065811408 
+            AWS_REGION=eu-west-3
             AWS_ACCESS_KEY_ID=${{ steps.aws.outputs.aws-access-key-id }}
             AWS_SECRET_ACCESS_KEY=${{ steps.aws.outputs.aws-secret-access-key }}
             AWS_SESSION_TOKEN=${{ steps.aws.outputs.aws-session-token }}
