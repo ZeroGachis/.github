@@ -121,7 +121,7 @@ jobs:
       - name: Login to ECR
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.AWS_ACCOUNT_ID}}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          registry: 007065811408.dkr.ecr.eu-west-3.amazonaws.com
           username: ${{ steps.aws.outputs.aws-access-key-id }}
           password: ${{ steps.aws.outputs.aws-secret-access-key }}
 
