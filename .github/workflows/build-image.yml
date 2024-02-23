@@ -121,11 +121,7 @@ jobs:
           
       - name: Login to ECR
         run: |
-          aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 007065811408.dkr.ecr.eu-west-3.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ steps.aws.outputs.aws-access-key-id }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.aws.outputs.aws-secret-access-key }}
-          AWS_SESSION_TOKEN: ${{ steps.aws.outputs.aws-session-token }}
+          docker login --username AWS --password ${{ steps.aws.outputs.aws-secret-access-key }} 007065811408.dkr.ecr.eu-west-3.amazonaws.com
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
