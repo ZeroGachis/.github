@@ -122,7 +122,7 @@ jobs:
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
 
       - name: Get tiers Tools credentials
-        uses: aws-actions/aws-secretsmanager-get-secrets@v1
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2
         with:
           secret-ids: |
             ${{ inputs.aws_secrets || env.AWS_DEFAULT_SECRETS }}
