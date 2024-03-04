@@ -91,7 +91,7 @@ jobs:
 
       - name: Import Secrets
         id: vault
-        uses: hashicorp/vault-action@00bce0da9c4b8be526718f7f5f20a88966f31022
+        uses: hashicorp/vault-action@a727ce205a9e187cf179d30796762854cac9c231
         with:
           url: ${{ inputs.vault-url }}
           role: ${{ inputs.vault-role }}
