@@ -35,6 +35,9 @@ on:
         required: false
         type: string
         default: "github_oidc_readonly"
+      environment_name:
+        required: false
+        type: string
 
 jobs:
   publish-s3:
@@ -43,6 +46,8 @@ jobs:
       id-token: write
       packages: read
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment_name }}
     env:
       VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
