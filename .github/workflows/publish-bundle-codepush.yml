@@ -1,4 +1,4 @@
-name: 'Publish Bundle to CodePush'
+name: "Publish Bundle to CodePush"
 
 on:
   workflow_call:
@@ -22,103 +22,103 @@ on:
         default: .
         type: string
       vault-path:
-          required: true
-          type: string
+        required: true
+        type: string
       vault-url:
-          required: true
-          type: string
-      vault-role:
-          default: github-actions-role
-          type: string
+        required: false
+        type: string
+      vault_github_actions_role:
+        required: false
+        type: string
 
 jobs:
-    bundle-js:
-        runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            id-token: write
-            packages: read
-        defaults:
-            run:
-                working-directory: ${{ inputs.working-directory }}
-        steps:
-            - name: Clean Workspace
-              uses: mickem/clean-after-action@v2
+  bundle-js:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    env:
+      VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-            - name: Checkout
-              uses: actions/checkout@v4
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          version: ${{ vars.TAILSCALE_VERSION }}
 
-            - name: Tailscale
-              uses: tailscale/github-action@v2
-              with:
-                  oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-                  oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-                  tags: tag:ci
-                  version: ${{ vars.TAILSCALE_VERSION }}
+      - name: Sleep for 10 seconds
+        run: sleep 10s
+        shell: bash
 
-            - name: Sleep for 10 seconds
-              run: sleep 10s
-              shell: bash
+      - name: Import Secrets
+        id: imported-secrets
+        uses: hashicorp/vault-action@v3
+        with:
+          url: ${{ env.VAULT_URL }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          secrets: |
+            secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY_NAME | CODE_PUSH_KEY_NAME ;
+            secret/data/${{ inputs.vault-path }} QA_CODE_PUSH_KEY_NAME | QA_CODE_PUSH_KEY_NAME ;
+            secret/data/${{ inputs.vault-path }} CODE_PUSH_TOKEN | CODE_PUSH_TOKEN ;
 
-            - name: Import Secrets
-              id: imported-secrets
-              uses: hashicorp/vault-action@v3
-              with:
-                  url: ${{ inputs.vault-url }}
-                  role: ${{ inputs.vault-role }}
-                  method: jwt
-                  path: 'github-actions'
-                  secrets: |
-                      secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY_NAME | CODE_PUSH_KEY_NAME ;
-                      secret/data/${{ inputs.vault-path }} QA_CODE_PUSH_KEY_NAME | QA_CODE_PUSH_KEY_NAME ;
-                      secret/data/${{ inputs.vault-path }} CODE_PUSH_TOKEN | CODE_PUSH_TOKEN ;
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@ZeroGachis"
 
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ inputs.node-version }}
-                  registry-url: 'https://npm.pkg.github.com'
-                  scope: '@ZeroGachis'
+      - name: Install lib dependencies
+        if: ${{ inputs.is-library-package == true }}
+        working-directory: .
+        run: npm ci --ignore-scripts
 
-            - name: Install lib dependencies
-              if: ${{ inputs.is-library-package == true }}
-              working-directory: .
-              run: npm ci --ignore-scripts
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Install dependencies
-              run: npm ci --ignore-scripts
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Rebuild & Prepare dependencies
+        run: npm rebuild && npm run prepare --if-present
 
-            - name: Rebuild & Prepare dependencies
-              run: npm rebuild && npm run prepare --if-present
+      - name: Install App center
+        run: npm install -g appcenter-cli
 
-            - name: Install App center
-              run: npm install -g appcenter-cli
+      - name: App center login
+        run: appcenter login --token ${{ steps.imported-secrets.outputs.CODE_PUSH_TOKEN }}
 
-            - name: App center login
-              run: appcenter login --token ${{ steps.imported-secrets.outputs.CODE_PUSH_TOKEN }}
+      - name: Format Target binary version
+        id: target-binary-version
+        run: echo "value=\"$(echo ${{ inputs.apk-version }} | grep -oP "^\K[^\.]*").X.X\"" >> $GITHUB_OUTPUT
 
-            - name: Format Target binary version
-              id: target-binary-version
-              run: echo "value=\"$(echo ${{ inputs.apk-version }} | grep -oP "^\K[^\.]*").X.X\"" >> $GITHUB_OUTPUT
+      - name: Determine CodePush key
+        id: code-push-key
+        run: |
+          if [[ "${{ inputs.is-qa-package }}" == "false" ]]
+          then
+            echo "value=${{ steps.imported-secrets.outputs.CODE_PUSH_KEY_NAME }}" >> $GITHUB_OUTPUT
+          else
+            echo "value=${{ steps.imported-secrets.outputs.QA_CODE_PUSH_KEY_NAME }}" >> $GITHUB_OUTPUT
+          fi
 
-            - name: Determine CodePush key
-              id: code-push-key
-              run: |
-                if [[ "${{ inputs.is-qa-package }}" == "false" ]]
-                then
-                  echo "value=${{ steps.imported-secrets.outputs.CODE_PUSH_KEY_NAME }}" >> $GITHUB_OUTPUT
-                else
-                  echo "value=${{ steps.imported-secrets.outputs.QA_CODE_PUSH_KEY_NAME }}" >> $GITHUB_OUTPUT
-                fi
+      - name: Deploy code push
+        run: |
+          appcenter codepush release-react -a ${{ inputs.codepush-app }} -d ${{ steps.code-push-key.outputs.value }} -t ${{ steps.target-binary-version.outputs.value }} || {
+            if [[ $? -eq 3 ]] ; then
+              echo "Code push deploy skipped."
+              exit 0
+            fi
 
-            - name: Deploy code push
-              run: |
-                  appcenter codepush release-react -a ${{ inputs.codepush-app }} -d ${{ steps.code-push-key.outputs.value }} -t ${{ steps.target-binary-version.outputs.value }} || {
-                    if [[ $? -eq 3 ]] ; then
-                      echo "Code push deploy skipped."
-                      exit 0
-                    fi
-
-                    exit $?
-                  }
+            exit $?
+          }
