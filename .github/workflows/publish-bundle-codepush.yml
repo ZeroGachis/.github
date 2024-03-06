@@ -30,10 +30,16 @@ on:
       vault_github_actions_role:
         required: false
         type: string
+      environment_name:
+        required: false
+        type: string
+  
 
 jobs:
   bundle-js:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment_name }}
     permissions:
       contents: read
       id-token: write
