@@ -16,9 +16,10 @@ on:
         required: true
         type: string
       vault-url:
-        required: true
+        required: false
         type: string
       vault-role:
+        required: false
         default: github-actions-role
         type: string
       s3-path:
