@@ -1,4 +1,4 @@
-name: 'Create Apk Artifact'
+name: "Create Apk Artifact"
 
 on:
   workflow_call:
@@ -21,12 +21,22 @@ on:
       vault-url:
         required: true
         type: string
-      vault-role:
-        default: github-actions-role
+      vault_github_actions_role:
+        required: false
         type: string
       vault-path:
         required: true
         type: string
+      aws_account_id:
+        required: false
+        type: string
+      aws_region:
+        required: false
+        type: string
+      aws_github_role_name:
+        required: false
+        type: string
+        default: "github_oidc_readonly"
       s3-path:
         required: true
         type: string
@@ -53,10 +63,6 @@ on:
         description: "Indicate if a new apk version was built"
         value: ${{ jobs.build.outputs.is-new-apk-version }}
 
-env:
-  smartway_keystore_name: smartway.keystore
-  apk_name: app-${{ inputs.configuration }}.apk
-
 jobs:
   build:
     permissions:
@@ -64,16 +70,22 @@ jobs:
       id-token: write
       packages: read
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
     defaults:
-        run:
-            working-directory: ${{ inputs.working-directory }}
+      run:
+        working-directory: ${{ inputs.working-directory }}
     outputs:
       apk-version: ${{ steps.get-apk-version.outputs.apk-version }}
       is-new-apk-version: ${{ steps.get-existing-apk.outputs.need-new-apk}}
+    env:
+      smartway_keystore_name: smartway.keystore
+      apk_name: app-${{ inputs.configuration }}.apk
+      VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
+      AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ inputs.AWS_REGION || vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
     steps:
-      - name: Clean Workspace
-        uses: mickem/clean-after-action@v2
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -93,29 +105,26 @@ jobs:
         id: vault
         uses: hashicorp/vault-action@v3
         with:
-          url: ${{ inputs.vault-url }}
-          role: ${{ inputs.vault-role }}
+          url: ${{ env.VAULT_URL }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
           method: jwt
           path: "github-actions"
           secrets: |
-              secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEYSTORE_PASSWORD ;
-              secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEY_PASSWORD ;
-              secret/data/smartapp/keystore KEY_ALIAS | SMARTWAY_KEY_ALIAS ;
-              secret/data/smartapp/datadog DATADOG_CLIENT_TOKEN | DATADOG_CLIENT_TOKEN ;
-              secret/data/smartapp/datadog DATADOG_APPLICATION_ID | DATADOG_APPLICATION_ID ;
-              secret/data/smartapp/datadog DATADOG_API_REVERSEPROXY | DATADOG_API_REVERSEPROXY ;
-              secret/data/github-actions-common/aws accessKey | AWS_ACCESS_KEY_ID ;
-              secret/data/github-actions-common/aws secretKey | AWS_SECRET_ACCESS_KEY ;
-              secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY | CODE_PUSH_KEY ;
-              secret/data/${{ inputs.vault-path }} QA_CODE_PUSH_KEY | QA_CODE_PUSH_KEY ;
-              secret/data/${{ inputs.vault-path }} S3_APP_BUCKET | S3_APP_BUCKET ;
+            secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEYSTORE_PASSWORD ;
+            secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEY_PASSWORD ;
+            secret/data/smartapp/keystore KEY_ALIAS | SMARTWAY_KEY_ALIAS ;
+            secret/data/smartapp/datadog DATADOG_CLIENT_TOKEN | DATADOG_CLIENT_TOKEN ;
+            secret/data/smartapp/datadog DATADOG_APPLICATION_ID | DATADOG_APPLICATION_ID ;
+            secret/data/smartapp/datadog DATADOG_API_REVERSEPROXY | DATADOG_API_REVERSEPROXY ;
+            secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY | CODE_PUSH_KEY ;
+            secret/data/${{ inputs.vault-path }} QA_CODE_PUSH_KEY | QA_CODE_PUSH_KEY ;
+            secret/data/${{ inputs.vault-path }} S3_APP_BUCKET | S3_APP_BUCKET ;
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4.0.1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ steps.vault.outputs.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ steps.vault.outputs.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-1
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
 
       - name: Get APK version
         id: get-apk-version
@@ -136,9 +145,9 @@ jobs:
       - uses: actions/setup-java@v4
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
         with:
-          distribution: 'temurin'
+          distribution: "temurin"
           java-version: ${{ inputs.java-version }}
-          cache: 'gradle'
+          cache: "gradle"
 
       - name: Validate Gradle wrapper
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
@@ -148,8 +157,8 @@ jobs:
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
         with:
           node-version: ${{ inputs.node-version }}
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@ZeroGachis'
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@ZeroGachis"
 
       - name: Get Smartway APK keystore
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
@@ -160,7 +169,7 @@ jobs:
         uses: mingjun97/file-regex-replace@v1
         with:
           regex: 'versionCode ([\d]+)'
-          replacement: 'versionCode ${{ inputs.version-code }}'
+          replacement: "versionCode ${{ inputs.version-code }}"
           include: "^android/app/build.gradle"
 
       - name: Modify Android applicationId
@@ -208,7 +217,7 @@ jobs:
 
       - name: Inject environment in .env file
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
-        run:  |
+        run: |
           echo "DATADOG_CLIENT_TOKEN=${{ steps.vault.outputs.DATADOG_CLIENT_TOKEN }}" >> .env
           echo "DATADOG_APPLICATION_ID=${{ steps.vault.outputs.DATADOG_APPLICATION_ID }}" >> .env
           echo "DATADOG_API_REVERSEPROXY=${{ steps.vault.outputs.DATADOG_API_REVERSEPROXY }}" >> .env
