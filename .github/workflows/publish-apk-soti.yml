@@ -13,10 +13,6 @@ jobs:
   publish-soti:
     runs-on: ubuntu-latest
     steps:
-      - name: Clean Workspace
-        uses: mickem/clean-after-action@v2
-
-
       - name: Download APK
         uses: actions/download-artifact@v4
         with:
