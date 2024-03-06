@@ -119,6 +119,7 @@ jobs:
             secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY | CODE_PUSH_KEY ;
             secret/data/${{ inputs.vault-path }} QA_CODE_PUSH_KEY | QA_CODE_PUSH_KEY ;
             secret/data/${{ inputs.vault-path }} S3_APP_BUCKET | S3_APP_BUCKET ;
+            secret/data/smartapp/keystore S3_BUCKET | KEYSTORE_BUCKET_S3
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -162,7 +163,7 @@ jobs:
 
       - name: Get Smartway APK keystore
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
-        run: aws s3 cp s3://backup-zerogachis/github-actions/${{ env.smartway_keystore_name }} android/app/${{ env.smartway_keystore_name }}
+        run: aws s3 cp s3://${{steps.vault.outputs.KEYSTORE_BUCKET_S3 }}/github-actions/${{ env.smartway_keystore_name }} android/app/${{ env.smartway_keystore_name }}
 
       - name: Update android versions
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
