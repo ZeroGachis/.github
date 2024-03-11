@@ -152,7 +152,7 @@ jobs:
 
       - name: Validate Gradle wrapper
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/wrapper-validation-action@v2
 
       - uses: actions/setup-node@v4
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
