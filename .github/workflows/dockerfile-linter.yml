@@ -31,11 +31,3 @@ jobs:
           dockerfile: ${{ inputs.dockerfile_path }}
           output-file: test-report.json
           format: json
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          check_name: "DockerFile Linter - ${{ inputs.image_name }}"
-          files: |
-            test-report.json
