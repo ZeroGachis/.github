@@ -18,6 +18,9 @@ on:
       releasetag:
         required: true
         type: string
+      additional_tags:
+        required: false
+        type: string
       environment_name:
         required: true
         type: string
@@ -72,9 +75,18 @@ jobs:
         env:
           ECR_DEFAULT_URL: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
           ECR_DEFAULT_REPOSITORY_NAME: ${{ inputs.environment_name }}/${{ inputs.image_name }}
+          ADDITIONAL_TAGS: ${{ inputs.additional_tags || '' }}
         run: |
           docker pull ${{ inputs.image_url}} 
           docker tag ${{ inputs.image_url}} ${{ inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:${{ inputs.releasetag }}
           docker tag ${{ inputs.image_url}} ${{ inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:latest
           docker push ${{  inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:${{ inputs.releasetag }}
           docker push ${{  inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:latest
+          # Push additional tags
+          if [ -n "$ADDITIONAL_TAGS" ]; then
+            IFS=',' read -ra TAGS_ARRAY <<< "$ADDITIONAL_TAGS"
+            for tag in "${TAGS_ARRAY[@]}"; do
+              docker tag ${{ inputs.image_url }} ${{ inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:$tag
+              docker push ${{ inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:$tag
+            done
+          fi
