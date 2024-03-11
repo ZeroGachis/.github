@@ -133,6 +133,7 @@ jobs:
           echo "apk-version=$(grep -oP "versionName \"\K[^\"]*" android/app/build.gradle)" >> $GITHUB_OUTPUT
 
       - name: Get existing APK
+        if: ${{ inputs.environment != 'pullrequest' }}
         id: get-existing-apk
         run: |
           aws s3 cp s3://${{ steps.vault.outputs.S3_APP_BUCKET }}/${{ inputs.s3-path }}/${{ steps.get-apk-version.outputs.apk-version }}/${{ env.apk_name }} android/app/build/outputs/apk/${{ inputs.configuration }}/${{ env.apk_name }} && {
@@ -182,7 +183,7 @@ jobs:
           include: "^android/app/build.gradle"
 
       - name: Set code push key in string.xml
-        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment != 'pullrequest' }}
         uses: mingjun97/file-regex-replace@v1
         with:
           regex: '<string moduleConfig="true" name="CodePushDeploymentKey">(.*)</string>'
@@ -190,7 +191,7 @@ jobs:
           include: "^android/app/src/main/res/values/strings.xml"
 
       - name: Set code push key when sync manually
-        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment != 'pullrequest' }}
         uses: mingjun97/file-regex-replace@v1
         with:
           regex: "'CODE_PUSH_KEY'"
@@ -198,7 +199,7 @@ jobs:
           include: "^src/"
 
       - name: Set code push key when sync manually for QA env
-        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment != 'pullrequest' }}
         uses: mingjun97/file-regex-replace@v1
         with:
           regex: "'QA_CODE_PUSH_KEY'"
