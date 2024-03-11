@@ -1,0 +1,77 @@
+name: "ContainerStructureTests"
+
+on:
+  workflow_call:
+    inputs:
+      image_url:
+        required: true
+        type: string
+      config_file:
+        required: True
+        type: string
+      image_name:
+        required: true
+        type: string
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+      actions: read
+      checks: write
+      issues: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Github Packages
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Pull image
+        run: |
+          docker pull ${{ inputs.image_url }}
+          docker tag ${{ inputs.image_url }} ${{ inputs.image_name }}:latest
+
+      - name: Cache Container Structure Test binary
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: .bin/container-structure-test
+          key: ${{ runner.os }}-container-structure-test
+          restore-keys: |
+            ${{ runner.os }}-container-structure-test
+      - name: Download container-structure-test
+        run: |
+          if [[ "${{ steps.cache.outputs.cache-hit }}" == 'true' ]]; then
+              echo "container-structure-test found in cache. It will not be installed for this run."
+          else
+              echo "container-structure-test not found in cache. tool will be installed."
+              curl --location \
+              --output container-structure-test \
+              "https://github.com/GoogleContainerTools/container-structure-test/releases/latest/download/container-structure-test-linux-amd64"
+
+              mkdir -vp "./bin"
+              chmod +x container-structure-test
+              mv -v container-structure-test "./bin/container-structure-test"
+          fi
+
+          echo "./bin" >> "$GITHUB_PATH"
+
+      - name: Run Container Structure Test
+        run: container-structure-test test --image ${{ inputs.image_name }}:latest --config "${{ inputs.config_file }}" --output junit --test-report test-report.xml
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          check_name: "ContainerStructureTests - ${{ inputs.image_name }}"
+          files: |
+            test-report.xml
