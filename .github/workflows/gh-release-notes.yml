@@ -2,7 +2,9 @@ name: "Github-ReleaseNotes"
 
 on:
   workflow_call:
-
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 jobs:
   github-release:
     runs-on: ubuntu-latest
