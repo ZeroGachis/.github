@@ -33,7 +33,6 @@ on:
       environment_name:
         required: false
         type: string
-  
 
 jobs:
   bundle-js:
@@ -120,7 +119,7 @@ jobs:
 
       - name: Deploy code push
         run: |
-          appcenter codepush release-react -a ${{ inputs.codepush-app }} -d ${{ steps.code-push-key.outputs.value }} -t ${{ steps.target-binary-version.outputs.value }} || {
+          appcenter codepush release-react -a ${{ inputs.codepush-app }} -d ${{ steps.code-push-key.outputs.value }} -t ${{ steps.target-binary-version.outputs.value }} -m || {
             if [[ $? -eq 3 ]] ; then
               echo "Code push deploy skipped."
               exit 0
