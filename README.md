@@ -1,7 +1,7 @@
 ## FAQ
 
-#### How create a release
+#### How to create a release ?
 
-git tag X.Y.Z
-git tag -f vX
-git push -f origin X.Y.Z vX
+git tag X.Y.Z  
+git tag -f vX  
+git push -f origin X.Y.Z vX  
