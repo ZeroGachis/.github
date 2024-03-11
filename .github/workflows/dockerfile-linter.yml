@@ -29,7 +29,7 @@ jobs:
       - uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: ${{ inputs.dockerfile_path }}
-          output-file: test-result.json
+          output-file: test-report.json
           format: json
 
       - name: Publish Test Results
@@ -38,4 +38,4 @@ jobs:
         with:
           check_name: "DockerFile Linter - ${{ inputs.image_name }}"
           files: |
-            test-result.json
+            test-report.json
