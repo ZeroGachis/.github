@@ -1,0 +1,41 @@
+name: "Dockerfile linter"
+
+on:
+  workflow_call:
+    inputs:
+      dockerfile_path:
+        required: true
+        type: string
+      image_name:
+        required: true
+        type: string
+
+jobs:
+  lint-dockerfile:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+      actions: read
+      checks: write
+      issues: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ${{ inputs.dockerfile_path }}
+          output-file: test-result.json
+          format: json
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          check_name: "DockerFile Linter - ${{ inputs.image_name }}"
+          files: |
+            test-result.json
