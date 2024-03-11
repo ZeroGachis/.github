@@ -145,25 +145,25 @@ jobs:
           }
 
       - uses: actions/setup-java@v4
-        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true' }} or ${{ inputs.environment == 'pullrequest' }}
         with:
           distribution: "temurin"
           java-version: ${{ inputs.java-version }}
           cache: "gradle"
 
       - name: Validate Gradle wrapper
-        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true' }} or ${{ inputs.environment == 'pullrequest' }}
         uses: gradle/wrapper-validation-action@v2
 
       - uses: actions/setup-node@v4
-        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true' }} or ${{ inputs.environment == 'pullrequest' }}
         with:
           node-version: ${{ inputs.node-version }}
           registry-url: "https://npm.pkg.github.com"
           scope: "@ZeroGachis"
 
       - name: Get Smartway APK keystore
-        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment == 'pullrequest' }}
         run: aws s3 cp s3://${{steps.vault.outputs.KEYSTORE_BUCKET_S3 }}/github-actions/${{ env.smartway_keystore_name }} android/app/${{ env.smartway_keystore_name }}
 
       - name: Update android versions
@@ -183,7 +183,7 @@ jobs:
           include: "^android/app/build.gradle"
 
       - name: Set code push key in string.xml
-        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment != 'pullrequest' }}
+        if: ${{ inputs.environment != 'pullrequest' }}
         uses: mingjun97/file-regex-replace@v1
         with:
           regex: '<string moduleConfig="true" name="CodePushDeploymentKey">(.*)</string>'
@@ -191,7 +191,7 @@ jobs:
           include: "^android/app/src/main/res/values/strings.xml"
 
       - name: Set code push key when sync manually
-        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment != 'pullrequest' }}
+        if: ${{ inputs.environment != 'pullrequest' }}
         uses: mingjun97/file-regex-replace@v1
         with:
           regex: "'CODE_PUSH_KEY'"
@@ -199,7 +199,7 @@ jobs:
           include: "^src/"
 
       - name: Set code push key when sync manually for QA env
-        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment != 'pullrequest' }}
+        if: ${{ inputs.environment != 'pullrequest' }}
         uses: mingjun97/file-regex-replace@v1
         with:
           regex: "'QA_CODE_PUSH_KEY'"
@@ -212,13 +212,13 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Install dependencies
-        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment == 'pullrequest' }}
         run: npm install
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Inject environment in .env file
-        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment == 'pullrequest' }}
         run: |
           echo "DATADOG_CLIENT_TOKEN=${{ steps.vault.outputs.DATADOG_CLIENT_TOKEN }}" >> .env
           echo "DATADOG_APPLICATION_ID=${{ steps.vault.outputs.DATADOG_APPLICATION_ID }}" >> .env
@@ -226,7 +226,7 @@ jobs:
           echo "ENVIRONMENT=${{ inputs.environment }}" >> .env
 
       - name: Build Apk
-        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}}
+        if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment == 'pullrequest' }}
         working-directory: ${{ inputs.working-directory }}/android/
         run: chmod +x ./gradlew && ./gradlew assemble${{ inputs.configuration }}
         env:
