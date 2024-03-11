@@ -86,6 +86,7 @@ jobs:
           if [ -n "$ADDITIONAL_TAGS" ]; then
             IFS=',' read -ra TAGS_ARRAY <<< "$ADDITIONAL_TAGS"
             for tag in "${TAGS_ARRAY[@]}"; do
+              echo "Constructed Reference: ${{ inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:$tag"
               docker tag ${{ inputs.image_url }} ${{ inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:$tag
               docker push ${{ inputs.ecr_url || env.ECR_DEFAULT_URL }}/${{ inputs.ecr_repository_name || env.ECR_DEFAULT_REPOSITORY_NAME }}:$tag
             done
