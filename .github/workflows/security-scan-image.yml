@@ -1,0 +1,56 @@
+name: "SecurityScan"
+
+on:
+  workflow_call:
+    inputs:
+      image_url:
+        required: true
+        type: string
+      image_name:
+        required: true
+        type: string
+      fail-build:
+        required: false
+        type: boolean
+        default: false
+      severity-cutoff:
+        required: false
+        type: string
+        default: critical
+
+jobs:
+  security-scan-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+      actions: read
+      checks: write
+      issues: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Github Packages
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Pull image
+        run: |
+          docker pull ${{ inputs.image_url }}
+          docker tag ${{ inputs.image_url }} ${{ inputs.image_name }}:latest
+
+      - name: Anchore Security Scan 
+        id: anchore-scan
+        uses: anchore/scan-action@v3
+        with:
+          image: ${{ inputs.image_name }}:latest
+          fail-build: ${{ inputs.fail-build }}
+          severity-cutoff: ${{ inputs.severity-cutoff }}
+          output-format: table
+  
