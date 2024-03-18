@@ -1,10 +1,10 @@
 apiVersion: backstage.io/v1alpha1
-kind: Library
+kind: Component
 metadata:
   name: github-actions-workflows
   annotations:
     github.com/project-slug: ZeroGachis/.github
 spec:
-  type: tools
+  type: library
   lifecycle: production
   owner: Platform
