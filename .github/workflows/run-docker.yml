@@ -140,3 +140,5 @@ jobs:
           reporter: ${{ inputs.test_report_format }}
           working-directory: ${{ inputs.workdir }}
           max-annotations: 0
+          list-tests: 'failed'
+
