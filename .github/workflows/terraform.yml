@@ -91,8 +91,8 @@ jobs:
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
 
-      - name: Sleep for 10 seconds
-        run: sleep 10s
+      - name: Sleep for 30 seconds
+        run: sleep 30s
         shell: bash
 
       - name: Import Secrets
