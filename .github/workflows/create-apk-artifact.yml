@@ -161,6 +161,7 @@ jobs:
           node-version: ${{ inputs.node-version }}
           registry-url: "https://npm.pkg.github.com"
           scope: "@ZeroGachis"
+          cache: 'npm'
 
       - name: Get Smartway APK keystore
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment == 'pullrequest' }}
@@ -224,6 +225,20 @@ jobs:
           echo "DATADOG_APPLICATION_ID=${{ steps.vault.outputs.DATADOG_APPLICATION_ID }}" >> .env
           echo "DATADOG_API_REVERSEPROXY=${{ steps.vault.outputs.DATADOG_API_REVERSEPROXY }}" >> .env
           echo "ENVIRONMENT=${{ inputs.environment }}" >> .env
+
+      - name: Cache Gradle Wrapper
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper
+
+      - name: Cache Gradle Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches
+          restore-keys: |
+            ${{ runner.os }}-gradle-caches
 
       - name: Build Apk
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment == 'pullrequest' }}
