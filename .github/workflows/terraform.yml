@@ -136,7 +136,7 @@ jobs:
       - name: Terraform Init
         id: init
         working-directory: ${{ inputs.workdir || github.workspace	}}
-        run: terraform init -backend-config="bucket=${{ inputs.terraform_backend || env.TERRAFORM_DEFAULT_BACKEND }}"
+        run: terraform init -backend-config="bucket=${{ inputs.terraform_backend || env.TERRAFORM_DEFAULT_BACKEND }}" 
 
       - name: Terraform Validate
         id: validate
