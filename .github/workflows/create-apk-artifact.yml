@@ -153,7 +153,7 @@ jobs:
 
       - name: Validate Gradle wrapper
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true' }} or ${{ inputs.environment == 'pullrequest' }}
-        uses: gradle/wrapper-validation-action@v2
+        uses: gradle/wrapper-validation-action@v3
 
       - uses: actions/setup-node@v4
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true' }} or ${{ inputs.environment == 'pullrequest' }}
