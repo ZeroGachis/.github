@@ -102,7 +102,7 @@ jobs:
         run: npm install -g appcenter-cli
 
       - name: App center login
-        run: appcenter login --token ${CODE_PUSH_TOKEN}
+        run: appcenter login --token ${{fromJSON( steps.secrets.outputs.outputs ).CODE_PUSH_TOKEN}}
 
       - name: Format Target binary version
         id: target-binary-version
@@ -113,9 +113,9 @@ jobs:
         run: |
           if [[ "${{ inputs.is-qa-package }}" == "false" ]]
           then
-            echo "value=${CODE_PUSH_KEY_NAME}" >> $GITHUB_OUTPUT
+            echo "value=${{fromJSON( steps.secrets.outputs.outputs ).CODE_PUSH_KEY_NAME}}" >> $GITHUB_OUTPUT
           else
-            echo "value=${QA_CODE_PUSH_KEY_NAME}" >> $GITHUB_OUTPUT
+            echo "value=${{fromJSON( steps.secrets.outputs.outputs ).QA_CODE_PUSH_KEY_NAME}}" >> $GITHUB_OUTPUT
           fi
 
       - name: Deploy code push
