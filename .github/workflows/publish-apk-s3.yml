@@ -95,4 +95,4 @@ jobs:
 
       - name: Push Apk to S3
         working-directory: "artifact"
-        run: aws s3 cp ${{ inputs.apk-name }} s3://${{ steps.vault.outputs.S3_APP_BUCKET }}/${{ inputs.s3-path }}/${{ inputs.apk-version }}/${{ inputs.apk-name }}
+        run: aws s3 cp ${{ inputs.apk-name }} s3://${{fromJSON( steps.secrets.outputs.outputs ).S3_APP_BUCKET }}/${{ inputs.s3-path }}/${{ inputs.apk-version }}/${{ inputs.apk-name }}
