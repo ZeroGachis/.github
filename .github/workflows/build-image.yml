@@ -79,24 +79,24 @@ jobs:
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
 
-      - name: Sleep for 30 seconds
-        run: sleep 30s
-        shell: bash
-
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Import Secrets
+        uses: Wandalen/wretry.action@v3
         if: inputs.vault_enabled
         id: secrets
-        uses: hashicorp/vault-action@v3
         with:
-          url: ${{ env.VAULT_URL }}
-          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-          method: jwt
-          path: "github-actions"
-          exportToken: true
-          secrets: |
+          action: hashicorp/vault-action@v3
+          attempt_limit: 3
+          attempt_delay: 100
+          with: |
+            url: ${{ env.VAULT_URL }}
+            role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+            method: jwt
+            path: "github-actions"
+            exportToken: true
+            secrets: |
               secret/data/github-actions-common/github/read-repo-token USERNAME | GH_ORG_READ_REPO_USER ;
               secret/data/github-actions-common/github/read-repo-token PASSWORD | GH_ORG_READ_REPO_TOKEN ;
 
@@ -149,8 +149,8 @@ jobs:
           target: ${{ inputs.image_target }}
           build-args: |
             ${{ inputs.build-args }}
-            GITHUB_USER=${{ steps.secrets.outputs.GH_ORG_READ_REPO_USER }}
-            GITHUB_TOKEN=${{ steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }}
+            GITHUB_USER=${GH_ORG_READ_REPO_USER}
+            GITHUB_TOKEN=${GH_ORG_READ_REPO_TOKEN}
             AWS_ACCESS_KEY_ID=${{ steps.aws.outputs.aws-access-key-id }}
             AWS_SECRET_ACCESS_KEY=${{ steps.aws.outputs.aws-secret-access-key }}
             AWS_SESSION_TOKEN=${{ steps.aws.outputs.aws-session-token }}

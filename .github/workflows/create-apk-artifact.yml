@@ -97,29 +97,30 @@ jobs:
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
 
-      - name: Sleep for 30 seconds
-        run: sleep 30s
-        shell: bash
-
       - name: Import Secrets
-        id: vault
-        uses: hashicorp/vault-action@v3
+        uses: Wandalen/wretry.action@v3
+        id: secrets
         with:
-          url: ${{ env.VAULT_URL }}
-          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-          method: jwt
-          path: "github-actions"
-          secrets: |
-            secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEYSTORE_PASSWORD ;
-            secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEY_PASSWORD ;
-            secret/data/smartapp/keystore KEY_ALIAS | SMARTWAY_KEY_ALIAS ;
-            secret/data/smartapp/datadog DATADOG_CLIENT_TOKEN | DATADOG_CLIENT_TOKEN ;
-            secret/data/smartapp/datadog DATADOG_APPLICATION_ID | DATADOG_APPLICATION_ID ;
-            secret/data/smartapp/datadog DATADOG_API_REVERSEPROXY | DATADOG_API_REVERSEPROXY ;
-            secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY | CODE_PUSH_KEY ;
-            secret/data/${{ inputs.vault-path }} QA_CODE_PUSH_KEY | QA_CODE_PUSH_KEY ;
-            secret/data/${{ inputs.vault-path }} S3_APP_BUCKET | S3_APP_BUCKET ;
-            secret/data/smartapp/keystore S3_BUCKET | KEYSTORE_BUCKET_S3
+          action: hashicorp/vault-action@v3
+          attempt_limit: 3
+          attempt_delay: 100
+          with: |
+            url: ${{ env.VAULT_URL }}
+            role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+            method: jwt
+            path: "github-actions"
+            exportToken: true
+            secrets: |
+              secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEYSTORE_PASSWORD ;
+              secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEY_PASSWORD ;
+              secret/data/smartapp/keystore KEY_ALIAS | SMARTWAY_KEY_ALIAS ;
+              secret/data/smartapp/datadog DATADOG_CLIENT_TOKEN | DATADOG_CLIENT_TOKEN ;
+              secret/data/smartapp/datadog DATADOG_APPLICATION_ID | DATADOG_APPLICATION_ID ;
+              secret/data/smartapp/datadog DATADOG_API_REVERSEPROXY | DATADOG_API_REVERSEPROXY ;
+              secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY | CODE_PUSH_KEY ;
+              secret/data/${{ inputs.vault-path }} QA_CODE_PUSH_KEY | QA_CODE_PUSH_KEY ;
+              secret/data/${{ inputs.vault-path }} S3_APP_BUCKET | S3_APP_BUCKET ;
+              secret/data/smartapp/keystore S3_BUCKET | KEYSTORE_BUCKET_S3
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -136,7 +137,7 @@ jobs:
         if: ${{ inputs.environment != 'pullrequest' }}
         id: get-existing-apk
         run: |
-          aws s3 cp s3://${{ steps.vault.outputs.S3_APP_BUCKET }}/${{ inputs.s3-path }}/${{ steps.get-apk-version.outputs.apk-version }}/${{ env.apk_name }} android/app/build/outputs/apk/${{ inputs.configuration }}/${{ env.apk_name }} && {
+          aws s3 cp s3://${S3_APP_BUCKET}/${{ inputs.s3-path }}/${{ steps.get-apk-version.outputs.apk-version }}/${{ env.apk_name }} android/app/build/outputs/apk/${{ inputs.configuration }}/${{ env.apk_name }} && {
             echo "Apk already exist for that version"
             echo "need-new-apk=false" >> $GITHUB_OUTPUT
           } || {
@@ -165,7 +166,7 @@ jobs:
 
       - name: Get Smartway APK keystore
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment == 'pullrequest' }}
-        run: aws s3 cp s3://${{steps.vault.outputs.KEYSTORE_BUCKET_S3 }}/github-actions/${{ env.smartway_keystore_name }} android/app/${{ env.smartway_keystore_name }}
+        run: aws s3 cp s3://${KEYSTORE_BUCKET_S3}/github-actions/${{ env.smartway_keystore_name }} android/app/${{ env.smartway_keystore_name }}
 
       - name: Update android versions
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment == 'pullrequest' }}
@@ -221,9 +222,9 @@ jobs:
       - name: Inject environment in .env file
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment == 'pullrequest' }}
         run: |
-          echo "DATADOG_CLIENT_TOKEN=${{ steps.vault.outputs.DATADOG_CLIENT_TOKEN }}" >> .env
-          echo "DATADOG_APPLICATION_ID=${{ steps.vault.outputs.DATADOG_APPLICATION_ID }}" >> .env
-          echo "DATADOG_API_REVERSEPROXY=${{ steps.vault.outputs.DATADOG_API_REVERSEPROXY }}" >> .env
+          echo "DATADOG_CLIENT_TOKEN=${DATADOG_CLIENT_TOKEN}" >> .env
+          echo "DATADOG_APPLICATION_ID=${DATADOG_APPLICATION_ID}" >> .env
+          echo "DATADOG_API_REVERSEPROXY=${DATADOG_API_REVERSEPROXY}" >> .env
           echo "ENVIRONMENT=${{ inputs.environment }}" >> .env
 
       - name: Cache Gradle Wrapper
