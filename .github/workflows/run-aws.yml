@@ -65,20 +65,21 @@ jobs:
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
 
-      - name: Sleep for 30 seconds
-        run: sleep 30s
-        shell: bash
-
       - name: Import Secrets
-        id: secrets
+        uses: Wandalen/wretry.action@v3
         if: inputs.vault_enabled
-        uses: hashicorp/vault-action@v3
+        id: secrets
         with:
-          url: ${{ env.VAULT_URL }}
-          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-          method: jwt
-          path: "github-actions"
-          secrets: |
+          action: hashicorp/vault-action@v3
+          attempt_limit: 3
+          attempt_delay: 100
+          with: |
+            url: ${{ env.VAULT_URL }}
+            role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+            method: jwt
+            path: "github-actions"
+            exportToken: true
+            secrets: |
               ${{ inputs.vault_secrets }}
 
       - name: Configure AWS Credentials

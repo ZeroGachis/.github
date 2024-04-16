@@ -61,22 +61,23 @@ jobs:
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
 
-      - name: Sleep for 30 seconds
-        run: sleep 30s
-        shell: bash
-
       - name: Import Secrets
-        id: imported-secrets
-        uses: hashicorp/vault-action@v3
+        uses: Wandalen/wretry.action@v3
+        id: secrets
         with:
-          url: ${{ env.VAULT_URL }}
-          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-          method: jwt
-          path: "github-actions"
-          secrets: |
-            secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY_NAME | CODE_PUSH_KEY_NAME ;
-            secret/data/${{ inputs.vault-path }} QA_CODE_PUSH_KEY_NAME | QA_CODE_PUSH_KEY_NAME ;
-            secret/data/${{ inputs.vault-path }} CODE_PUSH_TOKEN | CODE_PUSH_TOKEN ;
+          action: hashicorp/vault-action@v3
+          attempt_limit: 3
+          attempt_delay: 100
+          with: |
+            url: ${{ env.VAULT_URL }}
+            role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+            method: jwt
+            path: "github-actions"
+            exportToken: true
+            secrets: |
+              secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY_NAME | CODE_PUSH_KEY_NAME ;
+              secret/data/${{ inputs.vault-path }} QA_CODE_PUSH_KEY_NAME | QA_CODE_PUSH_KEY_NAME ;
+              secret/data/${{ inputs.vault-path }} CODE_PUSH_TOKEN | CODE_PUSH_TOKEN ;
 
       - uses: actions/setup-node@v4
         with:
@@ -101,7 +102,7 @@ jobs:
         run: npm install -g appcenter-cli
 
       - name: App center login
-        run: appcenter login --token ${{ steps.imported-secrets.outputs.CODE_PUSH_TOKEN }}
+        run: appcenter login --token ${CODE_PUSH_TOKEN}
 
       - name: Format Target binary version
         id: target-binary-version
@@ -112,9 +113,9 @@ jobs:
         run: |
           if [[ "${{ inputs.is-qa-package }}" == "false" ]]
           then
-            echo "value=${{ steps.imported-secrets.outputs.CODE_PUSH_KEY_NAME }}" >> $GITHUB_OUTPUT
+            echo "value=${CODE_PUSH_KEY_NAME}" >> $GITHUB_OUTPUT
           else
-            echo "value=${{ steps.imported-secrets.outputs.QA_CODE_PUSH_KEY_NAME }}" >> $GITHUB_OUTPUT
+            echo "value=${QA_CODE_PUSH_KEY_NAME}" >> $GITHUB_OUTPUT
           fi
 
       - name: Deploy code push

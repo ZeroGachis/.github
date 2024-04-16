@@ -62,23 +62,24 @@ jobs:
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
 
-      - name: Sleep for 30 seconds
-        run: sleep 30s
-        shell: bash
-
       - name: Import Secrets
-        id: vault
-        uses: hashicorp/vault-action@v3
+        uses: Wandalen/wretry.action@v3
+        id: secrets
         with:
-          url: ${{ env.VAULT_URL }}
-          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-          method: jwt
-          path: "github-actions"
-          secrets: |
-            secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEYSTORE_PASSWORD ;
-            secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEY_PASSWORD ;
-            secret/data/smartapp/keystore KEY_ALIAS | SMARTWAY_KEY_ALIAS ;
-            secret/data/${{ inputs.vault-path }} S3_APP_BUCKET | S3_APP_BUCKET ;
+          action: hashicorp/vault-action@v3
+          attempt_limit: 3
+          attempt_delay: 100
+          with: |
+            url: ${{ env.VAULT_URL }}
+            role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+            method: jwt
+            path: "github-actions"
+            exportToken: true
+            secrets: |
+              secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEYSTORE_PASSWORD ;
+              secret/data/smartapp/keystore KEYSTORE_PASSWORD | SMARTWAY_KEY_PASSWORD ;
+              secret/data/smartapp/keystore KEY_ALIAS | SMARTWAY_KEY_ALIAS ;
+              secret/data/${{ inputs.vault-path }} S3_APP_BUCKET | S3_APP_BUCKET ;
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
