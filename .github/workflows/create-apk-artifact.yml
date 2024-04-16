@@ -118,6 +118,7 @@ jobs:
               secret/data/smartapp/datadog DATADOG_APPLICATION_ID | DATADOG_APPLICATION_ID ;
               secret/data/smartapp/datadog DATADOG_API_REVERSEPROXY | DATADOG_API_REVERSEPROXY ;
               secret/data/${{ inputs.vault-path }} CODE_PUSH_KEY | CODE_PUSH_KEY ;
+              secret/data/${{ inputs.vault-path }} CODE_PUSH_SERVER_URL | CODE_PUSH_SERVER_URL ;
               secret/data/${{ inputs.vault-path }} QA_CODE_PUSH_KEY | QA_CODE_PUSH_KEY ;
               secret/data/${{ inputs.vault-path }} S3_APP_BUCKET | S3_APP_BUCKET ;
               secret/data/smartapp/keystore S3_BUCKET | KEYSTORE_BUCKET_S3
@@ -184,6 +185,14 @@ jobs:
           replacement: 'applicationId "${{ inputs.package-name }}"'
           include: "^android/app/build.gradle"
 
+      - name: Set code push server URL in string.xml
+        if: ${{ inputs.environment != 'pullrequest' }}
+        uses: mingjun97/file-regex-replace@v1
+        with:
+          regex: '<string moduleConfig="true" name="CodePushServerUrl">(.*)</string>'
+          replacement: '<string moduleConfig="true" name="CodePushServerUrl">${{ steps.vault.outputs.CODE_PUSH_SERVER_URL }}</string>'
+          include: "^android/app/src/main/res/values/strings.xml"
+        
       - name: Set code push key in string.xml
         if: ${{ inputs.environment != 'pullrequest' }}
         uses: mingjun97/file-regex-replace@v1
