@@ -55,13 +55,13 @@ on:
         value: app-${{ inputs.configuration }}.apk
       apk-version:
         description: "Apk version"
-        value: ${{ jobs.build.outputs.apk-version }}
+        value: ${{ jobs.create-apk.outputs.apk-version }}
       apk-artifact-name:
         description: "Apk artifact name"
         value: Apk-${{ inputs.configuration }}
       is-new-apk-version:
         description: "Indicate if a new apk version was built"
-        value: ${{ jobs.build.outputs.is-new-apk-version }}
+        value: ${{ jobs.create-apk.outputs.is-new-apk-version }}
 
 jobs:
   create-apk:
