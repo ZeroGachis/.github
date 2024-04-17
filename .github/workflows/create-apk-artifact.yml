@@ -167,7 +167,7 @@ jobs:
 
       - name: Get Smartway APK keystore
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment == 'pullrequest' }}
-        run: aws s3 cp s3:/${{ fromJSON( steps.secrets.outputs.outputs ).KEYSTORE_BUCKET_S3 }}/github-actions/${{ env.smartway_keystore_name }} android/app/${{ env.smartway_keystore_name }}
+        run: aws s3 cp s3://${{ fromJSON( steps.secrets.outputs.outputs ).KEYSTORE_BUCKET_S3 }}/github-actions/${{ env.smartway_keystore_name }} android/app/${{ env.smartway_keystore_name }}
 
       - name: Update android versions
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment == 'pullrequest' }}
