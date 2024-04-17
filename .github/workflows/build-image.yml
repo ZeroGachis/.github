@@ -149,8 +149,8 @@ jobs:
           target: ${{ inputs.image_target }}
           build-args: |
             ${{ inputs.build-args }}
-            GITHUB_USER=${{ fromJSON( steps.secrets.outputs.outputs ).GH_ORG_READ_REPO_USER }}
-            GITHUB_TOKEN=${{ fromJSON( steps.secrets.outputs.outputs ).GH_ORG_READ_REPO_TOKEN }}
+            GITHUB_USER=${{ inputs.vault_enabled && fromJSON( steps.secrets.outputs.outputs ).GH_ORG_READ_REPO_USER }}
+            GITHUB_TOKEN=${{ inputs.vault_enabled && fromJSON( steps.secrets.outputs.outputs ).GH_ORG_READ_REPO_TOKEN }}
             AWS_ACCESS_KEY_ID=${{ steps.aws.outputs.aws-access-key-id }}
             AWS_SECRET_ACCESS_KEY=${{ steps.aws.outputs.aws-secret-access-key }}
             AWS_SESSION_TOKEN=${{ steps.aws.outputs.aws-session-token }}
