@@ -131,7 +131,7 @@ jobs:
         run: ${{ inputs.run_command }}
 
       - name: Test Report
-        uses: dorny/test-reporter@v1.9.0
+        uses: dorny/test-reporter@v1.9.1
         id: test-report
         if: ${{ always() && inputs.enable_test_report == true }}
         with:
