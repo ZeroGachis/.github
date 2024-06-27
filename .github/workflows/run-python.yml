@@ -31,6 +31,33 @@ on:
       run_command:
         required: true
         type: string
+      aws_credentials_enabled:
+        required: false
+        type: boolean
+        default: false
+      aws_account_id:
+        required: false
+        type: string
+      aws_region:
+          required: false
+          type: string
+      aws_github_role_name:
+        required: false
+        type: string
+        default: "github_oidc_readonly"
+      enable_test_report:
+        required: false
+        type: boolean
+        default: false
+      test_report_name:
+        required: false
+        type: string
+      test_report_path:
+        required: false
+        type: string
+      test_report_format:
+        required: false
+        type: string
 
 jobs:
   run-python:
@@ -45,6 +72,7 @@ jobs:
       VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
       AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ inputs.AWS_REGION || vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
 
     steps:
       - name: Tailscale
@@ -80,5 +108,23 @@ jobs:
         with:
           python-version: ${{ inputs.python_version }}
 
+      - name: Configure AWS Credentials
+        if: inputs.aws_credentials_enabled
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
+
       - name: run-command
         run: ${{ inputs.run_command }}
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1.9.1
+        id: test-report
+        if: ${{ always() && inputs.enable_test_report == true }}
+        with:
+          name: '${{ inputs.test_report_name }}'
+          path: ${{ inputs.test_report_path }}
+          reporter: ${{ inputs.test_report_format }}
+          max-annotations: 0
+          list-tests: 'failed'
