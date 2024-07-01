@@ -66,6 +66,7 @@ jobs:
         contents: read
         id-token: write
         packages: read
+        checks: write
     environment:
       name: ${{ inputs.environment_name }}
     env:
