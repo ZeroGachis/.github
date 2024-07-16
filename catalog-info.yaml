@@ -8,4 +8,4 @@ spec:
   type: library
   lifecycle: production
   system: Platform
-  owner: Platform
+  owner: DevOps
