@@ -1,0 +1,33 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": ["config:recommended", ":semanticCommits"],
+    "vulnerabilityAlerts": {
+      "labels": ["security"],
+      "schedule": "at any time",
+      "commitMessageSuffix": "fix(security):",
+      "automerge": true
+    },
+    "prHourlyLimit": 0,
+    "prConcurrentLimit": 0,
+    "ignoreUnstable": true,
+    "stabilityDays": 7,
+    "packageRules": [
+      {
+        "matchUpdateTypes": ["patch"],
+        "automerge": true
+      },
+      {
+        "datasources": ["github-releases"],
+        "major": {
+          "enabled": true
+        },
+        "minor": {
+          "enabled": true
+        },
+        "patch": {
+          "enabled": true
+        }
+      }
+    ]
+  }
+  
