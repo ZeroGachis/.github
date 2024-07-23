@@ -129,6 +129,12 @@ jobs:
             ${{ inputs.aws_secrets || env.AWS_DEFAULT_SECRETS }}
             ${{ inputs.aws_additional_secrets }}
 
+      - name: Login to Github for private module
+        run: |
+          git config --global url."https://oauth2:${{ secrets.GH_READ_TOKEN }}@github.com/ZeroGachis".insteadOf "https://github.com/ZeroGachis"
+          git config --global url."https://${{ secrets.GH_READ_TOKEN }}:x-oauth-basic@github.com/ZeroGachis".insteadOf ssh://git@github.com/ZeroGachis
+        shell: sh
+
       - name: Terraform Format
         id: fmt
         working-directory: ${{ inputs.workdir || github.workspace	}}
