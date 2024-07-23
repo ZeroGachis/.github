@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.25.0](https://github.com/ZeroGachis/.github/compare/4.24.0...v4.25.0) (2024-07-23)
+
+
+### Features
+
+* **terraform:** login to github to use private module hosted in ouy org ([7566198](https://github.com/ZeroGachis/.github/commit/7566198a64a08777dcf118d4c8c7e1eb54f13eb5))
+
 ## [1.0.0] - 2022-11-30
 
 ### Added
