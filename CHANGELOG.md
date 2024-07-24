@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.26.1](https://github.com/ZeroGachis/.github/compare/v4.26.0...v4.26.1) (2024-07-24)
+
+
+### Bug Fixes
+
+* **terrafom:** syntax issue when input/vault_secrets is not empty ([86268d8](https://github.com/ZeroGachis/.github/commit/86268d86189e4961011385147fb193f43901a90b))
+
 ## [4.26.0](https://github.com/ZeroGachis/.github/compare/v4.25.0...v4.26.0) (2024-07-24)
 
 
