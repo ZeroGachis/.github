@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.26.2](https://github.com/ZeroGachis/.github/compare/v4.26.1...v4.26.2) (2024-07-24)
+
+
+### Bug Fixes
+
+* **terraform:** condition for login to private github org ([9118e67](https://github.com/ZeroGachis/.github/commit/9118e67c2ae5b5004b6ea0842d0e293666c9cbf6))
+
 ## [4.26.1](https://github.com/ZeroGachis/.github/compare/v4.26.0...v4.26.1) (2024-07-24)
 
 
