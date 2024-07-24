@@ -106,7 +106,7 @@ jobs:
             path: "github-actions"
             exportToken: true
             secrets: |
-              github/token/read_repositories token | GITHUB_READ_REPO_TOKEN
+              github/token/read_repositories token | GITHUB_READ_REPO_TOKEN;
               ${{ inputs.vault_secrets }}
           
 
@@ -138,7 +138,7 @@ jobs:
         shell: sh
 
       - name: Terraform Format
-        id: fmt
+        id: fmtgg
         working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform fmt -check
 
