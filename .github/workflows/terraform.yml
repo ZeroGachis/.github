@@ -106,6 +106,7 @@ jobs:
             path: "github-actions"
             exportToken: true
             secrets: |
+              github/token/read_repositories token | GITHUB_READ_REPO_TOKEN
               ${{ inputs.vault_secrets }}
           
 
@@ -130,9 +131,10 @@ jobs:
             ${{ inputs.aws_additional_secrets }}
 
       - name: Login to Github for private module
+        if: ${{ fromJSON( steps.secrets.outputs.outputs ).GITHUB_READ_REPO_TOKEN }}
         run: |
-          git config --global url."https://oauth2:${{ secrets.GH_READ_TOKEN }}@github.com/ZeroGachis".insteadOf "https://github.com/ZeroGachis"
-          git config --global url."https://${{ secrets.GH_READ_TOKEN }}:x-oauth-basic@github.com/ZeroGachis".insteadOf ssh://git@github.com/ZeroGachis
+          git config --global url."https://oauth2:${{ fromJSON( steps.secrets.outputs.outputs ).GITHUB_READ_REPO_TOKEN }}@github.com/ZeroGachis".insteadOf "https://github.com/ZeroGachis"
+          git config --global url."https://${{ fromJSON( steps.secrets.outputs.outputs ).GITHUB_READ_REPO_TOKEN }}:x-oauth-basic@github.com/ZeroGachis".insteadOf ssh://git@github.com/ZeroGachis
         shell: sh
 
       - name: Terraform Format
