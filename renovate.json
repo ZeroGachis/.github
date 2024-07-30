@@ -1,33 +1,41 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["config:recommended", ":semanticCommits"],
-    "vulnerabilityAlerts": {
-      "labels": ["security"],
-      "schedule": "at any time",
-      "commitMessageSuffix": "fix(security):",
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits"
+  ],
+  "vulnerabilityAlerts": {
+    "labels": [
+      "security"
+    ],
+    "schedule": "at any time",
+    "commitMessageSuffix": "fix(security):",
+    "automerge": true
+  },
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 0,
+  "ignoreUnstable": true,
+  "minimumReleaseAge": "7 days",
+  "packageRules": [
+    {
+      "matchUpdateTypes": [
+        "patch"
+      ],
       "automerge": true
     },
-    "prHourlyLimit": 0,
-    "prConcurrentLimit": 0,
-    "ignoreUnstable": true,
-    "stabilityDays": 7,
-    "packageRules": [
-      {
-        "matchUpdateTypes": ["patch"],
-        "automerge": true
+    {
+      "matchDatasources": [
+        "github-releases"
+      ],
+      "major": {
+        "enabled": true
       },
-      {
-        "datasources": ["github-releases"],
-        "major": {
-          "enabled": true
-        },
-        "minor": {
-          "enabled": true
-        },
-        "patch": {
-          "enabled": true
-        }
+      "minor": {
+        "enabled": true
+      },
+      "patch": {
+        "enabled": true
       }
-    ]
-  }
-  
+    }
+  ]
+}
