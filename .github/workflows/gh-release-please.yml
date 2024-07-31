@@ -2,12 +2,20 @@ name: "Github-ReleasePlease"
 
 on:
   workflow_call:
+    inputs:
+      major_and_minor_tags:
+        required: false
+        type: boolean
+        default: true
   push:
     branches:
     - 'main'
+    
 jobs:
   github-releaseplease:
     runs-on: ubuntu-latest
+    env: 
+      major_and_minor_tags: ${{ inputs.major_and_minor_tags }} 
     permissions:
       contents: write
       pull-requests: write
@@ -18,7 +26,7 @@ jobs:
           release-type: terraform-module
       - uses: actions/checkout@v4
       - name: tag major and minor versions
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created && env.major_and_minor_tags }}
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
