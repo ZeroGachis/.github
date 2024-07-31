@@ -7,6 +7,10 @@ on:
         required: false
         type: boolean
         default: true
+      release_type:
+        required: false
+        type: string
+        default: terraform-module
   push:
     branches:
     - 'main'
@@ -23,11 +27,7 @@ jobs:
       - uses: googleapis/release-please-action@v4
         id: release
         with:
-          release-type: terraform-module
-      - name: Debug outputs
-        run: |
-          echo "Release Created: ${{ steps.release.outputs.release_created }}"
-          echo "Major and Minor Tags: ${{ env.major_and_minor_tags }}"
+          release-type: ${{ inputs.release_type || 'terraform-module' }}
       - uses: actions/checkout@v4
       - name: tag major and minor versions
         if: ${{ steps.release.outputs.release_created && env.major_and_minor_tags == 'true' }}
