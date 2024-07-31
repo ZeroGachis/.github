@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.27.3](https://github.com/ZeroGachis/.github/compare/v4.27.2...v4.27.3) (2024-07-31)
+
+
+### Bug Fixes
+
+* **release-please:** fix boolean interpretation inside github workflow  3 ([1b2c126](https://github.com/ZeroGachis/.github/commit/1b2c12657be7a48e1e809d0ca1fbfc7df5e24653))
+
 ## [4.27.2](https://github.com/ZeroGachis/.github/compare/v4.27.1...v4.27.2) (2024-07-31)
 
 
