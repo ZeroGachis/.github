@@ -156,15 +156,6 @@ jobs:
         working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform validate
 
-      - name: Check if .tf files changed
-        if: inputs.infracost_enabled
-        id: files_changed
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            terraform:
-              - '**.tf'
-
       - name: Terraform Workspace
         id: workspace
         working-directory: ${{ inputs.workdir || github.workspace	}}
