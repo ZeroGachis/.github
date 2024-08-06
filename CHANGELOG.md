@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.29.0](https://github.com/ZeroGachis/.github/compare/v4.28.0...v4.29.0) (2024-08-06)
+
+
+### Features
+
+* **infracost:** init workflow ([ded1355](https://github.com/ZeroGachis/.github/commit/ded13554cc449782e0d0fa23b06f557442e55257))
+
 ## [4.28.0](https://github.com/ZeroGachis/.github/compare/v4.27.3...v4.28.0) (2024-07-31)
 
 
