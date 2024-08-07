@@ -10,7 +10,6 @@ on:
       release_type:
         required: false
         type: string
-        default: terraform-module
       release_please_config_file:
         required: false
         type: string
