@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.31.7](https://github.com/ZeroGachis/.github/compare/v4.31.6...v4.31.7) (2024-08-07)
+
+
+### Bug Fixes
+
+* **release-please:** creation of major tag condition  3 ([9f76492](https://github.com/ZeroGachis/.github/commit/9f764922c82f699f56ed11536dc362fe2e21c224))
+
 ## [4.31.6](https://github.com/ZeroGachis/.github/compare/v4.31.5...v4.31.6) (2024-08-07)
 
 
