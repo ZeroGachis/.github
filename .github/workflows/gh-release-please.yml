@@ -35,7 +35,7 @@ jobs:
       - uses: googleapis/release-please-action@v4
         id: release
         with:
-          release-type: ${{ inputs.release_type || 'terraform-module' }}
+          release-type: ${{ inputs.release_type }}
           config-file: ${{ inputs.release_please_config_file }}
           manifest-file: ${{ inputs.release_please_manifest_file }}
       - name: tag major and minor versions
