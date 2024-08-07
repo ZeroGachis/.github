@@ -11,6 +11,14 @@ on:
         required: false
         type: string
         default: terraform-module
+      release_please_config_file:
+        required: false
+        type: string
+        default: release-please-config.json
+      release_please_manifest_file:
+        required: false
+        type: string
+        default: release-please-manifest.json
   push:
     branches:
     - 'main'
@@ -28,6 +36,8 @@ jobs:
         id: release
         with:
           release-type: ${{ inputs.release_type || 'terraform-module' }}
+          config-file: ${{ inputs.release_please_config_file }}
+          manifest-file: ${{ inputs.release_please_manifest_file }}
       - uses: actions/checkout@v4
       - name: tag major and minor versions
         if: ${{ steps.release.outputs.release_created && env.major_and_minor_tags == 'true' }}
