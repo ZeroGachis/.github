@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.31.1](https://github.com/ZeroGachis/.github/compare/v4.31.0...v4.31.1) (2024-08-07)
+
+
+### Bug Fixes
+
+* (release-please): wrong step order to use config file ([017b1fa](https://github.com/ZeroGachis/.github/commit/017b1fa2a101fe9fc51bc32035b56f1d3c7733a1))
+
 ## [4.31.0](https://github.com/ZeroGachis/.github/compare/v4.30.0...v4.31.0) (2024-08-07)
 
 
