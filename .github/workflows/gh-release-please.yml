@@ -32,13 +32,13 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      - uses: actions/checkout@v4
       - uses: googleapis/release-please-action@v4
         id: release
         with:
           release-type: ${{ inputs.release_type || 'terraform-module' }}
           config-file: ${{ inputs.release_please_config_file }}
           manifest-file: ${{ inputs.release_please_manifest_file }}
-      - uses: actions/checkout@v4
       - name: tag major and minor versions
         if: ${{ steps.release.outputs.release_created && env.major_and_minor_tags == 'true' }}
         run: |
