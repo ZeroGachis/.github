@@ -17,7 +17,7 @@ on:
       release_please_manifest_file:
         required: false
         type: string
-        default: release-please-manifest.json
+        default: .release-please-manifest.json
   push:
     branches:
     - 'main'
