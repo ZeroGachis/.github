@@ -189,6 +189,7 @@ jobs:
           filters: |
             terraform:
               - '**.tf'
+              - '**.tfvars'
       - name: Filter Terraform Args
         if:  ${{ inputs.terraform_args }}
         id: filter_args
