@@ -26,103 +26,119 @@ jobs:
             const title = ':rocket: Go to Production';
             const head = '${{ github.ref_name }}';
             const base = '${{ inputs.base }}';
-            const existingPRs = await github.rest.pulls.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              head: '${{ github.ref_name }}',
-              base:'${{ inputs.base }}'
-            });
-            let prNumber;
+            async function handlePR(existingPRs) {
+              let prNumber;
+              if (existingPRs.data.length > 0) {
+                const existingPR = existingPRs.data[0];
+                prNumber = existingPR.number;
+                await github.rest.pulls.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                  title: title
+                });
+              } else {
+                const result = await github.rest.pulls.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: title,
+                  head: head,
+                  base: base
+                });
+                prNumber = result.data.number;
+              }
+              return prNumber;
+            }
 
-            if (existingPRs.data.length > 0) {
-              // Update the existing PR
-              const existingPR = existingPRs.data[0];
-              prNumber = existingPR.number;
+            async function fetchAndAddReviewers(prNumber) {
+              const commits = await github.rest.pulls.listCommits({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber
+              });
+              const contributors = [...new Set(commits.data.map(commit => commit.author.login))];
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                reviewers: contributors
+              });
+              return contributors;
+            }
+
+            try {
+              const existingPRs = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                head: head,
+                base: base
+              });
+              const prNumber = await handlePR(existingPRs);
+              let contributors = await fetchAndAddReviewers(prNumber); 
+
+              // Add reviewers
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                reviewers: contributors 
+              });
+              const bodyParts = [
+                '## :rocket: Automated PR to prepare for Go-To-Production',
+                `**Branch**: \`${{ github.ref_name }}\``,
+                `**Base**: \`${{ inputs.base }}\``,
+                '### :mag_right: Changes',
+                '### :busts_in_silhouette: Contributors',
+                '- ' + contributors.map(c => '@' + c).join('\n- ') 
+              ];
+
+              // Fetch list of changes (diffs)
+              const diffs = await github.rest.repos.compareCommits({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                base: base,
+                head: head
+              });
+              const mergedPRs = [];
+              const standaloneCommits = [];
+              diffs.data.commits.forEach(commit => {
+                const firstLine = commit.commit.message.split('\n')[0];
+                if (commit.parents.length > 1) {
+                  mergedPRs.push(`- Merged PR: ${firstLine}`);
+                } else {
+                  standaloneCommits.push(`- Commit: ${firstLine}`);
+                }
+              });
+              const changes = [
+                '#### :twisted_rightwards_arrows: Merged Pull Requests',
+                mergedPRs.join('\n'),
+                '#### :memo: Standalone Commits',
+                standaloneCommits.join('\n')
+              ].join('\n\n');
+              bodyParts.splice(4, 0, changes); 
+
+              const updatedBody = bodyParts.join('\n\n');
               await github.rest.pulls.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: prNumber,
-                title: title
+                body: updatedBody
               });
-            } else {
-              // Create a new PR
-              const result = await github.rest.pulls.create({
+
+
+              await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                title: title,
-                head: head,
-                base: base
+                issue_number: prNumber,
+                labels: ['go-to-prod', ':robot: automated-pr']
               });
-              prNumber = result.data.number;
+              github.rest.issues.updateLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'go-to-prod',
+                color: 'ff7f00'
+              });
+            } catch (error) {
+              console.error('Failed to create or update PR:', error);
             }
-            // Retrieve contributors from the commits
-            const commits = await github.rest.pulls.listCommits({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: prNumber
-            });
-            const contributors = [...new Set(commits.data.map(commit => commit.author.login))]; // Renamed to contributors
-
-            // Add reviewers
-            await github.rest.pulls.requestReviewers({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: prNumber,
-              reviewers: contributors 
-            });
-            const bodyParts = [
-              '## :rocket: Automated PR to prepare for Go-To-Production',
-              `**Branch**: \`${{ github.ref_name }}\``,
-              `**Base**: \`${{ inputs.base }}\``,
-              '### :mag_right: Changes',
-              '### :busts_in_silhouette: Contributors',
-              '- ' + contributors.join('\n- ')
-            ];
-
-            // Fetch list of changes (diffs)
-            const diffs = await github.rest.repos.compareCommits({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              base: base,
-              head: head
-            });
-            const mergedPRs = [];
-            const standaloneCommits = [];
-            diffs.data.commits.forEach(commit => {
-              const firstLine = commit.commit.message.split('\n')[0];
-              if (commit.parents.length > 1) {
-                mergedPRs.push(`- Merged PR: ${firstLine}`);
-              } else {
-                standaloneCommits.push(`- Commit: ${firstLine}`);
-              }
-            });
-            const changes = [
-              '#### :twisted_rightwards_arrows: Merged Pull Requests',
-              mergedPRs.join('\n'),
-              '#### :memo: Standalone Commits',
-              standaloneCommits.join('\n')
-            ].join('\n\n');
-            bodyParts.splice(4, 0, changes); // Insert changes before the contributors section
-
-            const updatedBody = bodyParts.join('\n\n');
-            await github.rest.pulls.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: prNumber,
-              body: updatedBody
-            });
-
-
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              labels: ['go-to-prod', ':robot: automated-pr']
-            });
-            github.rest.issues.updateLabel({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'go-to-prod',
-              color: 'ff7f00'
-            });
