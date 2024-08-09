@@ -4,15 +4,10 @@ on:
   workflow_call:
     inputs:
       base:
-        description: 'Base branch for the pull request'
+        description: "Base branch for the pull request"
         type: string
         required: false
-        default: 'main'
-      body:
-        description: 'Body of the pull request'
-        type: string
-        required: false
-        default: 'Automated pull request to GO TO PROD\n'
+        default: "main"
 
 jobs:
   create_pr:
@@ -31,7 +26,6 @@ jobs:
             const title = ':rocket: Go to Production';
             const head = '${{ github.ref_name }}';
             const base = '${{ inputs.base }}';
-            const body = '${{ inputs.body }}';
             const existingPRs = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -49,8 +43,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: prNumber,
-                title: title,
-                body: body
+                title: title
               });
             } else {
               // Create a new PR
@@ -59,27 +52,42 @@ jobs:
                 repo: context.repo.repo,
                 title: title,
                 head: head,
-                base: base,
-                body: body
+                base: base
               });
               prNumber = result.data.number;
             }
-
             // Retrieve contributors from the commits
             const commits = await github.rest.pulls.listCommits({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: prNumber
             });
-            const reviewers = [...new Set(commits.data.map(commit => commit.author.login))];
+            const contributors = [...new Set(commits.data.map(commit => commit.author.login))]; // Renamed to contributors
 
             // Add reviewers
             await github.rest.pulls.requestReviewers({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: prNumber,
-              reviewers: reviewers
+              reviewers: contributors 
             });
+            const bodyParts = [
+              '## :rocket: Automated PR to prepare for Go-To-Production',
+              `**Branch**: \`${{ github.ref_name }}\``,
+              `**Base**: \`${{ inputs.base }}\``,
+              '### :mag_right: Changes',
+              '- Please review the changes included in this PR.',
+              '### :busts_in_silhouette: Contributors'
+            ];
+            bodyParts.push('- ' + contributors.join('\n- '));
+            const updatedBody = bodyParts.join('\n\n');
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              body: updatedBody
+            });
+
 
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
