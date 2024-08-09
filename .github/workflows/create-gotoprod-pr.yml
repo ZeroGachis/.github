@@ -76,7 +76,6 @@ jobs:
               `**Branch**: \`${{ github.ref_name }}\``,
               `**Base**: \`${{ inputs.base }}\``,
               '### :mag_right: Changes',
-              '- Please review the changes included in this PR.',
               '### :busts_in_silhouette: Contributors',
               '- ' + contributors.join('\n- ')
             ];
