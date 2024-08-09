@@ -1,0 +1,95 @@
+name: Create Go-To-Prod Pull Request
+
+on:
+  workflow_call:
+    inputs:
+      base:
+        description: 'Base branch for the pull request'
+        type: string
+        required: false
+        default: 'main'
+      body:
+        description: 'Body of the pull request'
+        type: string
+        required: false
+        default: 'Automated pull request to GO TO PROD\n'
+
+jobs:
+  create_pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = ':rocket: Go to Production';
+            const head = '${{ github.ref_name }}';
+            const base = '${{ inputs.base }}';
+            const body = '${{ inputs.body }}';
+            const existingPRs = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: '${{ github.ref_name }}',
+              base:'${{ inputs.base }}'
+            });
+            let prNumber;
+
+            if (existingPRs.data.length > 0) {
+              // Update the existing PR
+              const existingPR = existingPRs.data[0];
+              prNumber = existingPR.number;
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                title: title,
+                body: body
+              });
+            } else {
+              // Create a new PR
+              const result = await github.rest.pulls.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                head: head,
+                base: base,
+                body: body
+              });
+              prNumber = result.data.number;
+            }
+
+            // Retrieve contributors from the commits
+            const commits = await github.rest.pulls.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+            const reviewers = [...new Set(commits.data.map(commit => commit.author.login))];
+
+            // Add reviewers
+            await github.rest.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              reviewers: reviewers
+            });
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              labels: ['go-to-prod', ':robot: automated-pr']
+            });
+            github.rest.issues.updateLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'go-to-prod',
+              color: 'ff7f00'
+            });
