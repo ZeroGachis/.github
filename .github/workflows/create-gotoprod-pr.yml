@@ -77,9 +77,35 @@ jobs:
               `**Base**: \`${{ inputs.base }}\``,
               '### :mag_right: Changes',
               '- Please review the changes included in this PR.',
-              '### :busts_in_silhouette: Contributors'
+              '### :busts_in_silhouette: Contributors',
+              '- ' + contributors.join('\n- ')
             ];
-            bodyParts.push('- ' + contributors.join('\n- '));
+
+            // Fetch list of changes (diffs)
+            const diffs = await github.rest.repos.compareCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              base: base,
+              head: head
+            });
+            const mergedPRs = [];
+            const standaloneCommits = [];
+            diffs.data.commits.forEach(commit => {
+              const firstLine = commit.commit.message.split('\n')[0];
+              if (commit.parents.length > 1) {
+                mergedPRs.push(`- Merged PR: ${firstLine}`);
+              } else {
+                standaloneCommits.push(`- Commit: ${firstLine}`);
+              }
+            });
+            const changes = [
+              '#### :twisted_rightwards_arrows: Merged Pull Requests',
+              mergedPRs.join('\n'),
+              '#### :memo: Standalone Commits',
+              standaloneCommits.join('\n')
+            ].join('\n\n');
+            bodyParts.splice(4, 0, changes); // Insert changes before the contributors section
+
             const updatedBody = bodyParts.join('\n\n');
             await github.rest.pulls.update({
               owner: context.repo.owner,
