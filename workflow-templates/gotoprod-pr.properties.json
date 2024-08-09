@@ -1,0 +1,10 @@
+{
+    "name": "Go-To-Prod PR",
+    "description": "Go-To-Prod PR workflow template.",
+    "iconName": "octicon goal",
+    "categories": [
+        "Automation",
+        "deployment",
+        "utilities"
+    ]
+}
