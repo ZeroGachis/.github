@@ -34,7 +34,7 @@ jobs:
           format: json
 
       - name: Update Pull Request
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         if: failure() && steps.linter.outcome == 'failure'
         with:
           script: |
