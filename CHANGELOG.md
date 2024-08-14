@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.33.2](https://github.com/ZeroGachis/.github/compare/v4.33.1...v4.33.2) (2024-08-14)
+
+
+### Bug Fixes
+
+* hadolint severity level and report trigger ([fa32491](https://github.com/ZeroGachis/.github/commit/fa32491c6a21590da840a2a78f332939efe27a52))
+
 ## [4.33.1](https://github.com/ZeroGachis/.github/compare/v4.33.0...v4.33.1) (2024-08-14)
 
 
