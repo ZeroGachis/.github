@@ -3,7 +3,7 @@ name: Go-To-Prod PR
 on:
   push:
     branches:
-      - $default-branch
+      - develop
 
 jobs:
   call-gotoprod-pr-workflow:
