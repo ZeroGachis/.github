@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.34.2](https://github.com/ZeroGachis/.github/compare/v4.34.1...v4.34.2) (2024-08-19)
+
+
+### Bug Fixes
+
+* naming of template workflow ([40456ae](https://github.com/ZeroGachis/.github/commit/40456ae22ee50fae6417737b64ee8255c6e59c60))
+
 ## [4.34.1](https://github.com/ZeroGachis/.github/compare/v4.34.0...v4.34.1) (2024-08-19)
 
 
