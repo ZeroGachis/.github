@@ -97,8 +97,7 @@ jobs:
             path: "github-actions"
             exportToken: true
             secrets: |
-              secret/data/github-actions-common/github/read-repo-token USERNAME | GH_ORG_READ_REPO_USER ;
-              secret/data/github-actions-common/github/read-repo-token PASSWORD | GH_ORG_READ_REPO_TOKEN ;
+              github/token/renovate-renovatebot token | GH_ORG_READ_REPO_TOKEN ;
 
       - name: Configure AWS Credentials
         id: aws
@@ -147,7 +146,7 @@ jobs:
           target: ${{ inputs.image_target }}
           build-args: |
             ${{ inputs.build-args }}
-            GITHUB_USER=${{ inputs.vault_enabled && fromJSON( steps.secrets.outputs.outputs ).GH_ORG_READ_REPO_USER }}
+            GITHUB_USER=oauth2
             GITHUB_TOKEN=${{ inputs.vault_enabled && fromJSON( steps.secrets.outputs.outputs ).GH_ORG_READ_REPO_TOKEN }}
             AWS_ACCESS_KEY_ID=${{ steps.aws.outputs.aws-access-key-id }}
             AWS_SECRET_ACCESS_KEY=${{ steps.aws.outputs.aws-secret-access-key }}
