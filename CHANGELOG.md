@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.35.0](https://github.com/ZeroGachis/.github/compare/v4.34.4...v4.35.0) (2024-08-20)
+
+
+### Features
+
+* **build-image:** migrate to Github dynamic vault engine ([7a0bae6](https://github.com/ZeroGachis/.github/commit/7a0bae6018c92920708ecbde506c660dd452ae37))
+
 ## [4.34.4](https://github.com/ZeroGachis/.github/compare/v4.34.3...v4.34.4) (2024-08-19)
 
 
