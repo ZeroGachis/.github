@@ -23,7 +23,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const title = ':rocket: Go to Production';
+            const title = '🚀 Go to Production';
             const head = '${{ github.ref_name }}';
             const base = '${{ inputs.base }}';
             async function handlePR(existingPRs) {
