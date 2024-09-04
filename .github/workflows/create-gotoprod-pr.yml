@@ -58,8 +58,8 @@ jobs:
               });
               const contributors = commits.data
                 .map(commit => commit.author.login)
-                .filter(username => !username.includes('[bot]')); 
-              const uniqueContributors = [...new Set(contributors)]; 
+                .filter(username => !username.includes('[bot]'));
+              const uniqueContributors = [...new Set(contributors)];
               await github.rest.pulls.requestReviewers({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -78,22 +78,15 @@ jobs:
                 base: base
               });
               const prNumber = await handlePR(existingPRs);
-              let contributors = await fetchAndAddReviewers(prNumber); 
+              let contributors = await fetchAndAddReviewers(prNumber);
 
-              // Add reviewers
-              await github.rest.pulls.requestReviewers({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: prNumber,
-                reviewers: contributors 
-              });
               const bodyParts = [
                 '## :rocket: Automated PR to prepare Go-To-Production',
                 `**Branch**: \`${{ github.ref_name }}\``,
                 `**Base**: \`${{ inputs.base }}\``,
                 '### :mag_right: Changes',
                 '### :busts_in_silhouette: Contributors',
-                '- ' + contributors.map(c => '@' + c).join('\n- ') 
+                '- ' + contributors.map(c => '@' + c).join('\n- ')
               ];
 
               // Fetch list of changes (diffs)
@@ -119,7 +112,7 @@ jobs:
                 '#### :memo: Commits',
                 Commits.join('\n')
               ].join('\n\n');
-              bodyParts.splice(4, 0, changes); 
+              bodyParts.splice(4, 0, changes);
 
               const updatedBody = bodyParts.join('\n\n');
               await github.rest.pulls.update({
