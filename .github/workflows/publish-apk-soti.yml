@@ -20,7 +20,7 @@ jobs:
           path: ${{ github.workspace }}/artifact/
 
       - name: Push Apk to soti
-        uses: ZeroGachis/soti-action-uploader@v1
+        uses: ZeroGachis/soti-action-uploader@v2
         with:
           apk-path: artifact/${{ inputs.apk-name }}
           soti-api-url: ${{ secrets.SOTI_API_URL }}
