@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.35.1](https://github.com/ZeroGachis/.github/compare/v4.35.0...v4.35.1) (2024-09-04)
+
+
+### Code Refactoring
+
+* remove redondant code in create-gotoprod-pr workflow ([3807ea3](https://github.com/ZeroGachis/.github/commit/3807ea304369e7ab53cfde661adfae56997de6db))
+
 ## [4.35.0](https://github.com/ZeroGachis/.github/compare/v4.34.4...v4.35.0) (2024-08-20)
 
 
