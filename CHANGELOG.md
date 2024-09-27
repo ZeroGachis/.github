@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.36.3](https://github.com/ZeroGachis/.github/compare/v4.36.2...v4.36.3) (2024-09-27)
+
+
+### Bug Fixes
+
+* **run-pytest:** setup python-coverage-comment-action coverage path ([bb87d10](https://github.com/ZeroGachis/.github/commit/bb87d1039e7bf20b4455d1032afe2faad164fc1e))
+
 ## [4.36.2](https://github.com/ZeroGachis/.github/compare/v4.36.1...v4.36.2) (2024-09-27)
 
 
