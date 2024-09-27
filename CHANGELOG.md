@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.36.0](https://github.com/ZeroGachis/.github/compare/v4.35.1...v4.36.0) (2024-09-27)
+
+
+### Features
+
+* Add dedicated workflow to run pytest unit tests with coverage and test report ([ca6cee0](https://github.com/ZeroGachis/.github/commit/ca6cee0b6915f089cc5d39b9a163522ac1ac64d2))
+
 ## [4.35.1](https://github.com/ZeroGachis/.github/compare/v4.35.0...v4.35.1) (2024-09-04)
 
 
