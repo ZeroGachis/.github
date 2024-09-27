@@ -9,9 +9,6 @@ on:
       workdir:
         required: true
         type: string
-      run_command:
-        required: true
-        type: string
       directory_to_test:
         required: true
         type: string
