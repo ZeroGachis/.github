@@ -39,6 +39,8 @@ jobs:
       env:
         DJANGO_SETTINGS_MODULE: ${{ inputs.env_django_settings_module }}
         GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+      volumes:
+        - ./.coverage:${inputs.workdir}/.coverage
     services:
       postgres:
         image: postgres:16
@@ -75,4 +77,4 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
-          COVERAGE_PATH: ${{ inputs.workdir }}
+          COVERAGE_PATH: ./
