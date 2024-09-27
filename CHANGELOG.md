@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.36.4](https://github.com/ZeroGachis/.github/compare/v4.36.3...v4.36.4) (2024-09-27)
+
+
+### Bug Fixes
+
+* **run-pytest:** share code coverage result file between the docker container and the ci host machine ([7440a9a](https://github.com/ZeroGachis/.github/commit/7440a9a9ef3d11f4241bbddd459ddf35d111d0aa))
+
 ## [4.36.3](https://github.com/ZeroGachis/.github/compare/v4.36.2...v4.36.3) (2024-09-27)
 
 
