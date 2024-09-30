@@ -39,8 +39,6 @@ jobs:
       env:
         DJANGO_SETTINGS_MODULE: ${{ inputs.env_django_settings_module }}
         GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
-      volumes:
-        - ./.coverage:${inputs.workdir}/.coverage
     services:
       postgres:
         image: postgres:16
@@ -53,7 +51,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: run-command
+      - name: Run Pytest
         working-directory: ${{ inputs.workdir }}
         env:
           POSTGRES_HOST: postgres
@@ -71,10 +69,9 @@ jobs:
           reporter: java-junit
           max-annotations: 0
           list-tests: 'failed'
-
       - name: Coverage comment
         uses: py-cov-action/python-coverage-comment-action@v3
         with:
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
-          COVERAGE_PATH: ./
+          COVERAGE_PATH: ${{ inputs.workdir }}
