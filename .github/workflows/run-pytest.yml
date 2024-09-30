@@ -74,4 +74,4 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
-          COVERAGE_PATH: ${{ inputs.workdir }}
+          COVERAGE_PATH: ${{ inputs.directory_to_test }}
