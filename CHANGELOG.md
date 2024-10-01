@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.36.7](https://github.com/ZeroGachis/.github/compare/v4.36.6...v4.36.7) (2024-10-01)
+
+
+### Bug Fixes
+
+* **run-pytest:** Make the code and the .coverage file accessible in the current workdir ([e85b324](https://github.com/ZeroGachis/.github/commit/e85b324d30dcca8e2c9a44f43e1f113eb10079bd))
+
 ## [4.36.6](https://github.com/ZeroGachis/.github/compare/v4.36.5...v4.36.6) (2024-09-30)
 
 
