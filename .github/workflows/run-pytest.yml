@@ -46,32 +46,56 @@ jobs:
           POSTGRES_PASSWORD: postgres
         ports:
         - 5432:5432
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Run Pytest
-        working-directory: ${{ inputs.workdir }}
         env:
           POSTGRES_HOST: postgres
           POSTGRES_PORT: 5432
         run: |
           pytest --verbose --cov --junit-xml reports/unit_tests_results.xml ${{ inputs.directory_to_test }}
-
+        working-directory: ${{ inputs.workdir }}
       - name: Test Report
         uses: dorny/test-reporter@v1.9.1
         id: test-report
         with:
           name: "UT Report"
-          path: ${{ inputs.workdir }}/reports/unit_tests_results.xml
-          working-directory: ${{ inputs.workdir }}
+          path: reports/unit_tests_results.xml
           reporter: java-junit
           max-annotations: 0
           list-tests: 'failed'
+          working-directory: ${{ inputs.workdir }}
+      
+      # HACK:
+      # Github actions does not works well when WORKDIR is defined within a Docker image
+      # which is our case most of the time.
+      # To counter this we override the "working-directory" input from script steps (steps that 'run' a shell script)
+      # but this does not work at all for steps that use custom action like dorny/test-reporter
+      # or py-cov-action/python-coverage-comment-action .
+      # 
+      # dorny/test-reporter offers a workaround by exposing a working-directory input too, but 
+      # py-cov-action/python-coverage-comment-action does not and the code is made so that
+      # any of its path input MUST be within the current working directory: this means that this step does
+      # dot see our code (which leaves in inputs.workdir) and so does not see the .coverage file either.
+      #
+      # To work around it, we need to checkout the code in the current working directory forced by github action
+      # when it creates the container (something like /github/workspace) and we copy the .coverage file
+      # generated during the test step into this working directory.
+      #
+      # I tried to implement this workaround directly within the py-cov-action/python-coverage-comment-action project
+      # but as it also uses docker to run itself, things go crazy and I never manage to make something working
+      # without refactoring the all codebase.
+      # 
+      # See:
+      # https://docs.github.com/en/actions/sharing-automations/creating-actions/dockerfile-support-for-github-actions#workdir
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Copy .coverage file
+        run: |
+          cp ${{ inputs.workdir }}/.coverage ./.coverage
+
       - name: Coverage comment
         uses: py-cov-action/python-coverage-comment-action@v3
-        with:
+        env:
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
-          COVERAGE_PATH: ${{ inputs.directory_to_test }}
+
