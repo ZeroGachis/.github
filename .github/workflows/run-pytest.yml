@@ -41,7 +41,7 @@ jobs:
         GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
           POSTGRES_PASSWORD: postgres
         ports:
