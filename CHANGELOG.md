@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.36.8](https://github.com/ZeroGachis/.github/compare/v4.36.7...v4.36.8) (2024-10-07)
+
+
+### Bug Fixes
+
+* **run-pytest:** Do not publish PR comment when build is not triggered from a PR ([00316ed](https://github.com/ZeroGachis/.github/commit/00316edd8d1b9d320daa141f4d199a5e81b14fa0))
+
 ## [4.36.7](https://github.com/ZeroGachis/.github/compare/v4.36.6...v4.36.7) (2024-10-01)
 
 
