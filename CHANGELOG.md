@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.36.9](https://github.com/ZeroGachis/.github/compare/v4.36.8...v4.36.9) (2024-10-15)
+
+
+### Bug Fixes
+
+* **run-pytest:** Do not use 'github.event.workflow_run.event' which seems never triggered ([7d97719](https://github.com/ZeroGachis/.github/commit/7d97719eedcf2141b20afd77274513b8ee61894b))
+
 ## [4.36.8](https://github.com/ZeroGachis/.github/compare/v4.36.7...v4.36.8) (2024-10-07)
 
 
