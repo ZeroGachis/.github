@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.36.11](https://github.com/ZeroGachis/.github/compare/v4.36.10...v4.36.11) (2024-11-12)
+
+
+### Bug Fixes
+
+* **terraform:** inverse validate and workspace step in CI to avoid some resolution issue ([5d22723](https://github.com/ZeroGachis/.github/commit/5d2272394dfdcaf66380902a04740cbdab0340c9))
+
 ## [4.36.10](https://github.com/ZeroGachis/.github/compare/v4.36.9...v4.36.10) (2024-11-05)
 
 
