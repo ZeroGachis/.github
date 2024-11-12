@@ -151,15 +151,15 @@ jobs:
         working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform init -backend-config="bucket=${{ inputs.terraform_backend || env.TERRAFORM_DEFAULT_BACKEND }}"
 
-      - name: Terraform Validate
-        id: validate
-        working-directory: ${{ inputs.workdir || github.workspace	}}
-        run: terraform validate
-
       - name: Terraform Workspace
         id: workspace
         working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform workspace select ${{ inputs.terraform_workspace }} || terraform workspace new ${{ inputs.terraform_workspace }}
+
+      - name: Terraform Validate
+        id: validate
+        working-directory: ${{ inputs.workdir || github.workspace	}}
+        run: terraform validate
 
       - name: Terraform Plan
         id: plan
@@ -191,11 +191,11 @@ jobs:
               - '**.tf'
               - '**.tfvars'
       - name: Filter Terraform Args
-        if:  ${{ inputs.terraform_args }}
+        if: ${{ inputs.terraform_args }}
         id: filter_args
         run: |
-            filtered_args=$(echo '${{ inputs.terraform_args }}' | sed -e 's/.*"\(.*\)".*/\1/')
-            echo "filtered_args=$filtered_args" >> "$GITHUB_OUTPUT"
+          filtered_args=$(echo '${{ inputs.terraform_args }}' | sed -e 's/.*"\(.*\)".*/\1/')
+          echo "filtered_args=$filtered_args" >> "$GITHUB_OUTPUT"
   infracost:
     name: "Run Infracost Workflow"
     needs: [infracost-prerequisites]
