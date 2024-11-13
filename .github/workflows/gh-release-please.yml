@@ -23,7 +23,7 @@ on:
         value: ${{ jobs.github-releaseplease.outputs.release_created }}
       release_number:
         description: "The release number"
-        value: ${{ jobs.github-releaseplease.outputs.tag_name }}
+        value: ${{ jobs.github-releaseplease.outputs.release_number }}
   push:
     branches:
       - "main"
@@ -36,7 +36,7 @@ jobs:
       pull-requests: write
     outputs:
       release_created: ${{ steps.release.outputs.releases_created }}
-      release_number: ${{ steps.release.outputs.version }}
+      release_number: ${{ steps.release.outputs.tag_name }}
     env:
       major_and_minor_tags: ${{ inputs.major_and_minor_tags || true }}
     steps:
