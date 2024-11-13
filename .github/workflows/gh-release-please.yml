@@ -23,7 +23,7 @@ on:
         value: ${{ jobs.github-releaseplease.outputs.release_created }}
       release_number:
         description: "The release number"
-        value: ${{ jobs.github-releaseplease.outputs.release_number }}
+        value: ${{ jobs.github-releaseplease.outputs.tag_name }}
   push:
     branches:
       - "main"
