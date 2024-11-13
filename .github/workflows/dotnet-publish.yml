@@ -1,0 +1,59 @@
+name: Dotnet - Publish
+
+on:
+  workflow_call:
+    inputs:
+      package_to_publish:
+        required: true
+        type: string
+        description: "The package to publish"
+      package_version:
+        required: true
+        type: string
+        description: "The package version to use"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      packages: read
+    environment: main
+    env:
+      AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ inputs.AWS_REGION || vars.AWS_REGION }}
+      CODEARTIFACT_DOMAIN: smartway
+      CODEARTIFACT_REPOSITORY: nuget-release
+    steps:
+      - name: Login to Github Packages
+        run: >-
+          nuget sources add
+          -Name github
+          -Source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+          -Username ${{ github.actor }}
+          -Password ${{ secrets.GITHUB_TOKEN }}
+          -StorePasswordInClearText
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github_oidc
+
+      - name: Login to CodeArtifact
+        run: "aws codeartifact login --tool dotnet --repository ${CODEARTIFACT_REPOSITORY} --domain ${CODEARTIFACT_DOMAIN} --domain-owner ${AWS_ACCOUNT_ID} --region ${AWS_REGION}"
+
+      - name: Download NuGet package
+        run: >-
+          nuget install ${{ inputs.package_to_publish }} 
+          -Version ${{ inputs.package_version }} 
+          -PackageSaveMode nupkg
+          -DirectDownload
+          -DependencyVersion Ignore
+          -Source github
+
+      - name: Publish package to AWS
+        run: >-
+          dotnet nuget push ${{ inputs.package_to_publish }}.${{ inputs.package_version }}/${{ inputs.package_to_publish }}.${{ inputs.package_version }}.nupkg
+          --source https://${{ env.CODEARTIFACT_DOMAIN }}-${{ env.AWS_ACCOUNT_ID }}.d.codeartifact.${{ env.AWS_REGION }}.amazonaws.com/nuget/${{ env.CODEARTIFACT_REPOSITORY }}/v3/index.json
+          --skip-duplicate
