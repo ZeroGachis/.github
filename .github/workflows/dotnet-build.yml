@@ -17,6 +17,11 @@ on:
         type: string
         description: "The project configuration to use"
         default: "Release"
+      solution_version_suffix:
+        required: false
+        type: string
+        description: "The project version suffix to use"
+        default: ""
       packages_to_upload:
         required: true
         type: string
@@ -40,6 +45,7 @@ jobs:
       issues: read
       checks: write
       pull-requests: write
+      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -105,12 +111,24 @@ jobs:
           recreate: true
           path: code-coverage-results.md
 
-      - name: Create package
-        run: dotnet pack ${{ inputs.solution_name }} --configuration ${{ inputs.solution_configuration }}
+      - name: Create Package
+        run: >-
+          dotnet pack ${{ inputs.solution_name }}
+          --configuration ${{ inputs.solution_configuration }}
+          --output packages
+          --version-suffix ${{ inputs.solution_version_suffix }}
 
-      - name: Upload packages to GitHub Packages
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ inputs.solution_name }}-${{ inputs.solution_configuration }}
-          path: |
-            ${{ join(format('./{0}/bin/{1}', fromJSON(inputs.packages_to_upload), inputs.solution_configuration), '\n') }}
+      - name: Login to Github Packages
+        run: >-
+          dotnet nuget add source
+          --username ${{ github.actor }}
+          --password ${{ secrets.GITHUB_TOKEN }}
+          --store-password-in-clear-text
+          --name github
+          "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+
+      - name: Publish packages to Github Packages
+        run: >-
+          dotnet nuget push packages/*.nupkg
+          --source github
+          --skip-duplicate
