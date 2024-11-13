@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.37.0](https://github.com/ZeroGachis/.github/compare/v4.36.11...v4.37.0) (2024-11-13)
+
+
+### Features
+
+* **release-please:** add output for version number ([ad11e86](https://github.com/ZeroGachis/.github/commit/ad11e86c285cac9049fea7bf1b1473ff00cdd0b4))
+
 ## [4.36.11](https://github.com/ZeroGachis/.github/compare/v4.36.10...v4.36.11) (2024-11-12)
 
 
