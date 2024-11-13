@@ -1,0 +1,116 @@
+name: Dotnet - Build
+
+on:
+  workflow_call:
+    inputs:
+      dotnet_version:
+        required: false
+        type: string
+        default: "8.0.x"
+        description: "The dotnet version to use"
+      solution_name:
+        required: true
+        type: string
+        description: "The project SLN file name to use"
+      solution_configuration:
+        required: false
+        type: string
+        description: "The project configuration to use"
+        default: "Release"
+      packages_to_upload:
+        required: true
+        type: string
+        description: "The packages list to upload"
+      code_coverage_threshold:
+        required: false
+        type: string
+        description: "The code coverage threshold to use"
+        default: "60 80"
+      code_coverage_enabled:
+        required: false
+        type: boolean
+        description: "Whether to enable code coverage reporting"
+        default: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet_version }}
+
+      - name: Build solution
+        run: dotnet build ${{ inputs.solution_name }} --configuration ${{ inputs.solution_configuration }}
+
+      - name: Unit tests
+        run: >-
+          dotnet test ${{ inputs.solution_name }}
+          --no-build
+          --configuration ${{ inputs.solution_configuration }}
+          --settings .test-runsettings.xml
+          --logger "trx"
+
+      - name: Test Report - Unit Tests - Check Summary
+        uses: dorny/test-reporter@v1.9.1
+        if: always()
+        with:
+          name: Unit Tests Results
+          path: TestResults/**/*.trx
+          reporter: dotnet-trx
+
+      - name: Test Report - Unit Tests - PR Annotation
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: TestResults/**/*.trx
+          check_run: false # Use dorny test report
+          job_summary: false # Use dorny test report
+
+      - name: Combine Coverage Reports
+        if: inputs.code_coverage_enabled
+        uses: danielpalme/ReportGenerator-GitHub-Action@v5
+        with:
+          reports: "TestResults/**/*.cobertura.xml"
+          targetdir: "${{ github.workspace }}/Coverage"
+          reporttypes: "Cobertura"
+
+      - name: Code Coverage Report
+        if: inputs.code_coverage_enabled
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: Coverage/Cobertura.xml
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: ${{ inputs.code_coverage_threshold }}
+
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request' && inputs.code_coverage_enabled
+        with:
+          recreate: true
+          path: code-coverage-results.md
+
+      - name: Create package
+        run: dotnet pack ${{ inputs.solution_name }} --configuration ${{ inputs.solution_configuration }}
+
+      - name: Upload packages to GitHub Packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.solution_name }}-${{ inputs.solution_configuration }}
+          path: |
+            ${{ join(format('./{0}/bin/{1}', fromJSON(inputs.packages_to_upload), inputs.solution_configuration), '\n') }}
