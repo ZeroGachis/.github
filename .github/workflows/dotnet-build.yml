@@ -22,10 +22,6 @@ on:
         type: string
         description: "The project version suffix to use"
         default: ""
-      packages_to_upload:
-        required: true
-        type: string
-        description: "The packages list to upload"
       code_coverage_threshold:
         required: false
         type: string
