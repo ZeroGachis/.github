@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.38.1](https://github.com/ZeroGachis/.github/compare/v4.38.0...v4.38.1) (2024-11-14)
+
+
+### Miscellaneous Chores
+
+* **dotnet:** useless package-to-upload var ([e40362a](https://github.com/ZeroGachis/.github/commit/e40362a66621ebe467a05e641dafff6b8a413d09))
+
 ## [4.38.0](https://github.com/ZeroGachis/.github/compare/v4.37.1...v4.38.0) (2024-11-14)
 
 
