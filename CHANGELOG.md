@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.38.0](https://github.com/ZeroGachis/.github/compare/v4.37.1...v4.38.0) (2024-11-14)
+
+
+### Features
+
+* **dotnet:** build workflow - push to github package ([281aa1c](https://github.com/ZeroGachis/.github/commit/281aa1c0248b59167304e38fbe00aa203b8c3ee4))
+* **dotnet:** create build workflow ([82848a8](https://github.com/ZeroGachis/.github/commit/82848a8ce1b14c79f67cc287a456fd21f07d565a))
+* **dotnet:** create publish workflow ([e67a05d](https://github.com/ZeroGachis/.github/commit/e67a05db717a15ce24f5fa9c26cb55997983c7da))
+* **dotnet:** publish to public nuget registry option ([908bf1a](https://github.com/ZeroGachis/.github/commit/908bf1af7b683792e1d6e094506e252e5daeb4c0))
+
+
+### Miscellaneous Chores
+
+* **dotnet:** allow to customize env name for publish workflow ([a80fef7](https://github.com/ZeroGachis/.github/commit/a80fef7c1579434658d0fd4e1e0295969a8e95ea))
+
 ## [4.37.1](https://github.com/ZeroGachis/.github/compare/v4.37.0...v4.37.1) (2024-11-13)
 
 
