@@ -21,7 +21,6 @@ on:
         required: false
         type: string
         description: "The project version suffix to use"
-        default: ""
       code_coverage_threshold:
         required: false
         type: string
@@ -108,6 +107,14 @@ jobs:
           path: code-coverage-results.md
 
       - name: Create Package
+        if: !inputs.solution_version_suffix
+        run: >-
+          dotnet pack ${{ inputs.solution_name }}
+          --configuration ${{ inputs.solution_configuration }}
+          --output packages
+
+      - name: Create Package with Suffix
+        if: inputs.solution_version_suffix
         run: >-
           dotnet pack ${{ inputs.solution_name }}
           --configuration ${{ inputs.solution_configuration }}
