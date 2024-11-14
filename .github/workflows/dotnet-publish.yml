@@ -16,14 +16,18 @@ on:
         type: boolean
         description: "Whether to publish to the public registry"
         default: true
-
+      environment_name:
+        required: false
+        type: string
+        description: "The environment name to use"
+        default: main
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       packages: read
-    environment: main
+    environment: ${{ inputs.environment_name }}
     env:
       VAULT_URL: ${{ vars.VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ vars.VAULT_GITHUB_ACTIONS_ROLE }}
