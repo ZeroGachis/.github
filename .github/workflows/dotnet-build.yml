@@ -107,14 +107,14 @@ jobs:
           path: code-coverage-results.md
 
       - name: Create Package
-        if: !inputs.solution_version_suffix
+        if: ${{ !inputs.solution_version_suffix }}
         run: >-
           dotnet pack ${{ inputs.solution_name }}
           --configuration ${{ inputs.solution_configuration }}
           --output packages
 
       - name: Create Package with Suffix
-        if: inputs.solution_version_suffix
+        if: ${{ inputs.solution_version_suffix }}
         run: >-
           dotnet pack ${{ inputs.solution_name }}
           --configuration ${{ inputs.solution_configuration }}
