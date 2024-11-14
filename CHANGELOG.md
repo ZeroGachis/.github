@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.38.2](https://github.com/ZeroGachis/.github/compare/v4.38.1...v4.38.2) (2024-11-14)
+
+
+### Bug Fixes
+
+* **dotnet:** dotnet pack command without suffix failed ([846b02e](https://github.com/ZeroGachis/.github/commit/846b02ebbcf0065c8c0acd9a9da777970df8ec03))
+
 ## [4.38.1](https://github.com/ZeroGachis/.github/compare/v4.38.0...v4.38.1) (2024-11-14)
 
 
