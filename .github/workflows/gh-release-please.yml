@@ -17,6 +17,10 @@ on:
         required: false
         type: string
         default: .release-please-manifest.json
+      target_branch:
+        required: false
+        type: string
+        default: main
     outputs:
       release_created:
         description: "Whether a release was created"
@@ -47,6 +51,7 @@ jobs:
           release-type: ${{ inputs.release_type }}
           config-file: ${{ inputs.release_please_config_file }}
           manifest-file: ${{ inputs.release_please_manifest_file }}
+          target-branch: ${{ inputs.target_branch }}
       - name: tag major and minor versions
         if: ${{ steps.release.outputs.releases_created == 'true' && env.major_and_minor_tags == 'true' }}
         run: |
