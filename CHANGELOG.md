@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.39.1](https://github.com/ZeroGachis/.github/compare/v4.39.0...v4.39.1) (2024-12-16)
+
+
+### Bug Fixes
+
+* **emergency:** increase retry and timeout. Pray for this :pray: ([c546fb9](https://github.com/ZeroGachis/.github/commit/c546fb90954d7f078b0ae56e706f3c1fedddf615))
+
 ## [4.39.0](https://github.com/ZeroGachis/.github/compare/v4.38.3...v4.39.0) (2024-11-20)
 
 
