@@ -1,4 +1,4 @@
-name: 'Run-Docker-Command-Upload-Artifact'
+name: "Run-Docker-Command-Upload-Artifact"
 
 on:
   workflow_call:
@@ -64,11 +64,11 @@ jobs:
   run-docker:
     runs-on: ubuntu-latest
     permissions:
-        contents: read
-        id-token: write
-        packages: read
-        actions: write
-        checks: write
+      contents: read
+      id-token: write
+      packages: read
+      actions: write
+      checks: write
     environment:
       name: ${{ inputs.environment_name }}
     container:
@@ -98,8 +98,8 @@ jobs:
         id: secrets
         with:
           action: hashicorp/vault-action@v3
-          attempt_limit: 5
-          attempt_delay: 150
+          attempt_limit: 15
+          attempt_delay: 500
           with: |
             url: ${{ env.VAULT_URL }}
             role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}

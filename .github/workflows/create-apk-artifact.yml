@@ -102,8 +102,8 @@ jobs:
         id: secrets
         with:
           action: hashicorp/vault-action@v3
-          attempt_limit: 5
-          attempt_delay: 150
+          attempt_limit: 15
+          attempt_delay: 500
           with: |
             url: ${{ env.VAULT_URL }}
             role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
@@ -163,7 +163,7 @@ jobs:
           node-version: ${{ inputs.node-version }}
           registry-url: "https://npm.pkg.github.com"
           scope: "@ZeroGachis"
-          cache: 'npm'
+          cache: "npm"
 
       - name: Get Smartway APK keystore
         if: ${{steps.get-existing-apk.outputs.need-new-apk == 'true'}} or ${{ inputs.environment == 'pullrequest' }}
@@ -192,7 +192,7 @@ jobs:
           regex: '<string moduleConfig="true" name="CodePushServerUrl">(.*)</string>'
           replacement: '<string moduleConfig="true" name="CodePushServerUrl">${{ steps.vault.outputs.CODE_PUSH_SERVER_URL }}</string>'
           include: "^android/app/src/main/res/values/strings.xml"
-        
+
       - name: Set code push key in string.xml
         if: ${{ inputs.environment != 'pullrequest' }}
         uses: mingjun97/file-regex-replace@v1

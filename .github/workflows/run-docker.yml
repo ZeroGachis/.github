@@ -1,4 +1,4 @@
-name: 'Run-Docker-Command'
+name: "Run-Docker-Command"
 
 on:
   workflow_call:
@@ -40,8 +40,8 @@ on:
         required: false
         type: string
       aws_region:
-          required: false
-          type: string
+        required: false
+        type: string
       aws_github_role_name:
         required: false
         type: string
@@ -68,11 +68,11 @@ jobs:
   run-docker:
     runs-on: ubuntu-latest
     permissions:
-        contents: read
-        id-token: write
-        packages: read
-        actions: write
-        checks: write
+      contents: read
+      id-token: write
+      packages: read
+      actions: write
+      checks: write
     environment:
       name: ${{ inputs.environment_name }}
     container:
@@ -103,8 +103,8 @@ jobs:
         id: secrets
         with:
           action: hashicorp/vault-action@v3
-          attempt_limit: 5
-          attempt_delay: 150
+          attempt_limit: 15
+          attempt_delay: 500
           with: |
             url: ${{ env.VAULT_URL }}
             role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
@@ -125,7 +125,6 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
 
-
       - name: run-command
         working-directory: ${{ inputs.workdir }}
         run: ${{ inputs.run_command }}
@@ -135,10 +134,9 @@ jobs:
         id: test-report
         if: ${{ always() && inputs.enable_test_report == true }}
         with:
-          name: '${{ inputs.test_report_name }}'
+          name: "${{ inputs.test_report_name }}"
           path: ${{ inputs.workdir }}/${{ inputs.test_report_path }}
           reporter: ${{ inputs.test_report_format }}
           working-directory: ${{ inputs.workdir }}
           max-annotations: 0
-          list-tests: 'failed'
-
+          list-tests: "failed"

@@ -1,4 +1,4 @@
-name: 'Run-Docker-Command'
+name: "Run-Docker-Command"
 
 on:
   workflow_call:
@@ -68,11 +68,11 @@ jobs:
   run-docker:
     runs-on: ubuntu-latest
     permissions:
-        contents: read
-        id-token: write
-        packages: read
-        actions: write
-        checks: write
+      contents: read
+      id-token: write
+      packages: read
+      actions: write
+      checks: write
     environment:
       name: ${{ inputs.environment_name }}
     container:
@@ -93,7 +93,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
         ports:
-        - 5432:5432
+          - 5432:5432
 
     steps:
       - name: Tailscale
@@ -111,8 +111,8 @@ jobs:
         id: secrets
         with:
           action: hashicorp/vault-action@v3
-          attempt_limit: 5
-          attempt_delay: 150
+          attempt_limit: 15
+          attempt_delay: 500
           with: |
             url: ${{ env.VAULT_URL }}
             role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
@@ -145,9 +145,9 @@ jobs:
         id: test-report
         if: ${{ always() && inputs.enable_test_report == true }}
         with:
-          name: '${{ inputs.test_report_name }}'
+          name: "${{ inputs.test_report_name }}"
           path: ${{ inputs.workdir }}/${{ inputs.test_report_path }}
           working-directory: ${{ inputs.workdir }}
           reporter: ${{ inputs.test_report_format }}
           max-annotations: 0
-          list-tests: 'failed'
+          list-tests: "failed"

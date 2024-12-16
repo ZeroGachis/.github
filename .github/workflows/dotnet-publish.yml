@@ -66,8 +66,8 @@ jobs:
         id: secrets
         with:
           action: hashicorp/vault-action@v3
-          attempt_limit: 5
-          attempt_delay: 150
+          attempt_limit: 15
+          attempt_delay: 500
           with: |
             url: ${{ env.VAULT_URL }}
             role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
