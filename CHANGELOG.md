@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.39.2](https://github.com/ZeroGachis/.github/compare/v4.39.1...v4.39.2) (2024-12-20)
+
+
+### Miscellaneous Chores
+
+* **deps:** update tailscale/github-action action to v3 ([cb1e041](https://github.com/ZeroGachis/.github/commit/cb1e041f5600982e8c352f47ca77166df943e30f))
+
 ## [4.39.1](https://github.com/ZeroGachis/.github/compare/v4.39.0...v4.39.1) (2024-12-16)
 
 
