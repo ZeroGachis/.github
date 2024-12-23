@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.39.3](https://github.com/ZeroGachis/.github/compare/v4.39.2...v4.39.3) (2024-12-23)
+
+
+### Miscellaneous Chores
+
+* **deps:** update anchore/scan-action action to v6 ([39a7708](https://github.com/ZeroGachis/.github/commit/39a7708933a3de0f90385fb2bbd220d2a508df06))
+* rename VAULT_URL to be compliant with terraform vault provider ([ed8f9d7](https://github.com/ZeroGachis/.github/commit/ed8f9d79f0ccbbe13d3d83a6a4beac60d5784fd2))
+
 ## [4.39.2](https://github.com/ZeroGachis/.github/compare/v4.39.1...v4.39.2) (2024-12-20)
 
 
