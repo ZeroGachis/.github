@@ -1,4 +1,4 @@
-name: 'Delete-Docker-Image'
+name: "Delete-Docker-Image"
 
 on:
   workflow_call:
@@ -24,13 +24,13 @@ jobs:
   delete:
     runs-on: ubuntu-latest
     permissions:
-        contents: read
-        id-token: write
-        packages: write
+      contents: read
+      id-token: write
+      packages: write
     environment:
       name: ${{ inputs.environment_name }}
     env:
-      VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_ADDR: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
     steps:
       # We keep this action as it is configure in lot of repo

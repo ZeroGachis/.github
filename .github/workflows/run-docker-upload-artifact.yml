@@ -78,7 +78,7 @@ jobs:
         password: ${{ secrets.github_token }}
       env:
         DJANGO_SETTINGS_MODULE: ${{ inputs.env_django_settings_module }}
-        VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+        VAULT_ADDR: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
         VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
         AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
         AWS_REGION: ${{ inputs.AWS_REGION || vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
@@ -101,7 +101,7 @@ jobs:
           attempt_limit: 15
           attempt_delay: 500
           with: |
-            url: ${{ env.VAULT_URL }}
+            url: ${{ env.VAULT_ADDR }}
             role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
             method: jwt
             path: "github-actions"
