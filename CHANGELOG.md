@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.40.0](https://github.com/ZeroGachis/.github/compare/v4.39.3...v4.40.0) (2025-01-16)
+
+
+### Features
+
+* init argocd workflows ([3ccbfbd](https://github.com/ZeroGachis/.github/commit/3ccbfbd2a8193b6d171bde6f612423eb9b9e702d))
+
 ## [4.39.3](https://github.com/ZeroGachis/.github/compare/v4.39.2...v4.39.3) (2024-12-23)
 
 
