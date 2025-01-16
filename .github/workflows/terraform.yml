@@ -91,7 +91,7 @@ jobs:
       AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
       AWS_REGION: ${{ inputs.AWS_REGION || vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
       ARGOCD_SERVER: ${{ inputs.argocd_server || vars.ARGOCD_SERVER }}
-      ARGOCD_TOKEN: ${{ vars.ARGOCD_TOKEN }}
+      ARGOCD_TOKEN: ${{ secrets.ARGOCD_TOKEN }}
       AWS_DEFAULT_SECRETS: |
         DD_API_KEY,datadog/${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}/technical-account/api-key
         DD_APP_KEY,datadog/${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}/technical-account/app-key
