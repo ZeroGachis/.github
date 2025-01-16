@@ -1,0 +1,63 @@
+name: ArgoCD Sync
+
+on:
+  workflow_call:
+    inputs:
+      argocd_server:
+        required: false
+        type: string
+      environment_name:
+        required: false
+        type: string
+      app_name:
+        required: true
+        type: string
+
+jobs:
+  argocd_sync:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment_name }}
+    env:
+      ARGOCD_SERVER: ${{ inputs.argocd_server || vars.ARGOCD_SERVER }}
+      APP_NAME: jupyterhub
+    steps:
+      - name: Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          version: ${{ vars.TAILSCALE_VERSION }}
+      - name: Tailscale BugReport
+        run: tailscale bugreport
+
+      - name: Check DNS Resolution
+        run: |
+          for i in {1..10}; do
+            if nslookup ${{ env.ARGOCD_SERVER }}; then
+              echo "DNS resolution successful"
+              break
+            else
+              echo "DNS resolution failed, retrying in 10 seconds..."
+              sleep 10
+            fi
+          done
+          # Exit with error if DNS resolution fails after retries
+          if ! nslookup ${{ env.ARGOCD_SERVER }}; then
+            echo "DNS resolution failed after multiple attempts"
+            exit 1
+          fi
+        shell: bash
+
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install ArgoCD CLI
+        run: curl -sSL -o /usr/local/bin/argocd https://${{env.ARGOCD_SERVER}}/download/argocd-linux-amd64
+
+      - name: Sync ArgoCD App
+        run: |
+          argocd --grpc-web --server ${{ vars.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_TOKEN }} app sync ${{ inputs.app_name }}
+          argocd --grpc-web --server ${{ vars.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_TOKEN }}  app wait ${{ env.APP_NAME }}

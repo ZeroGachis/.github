@@ -65,6 +65,13 @@ on:
         required: false
         type: boolean
         default: true
+      argocd_enabled:
+        required: false
+        type: boolean
+        default: false
+      argocd_server:
+        required: false
+        type: string
       infracost_terraform_workspace:
         type: string
         default: "develop,main"
@@ -83,6 +90,7 @@ jobs:
       VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
       AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
       AWS_REGION: ${{ inputs.AWS_REGION || vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
+      ARGOCD_SERVER: ${{ inputs.argocd_server || vars.ARGOCD_SERVER }}
       AWS_DEFAULT_SECRETS: |
         DD_API_KEY,datadog/${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}/technical-account/api-key
         DD_APP_KEY,datadog/${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}/technical-account/app-key
@@ -97,6 +105,25 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
+
+      - name: Check DNS Resolution
+        if: inputs.argocd_enabled
+        run: |
+          for i in {1..10}; do
+            if nslookup ${{ env.ARGOCD_SERVER }}; then
+              echo "DNS resolution successful"
+              break
+            else
+              echo "DNS resolution failed, retrying in 10 seconds..."
+              sleep 10
+            fi
+          done
+          # Exit with error if DNS resolution fails after retries
+          if ! nslookup ${{ env.ARGOCD_SERVER }}; then
+            echo "DNS resolution failed after multiple attempts"
+            exit 1
+          fi
+        shell: bash
 
       - name: Import Secrets
         uses: Wandalen/wretry.action@v3
