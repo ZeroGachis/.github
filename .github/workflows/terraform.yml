@@ -169,7 +169,7 @@ jobs:
         shell: sh
 
       - name: Terraform Format
-        id: fmtgg
+        id: fmt
         working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform fmt -check
 
@@ -181,7 +181,7 @@ jobs:
       - name: Terraform Workspace
         id: workspace
         working-directory: ${{ inputs.workdir || github.workspace	}}
-        run: terraform workspace select ${{ inputs.terraform_workspace }} || terraform workspace new ${{ inputs.terraform_workspace }}
+        run: terraform workspace select -or-create ${{ inputs.terraform_workspace }}
 
       - name: Terraform Validate
         id: validate
