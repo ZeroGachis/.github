@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.40.5](https://github.com/ZeroGachis/.github/compare/v4.40.4...v4.40.5) (2025-01-17)
+
+
+### Bug Fixes
+
+* **argocd:** use homebrew to install cli ([c1a6759](https://github.com/ZeroGachis/.github/commit/c1a6759e6bb38a79f2c09ec26d6f212561bd69c7))
+
 ## [4.40.4](https://github.com/ZeroGachis/.github/compare/v4.40.3...v4.40.4) (2025-01-16)
 
 
