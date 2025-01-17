@@ -20,7 +20,6 @@ jobs:
       name: ${{ inputs.environment_name }}
     env:
       ARGOCD_SERVER: ${{ inputs.argocd_server || vars.ARGOCD_SERVER }}
-      APP_NAME: jupyterhub
     steps:
       - name: Tailscale
         uses: tailscale/github-action@v3
@@ -60,4 +59,4 @@ jobs:
       - name: Sync ArgoCD App
         run: |
           argocd --grpc-web --server ${{ vars.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_TOKEN }} app sync ${{ inputs.app_name }}
-          argocd --grpc-web --server ${{ vars.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_TOKEN }} app wait ${{ env.APP_NAME }}
+          argocd --grpc-web --server ${{ vars.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_TOKEN }} app wait ${{ inputs.app_name }}
