@@ -55,7 +55,7 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@master
 
       - name: Install ArgoCD CLI
-        run: curl -sSL -o /usr/local/bin/argocd https://${{env.ARGOCD_SERVER}}/download/argocd-linux-amd64
+        run: /home/linuxbrew/.linuxbrew/bin/brew install argocd
 
       - name: Sync ArgoCD App
         run: |
