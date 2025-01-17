@@ -60,4 +60,4 @@ jobs:
       - name: Sync ArgoCD App
         run: |
           argocd --grpc-web --server ${{ vars.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_TOKEN }} app sync ${{ inputs.app_name }}
-          argocd --grpc-web --server ${{ vars.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_TOKEN }}  app wait ${{ env.APP_NAME }}
+          argocd --grpc-web --server ${{ vars.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_TOKEN }} app wait ${{ env.APP_NAME }}
