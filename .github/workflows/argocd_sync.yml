@@ -12,6 +12,12 @@ on:
       app_name:
         required: true
         type: string
+      vault_url:
+        required: false
+        type: string
+      vault_github_actions_role:
+        required: false
+        type: string
 
 jobs:
   argocd_sync:
@@ -19,6 +25,8 @@ jobs:
     environment:
       name: ${{ inputs.environment_name }}
     env:
+      VAULT_ADDR: ${{ inputs.vault_url || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
       ARGOCD_SERVER: ${{ inputs.argocd_server || vars.ARGOCD_SERVER }}
     steps:
       - name: Tailscale
@@ -28,8 +36,6 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
-      - name: Tailscale BugReport
-        run: tailscale bugreport
 
       - name: Check DNS Resolution
         run: |
@@ -49,6 +55,22 @@ jobs:
           fi
         shell: bash
 
+      - name: ArgoCD Secrets
+        uses: Wandalen/wretry.action@v3
+        id: argocd_secrets
+        with:
+          action: hashicorp/vault-action@v3
+          attempt_limit: 15
+          attempt_delay: 500
+          with: |
+            url: ${{ env.VAULT_ADDR }}
+            role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+            method: jwt
+            path: "github-actions"
+            exportToken: true
+            secrets: |
+              secret/data/github-actions-common/argocd apikey | ARGOCD_AUTH_TOKEN;
+
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
@@ -58,5 +80,5 @@ jobs:
 
       - name: Sync ArgoCD App
         run: |
-          argocd --grpc-web --server ${{ vars.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_TOKEN }} app sync ${{ inputs.app_name }}
-          argocd --grpc-web --server ${{ vars.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_TOKEN }} app wait ${{ inputs.app_name }}
+          argocd --grpc-web --server ${{ vars.ARGOCD_SERVER }} --auth-token ${{ steps.argocd_secrets.outputs.ARGOCD_AUTH_TOKEN }} app sync ${{ inputs.app_name }}
+          argocd --grpc-web --server ${{ vars.ARGOCD_SERVER }} --auth-token ${{ steps.argocd_secrets.outputs.ARGOCD_AUTH_TOKEN }} app wait ${{ inputs.app_name }}
