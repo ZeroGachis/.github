@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.40.9](https://github.com/ZeroGachis/.github/compare/v4.40.8...v4.40.9) (2025-01-28)
+
+
+### Bug Fixes
+
+* argocd env var token ([c26c27a](https://github.com/ZeroGachis/.github/commit/c26c27ac530b5bf7dfebd63526f4f1caa3194e91))
+
 ## [4.40.8](https://github.com/ZeroGachis/.github/compare/v4.40.7...v4.40.8) (2025-01-27)
 
 
