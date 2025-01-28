@@ -215,7 +215,7 @@ jobs:
 
       - name: Terraform Plan with ArgoCD
         id: plan
-        if: !inputs.argocd_enabled
+        if: ${{ !inputs.argocd_enabled }}
         working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform plan -out=tfplan -no-color -input=false ${{ inputs.terraform_args }}
 
