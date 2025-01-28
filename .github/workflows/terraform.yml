@@ -205,10 +205,17 @@ jobs:
         working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform validate
 
-      - name: Terraform Plan
-        id: plan
+      - name: Terraform Plan with ArgoCD
+        id: plan_argocd
+        if: inputs.argocd_enabled
         env:
           ARGOCD_AUTH_TOKEN: ${{ fromJSON( steps.argocd_secrets.outputs.outputs ).ARGOCD_AUTH_TOKEN }}
+        working-directory: ${{ inputs.workdir || github.workspace	}}
+        run: terraform plan -out=tfplan -no-color -input=false ${{ inputs.terraform_args }}
+
+      - name: Terraform Plan with ArgoCD
+        id: plan
+        if: !inputs.argocd_enabled
         working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform plan -out=tfplan -no-color -input=false ${{ inputs.terraform_args }}
 
