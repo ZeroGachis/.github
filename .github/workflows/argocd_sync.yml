@@ -21,6 +21,9 @@ on:
 
 jobs:
   argocd_sync:
+    permissions:
+      id-token: write
+      contents: read
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment_name }}
