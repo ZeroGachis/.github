@@ -59,20 +59,16 @@ jobs:
         shell: bash
 
       - name: ArgoCD Secrets
-        uses: Wandalen/wretry.action@v3
         id: argocd_secrets
+        uses: hashicorp/vault-action@v3
         with:
-          action: hashicorp/vault-action@v3
-          attempt_limit: 15
-          attempt_delay: 500
-          with: |
-            url: ${{ env.VAULT_ADDR }}
-            role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-            method: jwt
-            path: "github-actions"
-            exportToken: true
-            secrets: |
-              secret/data/github-actions-common/argocd apikey | ARGOCD_AUTH_TOKEN;
+          url: ${{ env.VAULT_ADDR }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          exportToken: true
+          secrets: |
+            secret/data/github-actions-common/argocd apikey | ARGOCD_AUTH_TOKEN;
 
       - name: Set up Homebrew
         id: set-up-homebrew
