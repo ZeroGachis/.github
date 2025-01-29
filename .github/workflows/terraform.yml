@@ -106,7 +106,26 @@ jobs:
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
 
-      - name: Check DNS Resolution
+      - name: Check DNS Resolution for Vault
+        if: inputs.vault_enabled
+        run: |
+          for i in {1..10}; do
+            if nslookup ${{ env.VAULT_ADDR }}; then
+              echo "DNS resolution successful"
+              break
+            else
+              echo "DNS resolution failed, retrying in 10 seconds..."
+              sleep 10
+            fi
+          done
+          # Exit with error if DNS resolution fails after retries
+          if ! nslookup ${{ env.VAULT_ADDR }}; then
+            echo "DNS resolution failed after multiple attempts"
+            exit 1
+          fi
+        shell: bash
+
+      - name: Check DNS Resolution for ArgoCD
         if: inputs.argocd_enabled
         run: |
           for i in {1..10}; do
@@ -144,21 +163,17 @@ jobs:
               ${{ inputs.vault_secrets }}
 
       - name: ArgoCD Secrets
-        uses: Wandalen/wretry.action@v3
+        uses: hashicorp/vault-action@v3
         if: inputs.argocd_enabled && inputs.vault_enabled
         id: argocd_secrets
         with:
-          action: hashicorp/vault-action@v3
-          attempt_limit: 15
-          attempt_delay: 500
-          with: |
-            url: ${{ env.VAULT_ADDR }}
-            role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-            method: jwt
-            path: "github-actions"
-            exportToken: true
-            secrets: |
-              secret/data/github-actions-common/argocd apikey | ARGOCD_AUTH_TOKEN;
+          url: ${{ env.VAULT_ADDR }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          exportToken: true
+          secrets: |
+            secret/data/github-actions-common/argocd apikey | ARGOCD_AUTH_TOKEN;
 
       - uses: hashicorp/setup-terraform@v3
 
