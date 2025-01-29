@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.42.0](https://github.com/ZeroGachis/.github/compare/v4.41.2...v4.42.0) (2025-01-29)
+
+
+### Features
+
+* **terraform:** load argocd token from vault ([6881d49](https://github.com/ZeroGachis/.github/commit/6881d49c28a9a384f2f29f2a4c11c3696830ec5a))
+
 ## [4.41.2](https://github.com/ZeroGachis/.github/compare/v4.41.1...v4.41.2) (2025-01-29)
 
 
