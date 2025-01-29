@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.41.1](https://github.com/ZeroGachis/.github/compare/v4.41.0...v4.41.1) (2025-01-29)
+
+
+### Bug Fixes
+
+* **argocd:** missing vault id token permission in sync workflow ([b1ad76e](https://github.com/ZeroGachis/.github/commit/b1ad76eb4ffc2919e12b7d4f2b626c85fdb41d6f))
+
 ## [4.41.0](https://github.com/ZeroGachis/.github/compare/v4.40.8...v4.41.0) (2025-01-28)
 
 
