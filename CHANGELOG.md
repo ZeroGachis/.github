@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.44.1](https://github.com/ZeroGachis/.github/compare/v4.44.0...v4.44.1) (2025-01-31)
+
+
+### Miscellaneous Chores
+
+* **argocd:** add timeout ([7961edc](https://github.com/ZeroGachis/.github/commit/7961edc4d1cd8fe76952ec472a878b92074742c3))
+
 ## [4.44.0](https://github.com/ZeroGachis/.github/compare/v4.43.4...v4.44.0) (2025-01-31)
 
 
