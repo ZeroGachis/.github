@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.43.1](https://github.com/ZeroGachis/.github/compare/v4.43.0...v4.43.1) (2025-01-31)
+
+
+### Miscellaneous Chores
+
+* **dns_issue:** increase dns resolution test to avoid issue ([ecff659](https://github.com/ZeroGachis/.github/commit/ecff6591a3d99af4d2ab8a81b6863924f0a1d7e4))
+
 ## [4.43.0](https://github.com/ZeroGachis/.github/compare/v4.42.0...v4.43.0) (2025-01-31)
 
 
