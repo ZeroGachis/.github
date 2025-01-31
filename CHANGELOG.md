@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.43.4](https://github.com/ZeroGachis/.github/compare/v4.43.3...v4.43.4) (2025-01-31)
+
+
+### Bug Fixes
+
+* **k8s:** add echo of kube enabled var ([877200a](https://github.com/ZeroGachis/.github/commit/877200a5505bb4f3850f2b1d55640b4cc1c53fba))
+
 ## [4.43.3](https://github.com/ZeroGachis/.github/compare/v4.43.2...v4.43.3) (2025-01-31)
 
 
