@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.43.0](https://github.com/ZeroGachis/.github/compare/v4.42.0...v4.43.0) (2025-01-31)
+
+
+### Features
+
+* **kube:** create two new workflow to handle Kube in some environment but not other ([4cca859](https://github.com/ZeroGachis/.github/commit/4cca8598815ba431f1f8d9d7eb833d4722e1ae10))
+
 ## [4.42.0](https://github.com/ZeroGachis/.github/compare/v4.41.2...v4.42.0) (2025-01-29)
 
 
