@@ -82,6 +82,7 @@ jobs:
       - name: Check if kube is enabled
         run: |
           echo "Check if Kube is enabled"
+          echo "kube_enabled: ${{ vars.kube_enabled }}"
   terraform:
     needs: check-kube-enabled
     if: ${{ needs.check-kube-enabled.outputs.kube_enabled == 'true' }}
