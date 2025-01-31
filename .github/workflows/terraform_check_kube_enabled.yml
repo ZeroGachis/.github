@@ -71,16 +71,13 @@ on:
       argocd_enabled:
         type: boolean
         default: false
-      kube_enabled:
-        type: string
-        default: "false"
 
 jobs:
   check-kube-enabled:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment_name }}
     outputs:
-      kube_enabled: ${{ inputs.kube_enabled || vars.kube_enabled }}
+      kube_enabled: ${{ vars.kube_enabled }}
     steps:
       - name: Check if kube is enabled
         run: |

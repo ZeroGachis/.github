@@ -9,16 +9,13 @@ on:
       app_name:
         required: true
         type: string
-      kube_enabled:
-        required: false
-        type: string
 
 jobs:
   check-kube-enabled:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment_name }}
     outputs:
-      kube_enabled: ${{ inputs.kube_enabled || vars.kube_enabled }}
+      kube_enabled: ${{ vars.kube_enabled }}
     steps:
       - name: Check if kube is enabled
         run: |
