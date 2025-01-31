@@ -21,6 +21,7 @@ on:
 
 jobs:
   argocd_sync:
+    timeout-minutes: 15
     permissions:
       id-token: write
       contents: read
