@@ -1,0 +1,33 @@
+name: ArgoCD Sync with check
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        required: true
+        type: string
+      app_name:
+        required: true
+        type: string
+      kube_enabled:
+        required: false
+        type: string
+
+jobs:
+  check-kube-enabled:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+    outputs:
+      kube_enabled: ${{ inputs.kube_enabled || vars.kube_enabled }}
+    steps:
+      - name: Check if kube is enabled
+        run: |
+          echo "Check if Kube is enabled"
+  argocd-sync:
+    needs: [check-kube-enabled]
+    if: ${{ needs.check-kube-enabled.outputs.kube_enabled == 'true' }}
+    uses: ZeroGachis/.github/.github/workflows/argocd_sync.yml@v4
+    with:
+      app_name: ${{ inputs.app_name }}
+      environment_name: ${{ github.ref_name }}
+    secrets: inherit
