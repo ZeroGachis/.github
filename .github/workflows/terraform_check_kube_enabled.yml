@@ -1,0 +1,103 @@
+name: Terraform with check Kube enabled
+
+on:
+  workflow_call:
+    inputs:
+      workdir:
+        required: false
+        type: string
+        default: ${{ github.workspace }}
+      terraform_check_only:
+        required: false
+        type: boolean
+        default: true
+      environment_name:
+        required: false
+        type: string
+      terraform_workspace:
+        required: false
+        type: string
+        default: ${{ github.ref_name }}
+      terraform_parallelism:
+        required: false
+        type: string
+        default: "10"
+      terraform_backend:
+        required: false
+        type: string
+      terraform_args:
+        required: false
+        type: string
+      aws_account_id:
+        required: false
+        type: string
+      aws_region:
+        required: false
+        type: string
+      aws_github_role_name:
+        required: false
+        type: string
+        default: "github_oidc_readonly"
+      vault_enabled:
+        required: false
+        type: boolean
+        default: true
+      vault_url:
+        required: false
+        type: string
+      vault_github_actions_role:
+        required: false
+        type: string
+      vault_secrets:
+        required: false
+        type: string
+      aws_secrets:
+        required: false
+        type: string
+      aws_additional_secrets:
+        required: false
+        type: string
+      tailscale_enabled:
+        required: false
+        type: boolean
+        default: true
+      infracost_enabled:
+        required: false
+        type: boolean
+        default: true
+      infracost_terraform_workspace:
+        type: string
+        default: "develop,main"
+      argocd_enabled:
+        type: boolean
+        default: false
+      kube_enabled:
+        type: string
+        default: "false"
+
+jobs:
+  check-kube-enabled:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+    outputs:
+      kube_enabled: ${{ inputs.kube_enabled || vars.kube_enabled }}
+    steps:
+      - name: Check if kube is enabled
+        run: |
+          echo "Check if Kube is enabled"
+  terraform:
+    needs: check-kube-enabled
+    if: ${{ needs.check-kube-enabled.outputs.kube_enabled == 'true' }}
+    uses: ZeroGachis/.github/.github/workflows/terraform.yml@v4
+    with:
+      workdir: ${{ inputs.workdir }}
+      terraform_workspace: ${{ inputs.terraform_workspace }}
+      environment_name: ${{ inputs.environment_name }}
+      terraform_args: ${{ inputs.terraform_args }}
+      argocd_enabled: ${{ inputs.argocd_enabled }}
+      aws_github_role_name: ${{ inputs.aws_github_role_name }}
+      terraform_check_only: ${{ inputs.terraform_check_only }}
+      vault_enabled: ${{ inputs.vault_enabled }}
+      tailscale_enabled: ${{ inputs.tailscale_enabled }}
+      infracost_terraform_workspace: ${{ inputs.infracost_terraform_workspace }}
+    secrets: inherit
