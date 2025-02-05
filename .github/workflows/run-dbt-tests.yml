@@ -1,0 +1,144 @@
+name: "Run-Dbt-Tests"
+
+on:
+  workflow_call:
+    inputs:
+      aws_credentials_enabled:
+        required: false
+        type: boolean
+        default: false
+      snowflake_dbt_schema:
+        required: false
+        type: string
+        default: dbt_ci
+      project_dir:
+        required: false
+        type: string
+        default: smartway
+      aws_github_role_name:
+        required: false
+        type: string
+        default: "github_oidc_readonly"
+      aws_account_id:
+        required: false
+        type: string
+      environment_name:
+        required: false
+        type: string
+      python_version:
+        required: false
+        type: string
+        default: "3.12"
+
+jobs:
+  run-docker:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment_name }}
+    env:
+      AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
+      BACKUP_BUCKET_NAME: ${{ vars.BACKUP_BUCKET_NAME }}
+      DBT_TYPE: snowflake
+      SNOWFLAKE_DBT_SCHEMA: ${{ inputs.snowflake_dbt_schema }}
+      DBT_PROFILES_DIR: ${{ github.workspace }}/smartway
+      VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
+      REPO_NAME: ${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}
+    permissions:
+      contents: read
+      id-token: write
+      issues: read
+      pull-requests: write
+      packages: read
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          version: ${{ vars.TAILSCALE_VERSION }}
+
+      - name: Sleep for 10 seconds
+        run: sleep 10s
+        shell: bash
+
+      - name: Import Secrets
+        uses: Wandalen/wretry.action@v3
+        id: secrets
+        with:
+          action: hashicorp/vault-action@v3
+          attempt_limit: 10
+          attempt_delay: 150
+          with: |
+            url: ${{ env.VAULT_URL }}
+            role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+            method: jwt
+            path: "github-actions"
+            exportToken: true
+            secrets: |
+              secret/data/snowflake/ecs SNOWFLAKE_ACCOUNT | SNOWFLAKE_ACCOUNT ;
+              secret/data/dbt/github-actions SNOWFLAKE_DBNAME | SNOWFLAKE_DBNAME ;
+              secret/data/dbt/github-actions SNOWFLAKE_DBT_PRIVATE_KEY | SNOWFLAKE_DBT_PRIVATE_KEY ;
+              secret/data/dbt/github-actions SNOWFLAKE_DBT_PRIVATE_KEY_PASSWORD | SNOWFLAKE_DBT_PRIVATE_KEY_PASSWORD ;
+              secret/data/dbt/github-actions SNOWFLAKE_DBT_ROLE | SNOWFLAKE_DBT_ROLE ;
+              secret/data/dbt/github-actions SNOWFLAKE_DBT_USERNAME | SNOWFLAKE_DBT_USERNAME ;
+              secret/data/dbt/github-actions SNOWFLAKE_DBT_WAREHOUSE | SNOWFLAKE_DBT_WAREHOUSE ;
+              github/token/read_repositories token | GH_ORG_READ_REPO_TOKEN ;
+
+      - name: Configure AWS Credentials
+        if: ${{ inputs.aws_credentials_enabled }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
+          aws-region: eu-west-1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python_version }}
+  
+      - name: Poetry install
+        run: |
+          pip install poetry
+          poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi --no-root
+
+      - name: Run dbt-checkpoint
+        run: |
+          pre-commit run --config .pre-commit-config-action.yaml
+
+      - name: Checkout dbt scripts
+        uses: actions/checkout@v4
+        with:
+          repository: ZeroGachis/.github
+          sparse-checkout: |
+            scripts
+          path: github_workflow
+          token: ${{ env.GH_ORG_READ_REPO_TOKEN }}
+
+      - name: Run dbt tests
+        run: |
+          ${{ github.workspace }}/github_workflow/scripts/run-dbt-tests.sh ${{ inputs.environment_name }} ${{ env.BACKUP_BUCKET_NAME }} ${{ github.workspace }} ${{ inputs.project_dir }} ${{ github.event.repository.name }}
+
+
+      - name: Package Manifest
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+        run: |
+          dbt compile --profile ${{ github.ref_name }} --project-dir smartway
+          tar -czf smartway/target/valid_manifest.json.tar.gz -C smartway/target manifest.json
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+        with:
+          name: manifest-${{ github.run_id }}
+          path: ./smartway/target/valid_manifest.json.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Drop snowflake test schema
+        if: always()
+        run: |
+          dbt run-operation --project-dir smartway drop_schema --args '{schema_name: ${{ inputs.snowflake_dbt_schema }}}'
