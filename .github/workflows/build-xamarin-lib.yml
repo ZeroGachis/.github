@@ -13,11 +13,11 @@ on:
         required: true
         type: string
       aws-github-role-name:
-        required: true
+        default: "github_oidc_readonly"
         type: string
       aws-account-id:
-        required: true
         type: string
+        default: "007065811408"
       aws-ecr-region:
         required: false
         type: string
