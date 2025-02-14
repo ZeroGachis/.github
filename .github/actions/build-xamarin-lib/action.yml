@@ -1,0 +1,32 @@
+name: Build libs
+
+on:
+  workflow_call:
+    inputs:
+      lib-version:
+        required: true
+        type: string
+      lib-name:
+        required: true
+        type: string
+      configuration:
+        required: true
+        type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Modify AssemblyInfo files
+      uses: mingjun97/file-regex-replace@v1
+      with:
+        regex: 'AssemblyVersion\("(.*?)"\)'
+        replacement: 'AssemblyVersion("${{ inputs.lib-version }}")'
+        include: "AssemblyInfo.cs"
+
+    - name: Restore packages
+      shell: bash
+      run: nuget restore ${{ inputs.lib-name }}.sln
+
+    - name: "Build ${{ inputs.lib-name }}"
+      shell: bash
+      run: msbuild ${{ inputs.lib-name }}.sln -p:Configuration=${{ inputs.configuration }} -clp:Summary
