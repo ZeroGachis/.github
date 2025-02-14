@@ -1,0 +1,85 @@
+name: Build & Publish libs
+
+on:
+  workflow_call:
+    inputs:
+      lib-version:
+        required: true
+        type: string
+      lib-name:
+        required: true
+        type: string
+      configuration:
+        required: true
+        type: string
+      unit-test:
+        required: true
+        type: boolean
+      aws-github-role-name:
+        required: true
+        type: string
+      aws-account-id:
+        required: true
+        type: string
+      aws-ecr-region:
+        required: false
+        type: string
+        default: eu-west-3
+
+jobs:
+  ecr-auth:
+    name: Authenticate to Amazon ECR
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ inputs.aws-account-id }}:role/${{ inputs.aws-github-role-name }}
+          aws-region: ${{ inputs.aws-ecr-region }}
+          mask-aws-account-id: "false"
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: "false"
+          # needed to pass creds to following steps
+          # https://github.com/actions/runner/issues/1498#issuecomment-1066836352
+    outputs:
+      registry: ${{ steps.login-ecr.outputs.registry }}
+      docker_username: ${{ steps.login-ecr.outputs[format('docker_username_{0}_dkr_ecr_eu_west_3_amazonaws_com', inputs.aws-account-id)] }}
+      docker_password: ${{ steps.login-ecr.outputs[format('docker_password_{0}_dkr_ecr_eu_west_3_amazonaws_com', inputs.aws-account-id)] }}
+
+  build:
+    name: Build Libs
+    needs: ecr-auth
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.ecr-auth.outputs.registry }}/xamarin-android:latest
+      credentials:
+        username: ${{ needs.ecr-auth.outputs.docker_username }}
+        password: ${{ needs.ecr-auth.outputs.docker_password }}
+      options: --user root
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build "${{ inputs.lib-name }}"
+        uses: ./.github/actions/build-xamarin-lib
+        with:
+          lib-version: ${{ inputs.lib-version }}
+          lib-name: ${{ inputs.lib-name }}
+          configuration: ${{ inputs.configuration }}
+
+      - name: Test "${{ inputs.lib-name }}"
+        uses: ./.github/actions/test-xamarin-lib
+        with:
+          lib-name: ${{ inputs.lib-name }}
+          configuration: ${{ inputs.configuration }}
+
+      - name: "Publish ${{ inputs.lib-name }}"
+        uses: ./.github/actions/publish-xamarin-lib
+        with:
+          lib-name: ${{ inputs.lib-name }}
