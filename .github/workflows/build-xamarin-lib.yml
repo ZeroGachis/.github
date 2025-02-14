@@ -12,9 +12,6 @@ on:
       configuration:
         required: true
         type: string
-      unit-test:
-        required: true
-        type: boolean
       aws-github-role-name:
         required: true
         type: string
@@ -25,6 +22,9 @@ on:
         required: false
         type: string
         default: eu-west-3
+      publish:
+        required: true
+        type: boolean
 
 jobs:
   ecr-auth:
@@ -80,6 +80,7 @@ jobs:
           configuration: ${{ inputs.configuration }}
 
       - name: "Publish ${{ inputs.lib-name }}"
+        if: ${{ inputs.publish }}
         uses: ./.github/actions/publish-xamarin-lib
         with:
           lib-name: ${{ inputs.lib-name }}
