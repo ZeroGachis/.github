@@ -53,6 +53,10 @@ on:
         required: false
         type: string
         default: error
+      security_scan_failed_build:
+        required: false
+        type: boolean
+        default: false
     outputs:
       image-url:
         value: ${{ jobs.build-image.outputs.image-url }}
@@ -191,3 +195,12 @@ jobs:
             AWS_SESSION_TOKEN=${{ steps.aws.outputs.aws-session-token }}
             CODEARTIFACT_DOMAIN=smartway
             CODEARTIFACT_DOMAINOWNER=007065811408
+
+      - name: Anchore Security Scan
+        id: anchore-scan
+        uses: anchore/scan-action@v6
+        with:
+          image: ${{ steps.meta.outputs.tags }}
+          fail-build: ${{ inputs.security_scan_failed_build }}
+          severity-cutoff: critical
+          output-format: table
