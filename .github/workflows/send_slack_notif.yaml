@@ -1,0 +1,81 @@
+name: Send Slack Notification
+
+on:
+  workflow_call:
+    inputs:
+      payload:
+        required: true
+        type: string
+      environment_name:
+        required: true
+        type: string
+      vault_url:
+        required: false
+        type: string
+      vault_github_actions_role:
+        required: false
+        type: string
+
+jobs:
+  send-slack-notif:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: ${{ inputs.environment_name }}
+    env:
+      VAULT_ADDR: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
+    steps:
+      - name: Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          version: ${{ vars.TAILSCALE_VERSION }}
+
+      - name: Check DNS Resolution for Vault
+        run: |
+          extract_domain() {
+            echo "$1" | awk -F[/:] '{print $4}'
+          }
+
+          VAULT_DOMAIN=$(extract_domain "${{ env.VAULT_ADDR }}")
+
+          for i in {1..100}; do
+            if nslookup $VAULT_DOMAIN; then
+              echo "DNS resolution successful"
+              break
+            else
+              echo "DNS resolution failed, retrying in 10 seconds..."
+              sleep 15
+            fi
+          done
+          # Exit with error if DNS resolution fails after retries
+          if ! nslookup $VAULT_DOMAIN; then
+            echo "DNS resolution failed after multiple attempts"
+            exit 1
+          fi
+        shell: bash
+
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v3
+        with:
+          url: ${{ env.VAULT_ADDR }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          exportToken: true
+          secrets: |
+            secret/data/github-actions-common/slack SLACK_BOT_TOKEN | SLACK_BOT_TOKEN ;
+
+      - name: Send Slack Notification
+        uses: slackapi/slack-github-action@v2
+        with:
+          method: chat.postMessage
+          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+          payload: |
+            ${{ inputs.payload }}
