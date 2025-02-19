@@ -1,0 +1,32 @@
+name: Send Slack Message
+
+on:
+  workflow_call:
+    inputs:
+      channel_id:
+        required: true
+        type: string
+      message:
+        required: true
+        type: string
+      environment_name:
+        required: true
+        type: string
+      vault_url:
+        required: false
+        type: string
+      vault_github_actions_role:
+        required: false
+        type: string
+
+jobs:
+  send-slack-message:
+    uses: ZeroGachis/.github/.github/workflows/send_slack_notif.yaml@feature/pla-2052
+    with:
+      environment_name: ${{ inputs.environment_name }}
+      vault_url: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      vault_github_actions_role: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
+      payload: |
+        channel: ${{ inputs.channel_id }}
+        text: "${{ inputs.message }}"
+    secrets: inherit
