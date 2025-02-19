@@ -22,7 +22,7 @@ on:
 
 jobs:
   send-slack-gha-status:
-    uses: ZeroGachis/.github/.github/workflows/send_slack_notif.yaml@feature/pla-2052
+    uses: ZeroGachis/.github/.github/workflows/send_slack_notif.yaml@v4
     with:
       environment_name: ${{ inputs.environment_name }}
       vault_url: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
