@@ -15,6 +15,9 @@ on:
       configuration:
         required: true
         type: string
+      nuget-api-key:
+        required: true
+        type: string
 
 runs:
   using: "composite"
@@ -25,4 +28,4 @@ runs:
 
     - name: "Publish ${{ inputs.lib-name }}"
       shell: bash
-      run: nuget push *.nupkg -ApiKey ${{ secrets.NUGET_API_KEY }} -Source https://api.nuget.org/v3/index.json -SkipDuplicate
+      run: nuget push *.nupkg -ApiKey ${{ inputs.nuget-api-key }} -Source https://api.nuget.org/v3/index.json -SkipDuplicate

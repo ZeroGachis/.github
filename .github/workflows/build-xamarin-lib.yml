@@ -66,8 +66,8 @@ jobs:
         password: ${{ needs.ecr-auth.outputs.docker_password }}
       options: --user root
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout called repo
+        uses: dariocurr/checkout-called@main
 
       - name: Build "${{ inputs.lib-name }}"
         uses: ZeroGachis/.github/.github/actions/build-xamarin-lib@feature/pla-2064
@@ -89,3 +89,4 @@ jobs:
           lib-name: ${{ inputs.lib-name }}
           spec-file: ${{ inputs.spec-file }}
           configuration: ${{ inputs.configuration }}
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
