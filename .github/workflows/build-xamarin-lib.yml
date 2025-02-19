@@ -9,6 +9,9 @@ on:
       lib-name:
         required: true
         type: string
+      spec-file:
+        required: true
+        type: string
       configuration:
         required: true
         type: string
@@ -84,3 +87,5 @@ jobs:
         uses: ./.github/actions/publish-xamarin-lib
         with:
           lib-name: ${{ inputs.lib-name }}
+          spec-file: ${{ inputs.spec-file }}
+          configuration: ${{ inputs.configuration }}

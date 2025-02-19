@@ -9,19 +9,19 @@ on:
       lib-name:
         required: true
         type: string
+      spec-file:
+        required: true
+        type: string
       configuration:
         required: true
         type: string
-      unit-test:
-        required: true
-        type: boolean
 
 runs:
   using: "composite"
   steps:
     - name: "Package ${{ inputs.lib-name }}"
       shell: bash
-      run: nuget pack ${{ inputs.lib-name }}.nuspec -properties Configuration=${{ inputs.configuration }} -Version ${{ inputs.lib-version }}
+      run: nuget pack ${{ inputs.spec-file }} -properties Configuration=${{ inputs.configuration }} -Version ${{ inputs.lib-version }}
 
     - name: "Publish ${{ inputs.lib-name }}"
       shell: bash
