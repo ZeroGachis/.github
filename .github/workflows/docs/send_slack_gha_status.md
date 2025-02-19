@@ -98,9 +98,5 @@ The message includes:
 - Environment name
 - Deployment status (with emoji indicators)
 - Triggering user
-- Links to workflow run and commit
+- Links to workflow run
 - Color-coded status (green for success, red for failure)
-
-![Status message example](resources/slack_message_example.png)
-
-_Example of a deployment status message in Slack_
