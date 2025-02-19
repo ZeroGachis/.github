@@ -92,22 +92,43 @@ jobs:
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
 
-      - name: Import Secrets
-        uses: Wandalen/wretry.action@v3
+      - name: Check DNS Resolution for Vault
         if: inputs.vault_enabled
+        run: |
+          extract_domain() {
+            echo "$1" | awk -F[/:] '{print $4}'
+          }
+
+          VAULT_DOMAIN=$(extract_domain "${{ env.VAULT_ADDR }}")
+
+          for i in {1..100}; do
+            if nslookup $VAULT_DOMAIN; then
+              echo "DNS resolution successful"
+              break
+            else
+              echo "DNS resolution failed, retrying in 10 seconds..."
+              sleep 15
+            fi
+          done
+          # Exit with error if DNS resolution fails after retries
+          if ! nslookup $VAULT_DOMAIN; then
+            echo "DNS resolution failed after multiple attempts"
+            exit 1
+          fi
+        shell: bash
+
+      - name: Import Secrets
         id: secrets
+        if: inputs.vault_enabled
+        uses: hashicorp/vault-action@v3
         with:
-          action: hashicorp/vault-action@v3
-          attempt_limit: 15
-          attempt_delay: 500
-          with: |
-            url: ${{ env.VAULT_ADDR }}
-            role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-            method: jwt
-            path: "github-actions"
-            exportToken: true
-            secrets: |
-              ${{ inputs.vault_secrets }}
+          url: ${{ env.VAULT_ADDR }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          exportToken: true
+          secrets: |
+            ${{ inputs.vault_secrets }}
 
       - name: Checkout
         if: ${{ inputs.checkout_enabled }}
