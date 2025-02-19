@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.45.0](https://github.com/ZeroGachis/.github/compare/v4.44.1...v4.45.0) (2025-02-19)
+
+
+### Features
+
+* add image security scan to build image docker ci ([ab0409c](https://github.com/ZeroGachis/.github/commit/ab0409c74a9b1336a9e71d20de784325f66a9e1e))
+* init hadolint in Build Image workflow ([02acdb4](https://github.com/ZeroGachis/.github/commit/02acdb42c92018b1743a4b408abce700fd0de53c))
+* init slack notif workflow ([40b6ac6](https://github.com/ZeroGachis/.github/commit/40b6ac62fec905c8de114d84d742445baa3eece4))
+* **slack:** add a workflow about github status ([8894111](https://github.com/ZeroGachis/.github/commit/88941110208bb9d5b8e738ea96c5b59213608322))
+
+
+### Bug Fixes
+
+* **dns-resolution:** replace retry step with check dns resolution before starting ([f18ebba](https://github.com/ZeroGachis/.github/commit/f18ebba9f231baaa04f6e5c2deb4228759399735))
+* organization readme image ([0283919](https://github.com/ZeroGachis/.github/commit/0283919a11083155015bea37ea2c6bd30b9557b8))
+* slack notif versionning issue ([49b84af](https://github.com/ZeroGachis/.github/commit/49b84afcafba3859588d7f7403b1793c9459317f))
+
+
+### Documentation
+
+* add documentation for all workflows ([ae4fda6](https://github.com/ZeroGachis/.github/commit/ae4fda69473136efa240e931d836c8652b7f61d2))
+
+
+### Miscellaneous Chores
+
+* delete useless workflows ([8f1b85d](https://github.com/ZeroGachis/.github/commit/8f1b85dfe1c181974327c94927b87a5dc03f3fd8))
+* **dns:** improve dns resolution for build-image workflow ([6b93a95](https://github.com/ZeroGachis/.github/commit/6b93a95c68271c20b9b027f40cd9bcacd82f8fa8))
+* **docs:** delete useless information on slack gha status doc ([2d4ed9f](https://github.com/ZeroGachis/.github/commit/2d4ed9fa5280d9b079c919a5afc3bdbccc40a9aa))
+
 ## [4.44.1](https://github.com/ZeroGachis/.github/compare/v4.44.0...v4.44.1) (2025-01-31)
 
 
