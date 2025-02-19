@@ -151,22 +151,18 @@ jobs:
         shell: bash
 
       - name: Import Secrets
-        uses: Wandalen/wretry.action@v3
         if: inputs.vault_enabled
         id: secrets
+        uses: hashicorp/vault-action@v3
         with:
-          action: hashicorp/vault-action@v3
-          attempt_limit: 15
-          attempt_delay: 500
-          with: |
-            url: ${{ env.VAULT_ADDR }}
-            role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-            method: jwt
-            path: "github-actions"
-            exportToken: true
-            secrets: |
-              github/token/read_repositories token | GITHUB_READ_REPO_TOKEN;
-              ${{ inputs.vault_secrets }}
+          url: ${{ env.VAULT_ADDR }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          exportToken: true
+          secrets: |
+            github/token/read_repositories token | GITHUB_READ_REPO_TOKEN;
+            ${{ inputs.vault_secrets }}
 
       - name: ArgoCD Secrets
         uses: hashicorp/vault-action@v3

@@ -60,22 +60,43 @@ jobs:
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
 
+      - name: Check DNS Resolution for Vault
+        if: inputs.publish_to_public_registry
+        shell: bash
+        run: |
+          extract_domain() {
+            echo "$1" | awk -F[/:] '{print $4}'
+          }
+
+          VAULT_DOMAIN=$(extract_domain "${{ env.VAULT_ADDR }}")
+
+          for i in {1..100}; do
+            if nslookup $VAULT_DOMAIN; then
+              echo "DNS resolution successful"
+              break
+            else
+              echo "DNS resolution failed, retrying in 10 seconds..."
+              sleep 15
+            fi
+          done
+          # Exit with error if DNS resolution fails after retries
+          if ! nslookup $VAULT_DOMAIN; then
+            echo "DNS resolution failed after multiple attempts"
+            exit 1
+          fi
+
       - name: Import Secrets
         if: inputs.publish_to_public_registry
-        uses: Wandalen/wretry.action@v3
         id: secrets
+        uses: hashicorp/vault-action@v3
         with:
-          action: hashicorp/vault-action@v3
-          attempt_limit: 15
-          attempt_delay: 500
-          with: |
-            url: ${{ env.VAULT_ADDR }}
-            role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-            method: jwt
-            path: "github-actions"
-            exportToken: true
-            secrets: |
-              secret/data/github-actions-common/nuget-registry api-key | NUGET_PUBLIC_API_KEY;
+          url: ${{ env.VAULT_ADDR }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          exportToken: true
+          secrets: |
+            secret/data/github-actions-common/nuget-registry api-key | NUGET_PUBLIC_API_KEY;
 
       - name: Login to CodeArtifact
         run: "aws codeartifact login --tool dotnet --repository ${CODEARTIFACT_REPOSITORY} --domain ${CODEARTIFACT_DOMAIN} --domain-owner ${AWS_ACCOUNT_ID} --region ${AWS_REGION}"
@@ -100,5 +121,5 @@ jobs:
         run: >-
           dotnet nuget push ${{ inputs.package_to_publish }}.${{ inputs.package_version }}/${{ inputs.package_to_publish }}.${{ inputs.package_version }}.nupkg
           --source https://api.nuget.org/v3/index.json
-          --api-key ${{ fromJSON( steps.secrets.outputs.outputs ).NUGET_PUBLIC_API_KEY }}
+          --api-key ${{ steps.secrets.outputs.NUGET_PUBLIC_API_KEY }}
           --skip-duplicate
