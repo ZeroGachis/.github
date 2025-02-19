@@ -21,7 +21,7 @@ runs:
   steps:
     - name: "Package ${{ inputs.lib-name }}"
       shell: bash
-      run: nuget pack ${{ inputs.lib-name }}.nuspec
+      run: nuget pack ${{ inputs.lib-name }}.nuspec -properties Configuration=${{ inputs.configuration }} -Version ${{ inputs.lib-version }}
 
     - name: "Publish ${{ inputs.lib-name }}"
       shell: bash
