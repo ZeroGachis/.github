@@ -30,6 +30,8 @@ Below is the list of available templates and associated documentations:
 | Run Python | `.github/workflows/run-python.yml` | Executes Python scripts | [Documentation](.github/workflows/docs/run-python.md) |
 | Run Pytest | `.github/workflows/run-pytest.yml` | Runs Python tests | [Documentation](.github/workflows/docs/run-pytest.md) |
 | Send Slack Notification | `.github/workflows/send_slack_notif.yaml` | Sends Slack notifications | [Documentation](.github/workflows/docs/send-slack-notification.md) |
+| Send Slack Message | `.github/workflows/send_slack_message.yaml` | Sends Slack messages | [Documentation](.github/workflows/docs/send_slack_message.md) |
+| Send Slack Github Actions Status | `.github/workflows/send_slack_gha_status.yaml` | Sends Slack notifications | [Documentation](.github/workflows/docs/send_slack_gha_status.md) |
 | Terraform | `.github/workflows/terraform.yml` | Manages Terraform infrastructure | [Documentation](.github/workflows/docs/terraform.md) |
 | Terraform Check Kube Enabled | `.github/workflows/terraform_check_kube_enabled.yml` | Checks Kubernetes enablement for Terraform | [Documentation](.github/workflows/docs/terraform-check-kube-enabled.md) |
 

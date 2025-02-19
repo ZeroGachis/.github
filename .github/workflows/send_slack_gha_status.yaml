@@ -1,0 +1,81 @@
+name: Send Slack Github Status
+
+on:
+  workflow_call:
+    inputs:
+      channel_id:
+        required: true
+        type: string
+      environment_name:
+        required: true
+        type: string
+      vault_url:
+        required: false
+        type: string
+      vault_github_actions_role:
+        required: false
+        type: string
+      status:
+        required: false
+        type: string
+        default: "success"
+
+jobs:
+  send-slack-gha-status:
+    uses: ZeroGachis/.github/.github/workflows/send_slack_notif.yaml@feature/pla-2052
+    with:
+      environment_name: ${{ inputs.environment_name }}
+      vault_url: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      vault_github_actions_role: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
+      payload: |
+        {
+          "channel": ${{ inputs.channel_id }},
+          "attachments": [
+            {
+              "color": "${{ inputs.status == 'success' && '2eb67d' || 'e01e5a' }}",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "${{ inputs.status == 'success' && '✅' || '🔥' }} Deployment Status: ${{ github.event.repository.name }}",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Repository:* <${{ github.event.repository.html_url }}|${{ github.event.repository.name }}>\n*Environment:* `${{ inputs.environment_name }}`"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Status:*\n${{ inputs.status == 'success' && '✅ Success' || '🔥 Failure' }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Triggered by:*\n👤 `${{ github.actor }}`"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Workflow:*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run ↗️>"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+    secrets: inherit
