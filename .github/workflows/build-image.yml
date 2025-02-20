@@ -204,3 +204,4 @@ jobs:
           fail-build: ${{ inputs.security_scan_failed_build }}
           severity-cutoff: critical
           output-format: table
+          cache-db: true
