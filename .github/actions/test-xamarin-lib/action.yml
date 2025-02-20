@@ -1,0 +1,28 @@
+name: Test libs
+
+on:
+  workflow_call:
+    inputs:
+      lib-name:
+        required: true
+        type: string
+      configuration:
+        required: true
+        type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Unit tests
+      id: unittests
+      continue-on-error: true
+      shell: bash
+      run: mono ~/.nuget/packages/xunit.runner.console/*/tools/net472/xunit.console.exe ./${{ inputs.lib-name }}.UnitTests/bin/${{ inputs.configuration }}/net461/${{ inputs.lib-name }}.UnitTests.dll -junit test-results.xml
+
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v5
+      if: always()
+      with:
+        report_paths: "test-results.xml"
+        comment: true
+        annotate_notice: true

@@ -10,6 +10,7 @@ Below is the list of available templates and associated documentations:
 | Android Format Version Code | `.github/workflows/android-format-version-code.yml` | Generates version code for Android applications | [Documentation](.github/workflows/docs/android-format-version-code.md) |
 | ArgoCD Sync | `.github/workflows/argocd_sync.yml` | Synchronizes applications with ArgoCD | [Documentation](.github/workflows/docs/argocd-sync.md) |
 | Build Image | `.github/workflows/build-image.yml` | Builds and validates Docker images | [Documentation](.github/workflows/docs/build-image.md) |
+| Build Xamarin Libs | `.github/workflows/build-xamarin-libs.yml` | Builds Xamarin libraries | [Documentation](.github/workflows/docs/build-xamarin-lib.md) |
 | Create APK Artifact | `.github/workflows/create-apk-artifact.yml` | Creates Android APK artifacts | [Documentation](.github/workflows/docs/create-apk-artifact.md) |
 | Create Go-To-Prod PR | `.github/workflows/create-gotoprod-pr.yml` | Creates production deployment pull requests | [Documentation](.github/workflows/docs/create-gotoprod-pr.md) |
 | Delete Docker Image | `.github/workflows/delete-docker-image.yml` | Deletes Docker images from registry | [Documentation](.github/workflows/docs/delete-docker-image.md) |
