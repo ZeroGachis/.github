@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.46.0](https://github.com/ZeroGachis/.github/compare/v4.45.3...v4.46.0) (2025-02-20)
+
+
+### Features
+
+* add annotation for tests reports ([7199e80](https://github.com/ZeroGachis/.github/commit/7199e8012a1faf46dc311fd422c16f52d84d6277))
+* add composite action for Xamarin build ([179e633](https://github.com/ZeroGachis/.github/commit/179e633c47fd79522d2f4e17e6d3bc8e3ed4ca74))
+* add general xamarin build workflow ([76750e1](https://github.com/ZeroGachis/.github/commit/76750e129c68940553423a6638abcf430f7e2388))
+* change test report action ([6234a90](https://github.com/ZeroGachis/.github/commit/6234a903f851e7e4915ccfd79e252415041d940f))
+
+
+### Bug Fixes
+
+* correct bad Github implementation ([d958f4b](https://github.com/ZeroGachis/.github/commit/d958f4b873c3ec98e3f044ef2ed4c8ee587a23fe))
+* correct path for composite action ([6191310](https://github.com/ZeroGachis/.github/commit/619131040bddc616a5c3c871f5b848a973d30167))
+* disable workflow files for Release Please ([6e229ae](https://github.com/ZeroGachis/.github/commit/6e229ae7605176ac628de6d00396393aaad5d1bc))
+* replace checkout action ([e877e03](https://github.com/ZeroGachis/.github/commit/e877e03a49cf1c803b05dd913363a1788b8ae636))
+
+
+### Miscellaneous Chores
+
+* add condition for publish step ([ca854ad](https://github.com/ZeroGachis/.github/commit/ca854adaba1b360d689fe2d5e88f1c765c9552f3))
+* add option to nuget pack cmd ([fe81d12](https://github.com/ZeroGachis/.github/commit/fe81d129aa24e7ffd40a184bb92e73bfea742ed9))
+* defautl var for convenience ([916e5c7](https://github.com/ZeroGachis/.github/commit/916e5c75d22bc91984eb65db1e873acda8f5be20))
+* update input params ([edec69b](https://github.com/ZeroGachis/.github/commit/edec69b8753a46a92e124d273503a961243fadfa))
+* update release please to watch yml file ([a59367a](https://github.com/ZeroGachis/.github/commit/a59367a59f71b326e6bb9c342d7e40be3851a0cb))
+* update test reporter version ([f358230](https://github.com/ZeroGachis/.github/commit/f358230b86bd9cce4fb4f314e6701d5a3220a5a7))
+
 ## [4.45.3](https://github.com/ZeroGachis/.github/compare/v4.45.2...v4.45.3) (2025-02-20)
 
 
