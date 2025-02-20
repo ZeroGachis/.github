@@ -51,5 +51,22 @@
       ]
     }
   },
+  "extra-files": [
+    {
+      "type": "yaml",
+      "path": ".github/workflows/build-xamarin-lib.yml",
+      "jsonpath": "jobs.build.steps[1].uses"
+    },
+    {
+      "type": "yaml",
+      "path": ".github/workflows/build-xamarin-lib.yml",
+      "jsonpath": "jobs.build.steps[2].uses"
+    },
+    {
+      "type": "yaml",
+      "path": ".github/workflows/build-xamarin-lib.yml",
+      "jsonpath": "jobs.build.steps[3].uses"
+    }
+  ],
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
 }

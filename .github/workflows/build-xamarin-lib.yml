@@ -74,21 +74,21 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build "${{ inputs.lib-name }}"
-        uses: ZeroGachis/.github/.github/actions/build-xamarin-lib@feature/pla-2064
+        uses: ZeroGachis/.github/.github/actions/build-xamarin-lib@v4
         with:
           lib-version: ${{ inputs.lib-version }}
           lib-name: ${{ inputs.lib-name }}
           configuration: ${{ inputs.configuration }}
 
       - name: Test "${{ inputs.lib-name }}"
-        uses: ZeroGachis/.github/.github/actions/test-xamarin-lib@feature/pla-2064
+        uses: ZeroGachis/.github/.github/actions/test-xamarin-lib@v4
         with:
           lib-name: ${{ inputs.lib-name }}
           configuration: ${{ inputs.configuration }}
 
       - name: "Publish ${{ inputs.lib-name }}"
         if: ${{ inputs.publish }}
-        uses: ZeroGachis/.github/.github/actions/publish-xamarin-lib@feature/pla-2064
+        uses: ZeroGachis/.github/.github/actions/publish-xamarin-lib@v4
         with:
           lib-name: ${{ inputs.lib-name }}
           spec-file: ${{ inputs.spec-file }}
