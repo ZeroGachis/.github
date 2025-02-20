@@ -59,6 +59,10 @@ jobs:
     name: Build Libs
     needs: ecr-auth
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: read
     container:
       image: ${{ needs.ecr-auth.outputs.registry }}/xamarin-android:latest
       credentials:
