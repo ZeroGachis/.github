@@ -1,4 +1,4 @@
-name: Publish libs
+name: Test libs
 
 on:
   workflow_call:
@@ -20,7 +20,7 @@ runs:
       run: mono ~/.nuget/packages/xunit.runner.console/*/tools/net472/xunit.console.exe ./${{ inputs.lib-name }}.UnitTests/bin/${{ inputs.configuration }}/net461/${{ inputs.lib-name }}.UnitTests.dll -junit test-results.xml
 
     - name: Test Report - Unit Tests
-      uses: dorny/test-reporter@v1.5.0
+      uses: dorny/test-reporter@v1.9.1
       if: success() || (failure() && steps.unittests.outcome == 'failure')
       with:
         name: ${{ inputs.lib-name }} Unit Tests Results
