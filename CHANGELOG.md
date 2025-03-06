@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.47.1](https://github.com/ZeroGachis/.github/compare/v4.47.0...v4.47.1) (2025-03-06)
+
+
+### Bug Fixes
+
+* **ci:** docker metadatas tags version ([5cf71e1](https://github.com/ZeroGachis/.github/commit/5cf71e1d51bad0f3db5ef04a58dee481022d80e5))
+
 ## [4.47.0](https://github.com/ZeroGachis/.github/compare/v4.46.0...v4.47.0) (2025-03-06)
 
 
