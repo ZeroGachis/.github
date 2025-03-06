@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.47.0](https://github.com/ZeroGachis/.github/compare/v4.46.0...v4.47.0) (2025-03-06)
+
+
+### Features
+
+* add GitHub Actions workflow for building and pushing Docker images to DockerHub ([af3ca88](https://github.com/ZeroGachis/.github/commit/af3ca88bba054508217a98e3232bb70222e85e8c))
+* add GitHub Actions workflow for building and pushing Docker images to DockerHub ([6619358](https://github.com/ZeroGachis/.github/commit/66193587394a8a93db359107e79c23eae784a940))
+
 ## [4.46.0](https://github.com/ZeroGachis/.github/compare/v4.45.3...v4.46.0) (2025-02-20)
 
 
