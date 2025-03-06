@@ -29,13 +29,32 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Prepare tags for Docker meta
+        id: tags
+        env:
+          # When release please is skipped, these values will be empty
+          is_release: ${{ inputs.tag != '' }}
+          version: ${{ inputs.tag }}
+        run: |
+          tags=""
+          if [[ "$is_release" = 'true' ]]; then
+            tags="type=semver,pattern={{version}},value=$version
+          type=semver,pattern={{major}},value=$version
+          type=semver,pattern={{major}}.{{minor}},value=$version"
+          else
+            type=sha,format=short
+          fi
+          {
+            echo 'tags<<EOF'
+            echo "$tags"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ vars.DOCKERHUB_USERNAME }}/${{ inputs.dockerhub_repository_name }}
-          tags: |
-             ${{ inputs.tag != '' && format('type=semver,pattern={{version}},value={0}', inputs.tag) || format('type=sha,format=short') }}
+          tags: ${{ steps.tags.outputs.tags }}
           labels: |
             org.opencontainers.image.source=github.com/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
