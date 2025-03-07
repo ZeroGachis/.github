@@ -203,5 +203,8 @@ jobs:
           image: ${{ steps.meta.outputs.tags }}
           fail-build: ${{ inputs.security_scan_failed_build }}
           severity-cutoff: critical
-          output-format: table
           cache-db: true
+      - name: Upload vulnerability report
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
