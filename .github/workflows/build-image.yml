@@ -61,6 +61,10 @@ on:
         required: false
         type: boolean
         default: false
+      security_scan_output_format:
+        required: false
+        type: string
+        default: table
     outputs:
       image-url:
         value: ${{ jobs.build-image.outputs.image-url }}
@@ -208,5 +212,5 @@ jobs:
           image: ${{ steps.meta.outputs.tags }}
           fail-build: ${{ inputs.security_scan_failed_build }}
           severity-cutoff: critical
-          output-format: table
+          output-format: ${{ inputs.security_scan_output_format }}
           cache-db: true
