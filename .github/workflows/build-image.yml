@@ -214,3 +214,14 @@ jobs:
           severity-cutoff: critical
           output-format: ${{ inputs.security_scan_output_format }}
           cache-db: true
+
+      - name: Upload Sarif result
+        if: inputs.security_scan_output_format == 'sarif'
+        uses: github/codeql-action/upload-sarif@v3
+        needs: anchore-scan
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: ${{ steps.anchore-scan.outputs.sarif }}
+          # Optional category for the results
+          # Used to differentiate multiple results for one commit
+          category: Anchore
