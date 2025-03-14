@@ -9,6 +9,10 @@ on:
       dockerfile_context:
         required: true
         type: string
+      file:
+        required: false
+        type: string
+        default: Dockerfile
       regitry_url:
         required: true
         type: string
@@ -185,6 +189,7 @@ jobs:
         with:
           push: true
           context: ${{ inputs.dockerfile_context }}
+          file: ${{ inputs.dockerfile_context }}/${{ inputs.file }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
