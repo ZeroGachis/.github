@@ -224,3 +224,15 @@ jobs:
           # Optional category for the results
           # Used to differentiate multiple results for one commit
           category: Anchore
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.30.0
+        with:
+          image-ref: ${{ steps.meta.outputs.tags }}
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+        env:
+          TRIVY_DISABLE_VEX_NOTICE: true
