@@ -226,7 +226,7 @@ jobs:
           category: Anchore
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: ${{ steps.meta.outputs.tags }}
           format: 'table'
