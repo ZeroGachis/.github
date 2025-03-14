@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.48.0](https://github.com/ZeroGachis/.github/compare/v4.47.1...v4.48.0) (2025-03-14)
+
+
+### Features
+
+* add new parameter file ([46c8327](https://github.com/ZeroGachis/.github/commit/46c8327d80b6dd41de1055a43ebf2cc4ba31fd64))
+* add new parameter file ([cf89939](https://github.com/ZeroGachis/.github/commit/cf8993967a06dc8d2b6f46f99105764c1c3c5661))
+* make output of security scan configurable ([2b9e9b4](https://github.com/ZeroGachis/.github/commit/2b9e9b4c481a608ff437d8e966cc0a3bffb832af))
+* make output of security scan configurable ([968912e](https://github.com/ZeroGachis/.github/commit/968912ea032077f96ed36353e28bd88126e55f32))
+
+
+### Miscellaneous Chores
+
+* add the upload step here ([1cb6482](https://github.com/ZeroGachis/.github/commit/1cb6482d68c5e9567745132ee387a61b37288c96))
+* add the upload step here ([45d2dc9](https://github.com/ZeroGachis/.github/commit/45d2dc9376f76d162f0a3d317a8482fdc53061fd))
+
 ## [4.47.1](https://github.com/ZeroGachis/.github/compare/v4.47.0...v4.47.1) (2025-03-06)
 
 
