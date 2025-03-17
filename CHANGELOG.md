@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.50.0](https://github.com/ZeroGachis/.github/compare/v4.49.0...v4.50.0) (2025-03-17)
+
+
+### Features
+
+* add high vuln level ([e6271f0](https://github.com/ZeroGachis/.github/commit/e6271f0b047bd110d1eaf3012b3b6d3c00f2bd0c))
+* do not exit on error if vuln found (this is obviously temporary) ([899b27b](https://github.com/ZeroGachis/.github/commit/899b27b1d70529caeca215a7a7aaf0448e4bfefa))
+* new trivy scanner ([19ea2d8](https://github.com/ZeroGachis/.github/commit/19ea2d8071cf450b5ccf0020466efcd941d8ec71))
+* new trivy scanner ([68364fd](https://github.com/ZeroGachis/.github/commit/68364fddc395355299ec471bd462008b4cf83987))
+* remove grype ([2f6b78b](https://github.com/ZeroGachis/.github/commit/2f6b78b8b048aa12cd7a4a4a073dabc9b3761b9e))
+* use 0.3.0 thanks to [@nicolasbriere1](https://github.com/nicolasbriere1) ([00ffe9c](https://github.com/ZeroGachis/.github/commit/00ffe9c36c3a8f49fb45fba16b5012b57cffb721))
+
+
+### Miscellaneous Chores
+
+* activate sarif upload ([754d176](https://github.com/ZeroGachis/.github/commit/754d17684cba7cf59b7bf42f535846f6511836bd))
+
 ## [4.49.0](https://github.com/ZeroGachis/.github/compare/v4.48.2...v4.49.0) (2025-03-14)
 
 
