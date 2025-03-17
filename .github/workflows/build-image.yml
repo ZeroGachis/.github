@@ -65,6 +65,10 @@ on:
         required: false
         type: string
         default: table
+      trivy_exit-code:
+        required: false
+        type: string
+        default: '0'
     outputs:
       image-url:
         value: ${{ jobs.build-image.outputs.image-url }}
@@ -215,7 +219,7 @@ jobs:
           output-format: ${{ inputs.security_scan_output_format }}
           cache-db: true
 
-      - name: Upload Sarif result
+      - name: Upload Anchore Sarif result
         if: inputs.security_scan_output_format == 'sarif'
         uses: github/codeql-action/upload-sarif@v3
         with:
@@ -226,13 +230,41 @@ jobs:
           category: Anchore
 
       - name: Run Trivy vulnerability scanner
+        if: inputs.security_scan_output_format != 'sarif'
+        id: trivy-scan
         uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: ${{ steps.meta.outputs.tags }}
           format: 'table'
-          exit-code: '0'
+          exit-code: ${{ inputs.trivy_exit-code }}
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
         env:
           TRIVY_DISABLE_VEX_NOTICE: true
+
+      - name: Run Trivy vulnerability scanner sarif
+        if: inputs.security_scan_output_format == 'sarif'
+        id: trivy-scan-sarif
+        uses: aquasecurity/trivy-action@0.30.0
+        with:
+          image-ref: ${{ steps.meta.outputs.tags }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          exit-code: ${{ inputs.trivy_exit-code }}
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+        env:
+          TRIVY_DISABLE_VEX_NOTICE: true
+
+
+      - name: Upload Trivy Sarif result
+        if: inputs.security_scan_output_format == 'sarif'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: 'trivy-results.sarif'
+          # Optional category for the results
+          # Used to differentiate multiple results for one commit
+          category: Trivy
