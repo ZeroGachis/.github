@@ -69,6 +69,10 @@ on:
         required: false
         type: string
         default: '0'
+      trivy_severity:
+        required: false
+        type: string
+        default: 'CRITICAL,HIGH'
     outputs:
       image-url:
         value: ${{ jobs.build-image.outputs.image-url }}
@@ -219,7 +223,7 @@ jobs:
           exit-code: ${{ inputs.trivy_exit-code }}
           ignore-unfixed: true
           vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+          severity: ${{ inputs.trivy_severity }}
         env:
           TRIVY_DISABLE_VEX_NOTICE: true
 
@@ -234,7 +238,7 @@ jobs:
           exit-code: ${{ inputs.trivy_exit-code }}
           ignore-unfixed: true
           vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+          severity: ${{ inputs.trivy_severity }}
         env:
           TRIVY_DISABLE_VEX_NOTICE: true
 
