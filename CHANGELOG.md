@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.51.1](https://github.com/ZeroGachis/.github/compare/v4.51.0...v4.51.1) (2025-03-18)
+
+
+### Miscellaneous Chores
+
+* add permissions that are needed with CODEQL ([9c46c59](https://github.com/ZeroGachis/.github/commit/9c46c599ce39ca72f6401f01346870d3d8b0d98b))
+* add permissions that are needed with CODEQL ([b794ae4](https://github.com/ZeroGachis/.github/commit/b794ae44fee797e920d2c2fad3f11a575a0419d3))
+
 ## [4.51.0](https://github.com/ZeroGachis/.github/compare/v4.50.0...v4.51.0) (2025-03-18)
 
 
