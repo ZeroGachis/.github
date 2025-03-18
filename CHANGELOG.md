@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.51.0](https://github.com/ZeroGachis/.github/compare/v4.50.0...v4.51.0) (2025-03-18)
+
+
+### Features
+
+* add a parameter for trivy severity ([8b96745](https://github.com/ZeroGachis/.github/commit/8b9674545447956539e6f8c10dadcf3293485a58))
+* add a parameter for trivy severity ([339cb61](https://github.com/ZeroGachis/.github/commit/339cb61dc873ad70e4b6c5a16340b83e20d7c643))
+
 ## [4.50.0](https://github.com/ZeroGachis/.github/compare/v4.49.0...v4.50.0) (2025-03-17)
 
 
