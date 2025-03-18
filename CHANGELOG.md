@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Continuous Integration
 
 * add perms to upload sarif ([c5ca00f](https://github.com/ZeroGachis/.github/commit/c5ca00f1bd07ab6476976b895c2324189b2bc8ba))
-* add perms to upload sarif ([d149020](https://github.com/ZeroGachis/.github/commit/d1490203b76c6a157bb9a94d067e7d8684cfd385))
 
 ## [4.51.1](https://github.com/ZeroGachis/.github/compare/v4.51.0...v4.51.1) (2025-03-18)
 
@@ -19,7 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Miscellaneous Chores
 
 * add permissions that are needed with CODEQL ([9c46c59](https://github.com/ZeroGachis/.github/commit/9c46c599ce39ca72f6401f01346870d3d8b0d98b))
-* add permissions that are needed with CODEQL ([b794ae4](https://github.com/ZeroGachis/.github/commit/b794ae44fee797e920d2c2fad3f11a575a0419d3))
 
 ## [4.51.0](https://github.com/ZeroGachis/.github/compare/v4.50.0...v4.51.0) (2025-03-18)
 
@@ -27,7 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Features
 
 * add a parameter for trivy severity ([8b96745](https://github.com/ZeroGachis/.github/commit/8b9674545447956539e6f8c10dadcf3293485a58))
-* add a parameter for trivy severity ([339cb61](https://github.com/ZeroGachis/.github/commit/339cb61dc873ad70e4b6c5a16340b83e20d7c643))
 
 ## [4.50.0](https://github.com/ZeroGachis/.github/compare/v4.49.0...v4.50.0) (2025-03-17)
 
@@ -37,7 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * add high vuln level ([e6271f0](https://github.com/ZeroGachis/.github/commit/e6271f0b047bd110d1eaf3012b3b6d3c00f2bd0c))
 * do not exit on error if vuln found (this is obviously temporary) ([899b27b](https://github.com/ZeroGachis/.github/commit/899b27b1d70529caeca215a7a7aaf0448e4bfefa))
 * new trivy scanner ([19ea2d8](https://github.com/ZeroGachis/.github/commit/19ea2d8071cf450b5ccf0020466efcd941d8ec71))
-* new trivy scanner ([68364fd](https://github.com/ZeroGachis/.github/commit/68364fddc395355299ec471bd462008b4cf83987))
 * remove grype ([2f6b78b](https://github.com/ZeroGachis/.github/commit/2f6b78b8b048aa12cd7a4a4a073dabc9b3761b9e))
 * use 0.3.0 thanks to [@nicolasbriere1](https://github.com/nicolasbriere1) ([00ffe9c](https://github.com/ZeroGachis/.github/commit/00ffe9c36c3a8f49fb45fba16b5012b57cffb721))
 
