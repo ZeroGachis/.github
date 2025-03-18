@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.51.2](https://github.com/ZeroGachis/.github/compare/v4.51.1...v4.51.2) (2025-03-18)
+
+
+### Continuous Integration
+
+* add perms to upload sarif ([c5ca00f](https://github.com/ZeroGachis/.github/commit/c5ca00f1bd07ab6476976b895c2324189b2bc8ba))
+* add perms to upload sarif ([d149020](https://github.com/ZeroGachis/.github/commit/d1490203b76c6a157bb9a94d067e7d8684cfd385))
+
 ## [4.51.1](https://github.com/ZeroGachis/.github/compare/v4.51.0...v4.51.1) (2025-03-18)
 
 
