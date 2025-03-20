@@ -52,11 +52,15 @@ on:
       environment_name:
         required: false
         type: string
-      hadolint_filter_mode:
+      linter_tool:
+        required: false
+        type: string
+        default: hadolint
+      linter_filter_mode:
         required: false
         type: string
         default: added
-      hadolint_fail_level:
+      linter_fail_level:
         required: false
         type: string
         default: error
@@ -186,15 +190,33 @@ jobs:
           flavor: |
             latest=false
 
+      - name: Manual Trivy Setup
+        uses: aquasecurity/setup-trivy@v0.2.2
+        with:
+          cache: true
+          version: v0.60.0
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Lint Dockerfile
+      - name: Lint Dockerfile - Trivy
+        if: inputs.linter_tool == 'trivy'
+        uses: reviewdog/action-trivy@v1
+        with:
+          trivy_command: config
+          trivy_target: ${{ inputs.dockerfile_context }}/${{ inputs.file }}
+          reporter: github-pr-check
+          filter_mode: ${{ inputs.linter_filter_mode }}
+          fail_level: ${{ inputs.linter_fail_level }}
+          level: info
+
+      - name: Lint Dockerfile - Hadolint
+        if: inputs.linter_tool == 'hadolint'
         uses: reviewdog/action-hadolint@v1
         with:
           reporter: github-pr-check
-          filter_mode: ${{ inputs.hadolint_filter_mode }}
-          fail_level: ${{ inputs.hadolint_fail_level }}
+          filter_mode: ${{ inputs.linter_filter_mode }}
+          fail_level: ${{ inputs.linter_fail_level }}
           hadolint_ignore: DL3002 DL3008
 
       - name: Build
@@ -229,6 +251,7 @@ jobs:
         id: trivy-scan
         uses: aquasecurity/trivy-action@0.30.0
         with:
+          skip-setup-trivy: true
           image-ref: ${{ steps.meta.outputs.tags }}
           format: "table"
           exit-code: ${{ inputs.trivy_exit-code }}
