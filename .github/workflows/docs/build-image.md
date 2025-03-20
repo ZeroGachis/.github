@@ -25,22 +25,25 @@ jobs:
 
 ### Optional Inputs
 
-| Input                        | Default                               | Description                                             |
-| ---------------------------- | ------------------------------------- | ------------------------------------------------------- |
-| `working-directory`          | -                                     | The working directory for the workflow                  |
-| `regitry_username`           | -                                     | Registry username for authentication                    |
-| `regitry_password`           | -                                     | Registry password for authentication                    |
-| `image_name`                 | `${{ github.event.repository.name }}` | Name of the Docker image                                |
-| `image_target`               | -                                     | Target stage to build in multi-stage Dockerfile         |
-| `build-args`                 | -                                     | Build arguments passed to Docker build                  |
-| `tailscale_enabled`          | `true`                                | Enable Tailscale VPN connection                         |
-| `vault_enabled`              | `true`                                | Enable HashiCorp Vault integration                      |
-| `vault_url`                  | -                                     | Vault server URL                                        |
-| `vault_github_actions_role`  | -                                     | Vault role for GitHub Actions                           |
-| `environment_name`           | -                                     | GitHub Environment name                                 |
-| `hadolint_filter_mode`       | `added`                               | Filter mode for Hadolint (added/diff/file/nofilter)     |
-| `hadolint_fail_level`        | `error`                               | Minimum severity to fail the build (error/warning/info) |
-| `security_scan_failed_build` | `false`                               | Fail build on security scan issues                      |
+| Input                         | Default                               | Description                                             |
+| ----------------------------- | ------------------------------------- | ------------------------------------------------------- |
+| `working-directory`           | -                                     | The working directory for the workflow                  |
+| `regitry_username`            | -                                     | Registry username for authentication                    |
+| `regitry_password`            | -                                     | Registry password for authentication                    |
+| `image_name`                  | `${{ github.event.repository.name }}` | Name of the Docker image                                |
+| `image_target`                | -                                     | Target stage to build in multi-stage Dockerfile         |
+| `build-args`                  | -                                     | Build arguments passed to Docker build                  |
+| `tailscale_enabled`           | `true`                                | Enable Tailscale VPN connection                         |
+| `vault_enabled`               | `true`                                | Enable HashiCorp Vault integration                      |
+| `vault_url`                   | -                                     | Vault server URL                                        |
+| `vault_github_actions_role`   | -                                     | Vault role for GitHub Actions                           |
+| `environment_name`            | -                                     | GitHub Environment name                                 |
+| `hadolint_filter_mode`        | `added`                               | Filter mode for Hadolint (added/diff/file/nofilter)     |
+| `hadolint_fail_level`         | `error`                               | Minimum severity to fail the build (error/warning/info) |
+| `security_scan_failed_build`  | `false`                               | Fail build on security scan issues                      |
+| `security_scan_output_format` | `table`                               | The format used by the security scanner (table or sarif |
+| `trivy_exit-code`             | `0`                                   | Job exits in error if an issue is found, 0 no, 1 yes    |
+| `trivy_severity`              | `CRITICAL,HIGH`                       | Which security levels are scanned                       |
 
 ## Outputs
 
@@ -85,5 +88,8 @@ jobs:
       vault_enabled: false
       tailscale_enabled: false
       regitry_url: ghcr.io
+      security_scan_output_format: sarif
+      trivy_exit-code: 1
+      trivy_severity: 'CRITICAL,HIGH,MEDIUM'
     secrets: inherit
 ```
