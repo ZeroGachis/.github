@@ -32,6 +32,9 @@ on:
       build-args:
         required: false
         type: string
+      build-secrets:
+        required: false
+        type: string
       tailscale_enabled:
         required: false
         type: boolean
@@ -49,11 +52,15 @@ on:
       environment_name:
         required: false
         type: string
-      hadolint_filter_mode:
+      linter_tool:
+        required: false
+        type: string
+        default: hadolint
+      linter_filter_mode:
         required: false
         type: string
         default: added
-      hadolint_fail_level:
+      linter_fail_level:
         required: false
         type: string
         default: error
@@ -68,11 +75,11 @@ on:
       trivy_exit-code:
         required: false
         type: string
-        default: '0'
+        default: "0"
       trivy_severity:
         required: false
         type: string
-        default: 'CRITICAL,HIGH'
+        default: "CRITICAL,HIGH"
     outputs:
       image-url:
         value: ${{ jobs.build-image.outputs.image-url }}
@@ -183,15 +190,33 @@ jobs:
           flavor: |
             latest=false
 
+      - name: Manual Trivy Setup
+        uses: aquasecurity/setup-trivy@v0.2.2
+        with:
+          cache: true
+          version: v0.60.0
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Lint Dockerfile
+      - name: Lint Dockerfile - Trivy
+        if: inputs.linter_tool == 'trivy'
+        uses: reviewdog/action-trivy@v1
+        with:
+          trivy_command: config
+          trivy_target: ${{ inputs.dockerfile_context }}/${{ inputs.file }}
+          reporter: github-pr-check
+          filter_mode: ${{ inputs.linter_filter_mode }}
+          fail_level: ${{ inputs.linter_fail_level }}
+          level: info
+
+      - name: Lint Dockerfile - Hadolint
+        if: inputs.linter_tool == 'hadolint'
         uses: reviewdog/action-hadolint@v1
         with:
           reporter: github-pr-check
-          filter_mode: ${{ inputs.hadolint_filter_mode }}
-          fail_level: ${{ inputs.hadolint_fail_level }}
+          filter_mode: ${{ inputs.linter_filter_mode }}
+          fail_level: ${{ inputs.linter_fail_level }}
           hadolint_ignore: DL3002 DL3008
 
       - name: Build
@@ -214,17 +239,24 @@ jobs:
             AWS_SESSION_TOKEN=${{ steps.aws.outputs.aws-session-token }}
             CODEARTIFACT_DOMAIN=smartway
             CODEARTIFACT_DOMAINOWNER=007065811408
+          secrets: |
+            ${{ inputs.build-secrets }}
+            aws-key-id=${{ steps.aws.outputs.aws-access-key-id }}
+            aws-secret-key=${{ steps.aws.outputs.aws-secret-access-key }}
+            aws-session-token=${{ steps.aws.outputs.aws-session-token }}
+            github-token=${{ inputs.vault_enabled && steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }}
 
       - name: Run Trivy vulnerability scanner
         if: inputs.security_scan_output_format != 'sarif'
         id: trivy-scan
         uses: aquasecurity/trivy-action@0.30.0
         with:
+          skip-setup-trivy: true
           image-ref: ${{ steps.meta.outputs.tags }}
-          format: 'table'
+          format: "table"
           exit-code: ${{ inputs.trivy_exit-code }}
           ignore-unfixed: true
-          vuln-type: 'os,library'
+          vuln-type: "os,library"
           severity: ${{ inputs.trivy_severity }}
         env:
           TRIVY_DISABLE_VEX_NOTICE: true
@@ -235,22 +267,21 @@ jobs:
         uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: ${{ steps.meta.outputs.tags }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+          format: "sarif"
+          output: "trivy-results.sarif"
           exit-code: ${{ inputs.trivy_exit-code }}
           ignore-unfixed: true
-          vuln-type: 'os,library'
+          vuln-type: "os,library"
           severity: ${{ inputs.trivy_severity }}
         env:
           TRIVY_DISABLE_VEX_NOTICE: true
-
 
       - name: Upload Trivy Sarif result
         if: inputs.security_scan_output_format == 'sarif'
         uses: github/codeql-action/upload-sarif@v3
         with:
           # Path to SARIF file relative to the root of the repository
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: "trivy-results.sarif"
           # Optional category for the results
           # Used to differentiate multiple results for one commit
           category: Trivy
