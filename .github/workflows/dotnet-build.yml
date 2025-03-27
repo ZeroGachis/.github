@@ -6,7 +6,8 @@ on:
       dotnet_version:
         required: false
         type: string
-        default: "8.0.x"
+        default: |
+          8.0.x
         description: "The dotnet version to use"
       solution_name:
         required: true
