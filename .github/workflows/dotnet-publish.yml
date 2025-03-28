@@ -100,6 +100,10 @@ jobs:
 
       - name: Login to CodeArtifact
         run: "aws codeartifact login --tool dotnet --repository ${CODEARTIFACT_REPOSITORY} --domain ${CODEARTIFACT_DOMAIN} --domain-owner ${AWS_ACCOUNT_ID} --region ${AWS_REGION}"
+      - uses: nuget/setup-nuget@v2
+        with:
+          nuget-api-key: ${{ steps.secrets.outputs.NUGET_PUBLIC_API_KEY }}
+          nuget-version: latest
 
       - name: Download NuGet package
         run: >-
@@ -121,5 +125,4 @@ jobs:
         run: >-
           dotnet nuget push ${{ inputs.package_to_publish }}.${{ inputs.package_version }}/${{ inputs.package_to_publish }}.${{ inputs.package_version }}.nupkg
           --source https://api.nuget.org/v3/index.json
-          --api-key ${{ steps.secrets.outputs.NUGET_PUBLIC_API_KEY }}
           --skip-duplicate
