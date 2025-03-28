@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.53.0](https://github.com/ZeroGachis/.github/compare/v4.52.0...v4.53.0) (2025-03-28)
+
+
+### Features
+
+* **workflow:** add NuGet setup step for package publishing ([1fe8960](https://github.com/ZeroGachis/.github/commit/1fe8960271b038708dfac820dbb97d88a90a6f40))
+* **workflow:** add NuGet setup step for package publishing ([2b2f7ae](https://github.com/ZeroGachis/.github/commit/2b2f7aedb1a1a9e10f460b69b90d0a929929d187))
+
 ## [4.52.0](https://github.com/ZeroGachis/.github/compare/v4.51.2...v4.52.0) (2025-03-20)
 
 
