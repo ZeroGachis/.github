@@ -23,7 +23,7 @@ on:
         default: main
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       id-token: write
       packages: read
@@ -36,6 +36,15 @@ jobs:
       CODEARTIFACT_DOMAIN: smartway
       CODEARTIFACT_REPOSITORY: nuget-release
     steps:
+      - name: Login to Github Packages
+        run: >-
+          nuget sources add
+          -Name github
+          -Source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+          -Username ${{ github.actor }}
+          -Password ${{ secrets.GITHUB_TOKEN }}
+          -StorePasswordInClearText
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -92,21 +101,14 @@ jobs:
       - name: Login to CodeArtifact
         run: "aws codeartifact login --tool dotnet --repository ${CODEARTIFACT_REPOSITORY} --domain ${CODEARTIFACT_DOMAIN} --domain-owner ${AWS_ACCOUNT_ID} --region ${AWS_REGION}"
 
-      - name: Login to Github Packages
-        run: >-
-          dotnet nuget add source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
-          --name github
-          --username ${{ github.actor }}
-          --password ${{ secrets.GITHUB_TOKEN }}
-          --store-password-in-clear-text
-
       - name: Download NuGet package
         run: >-
-          dotnet add package ${{ inputs.package_to_publish }} 
-          --version ${{ inputs.package_version }} 
-          --package-directory .
-          --source github
-          --no-restore
+          nuget install ${{ inputs.package_to_publish }} 
+          -Version ${{ inputs.package_version }} 
+          -PackageSaveMode nupkg
+          -DirectDownload
+          -DependencyVersion Ignore
+          -Source github
 
       - name: Publish package to AWS
         run: >-
@@ -119,5 +121,5 @@ jobs:
         run: >-
           dotnet nuget push ${{ inputs.package_to_publish }}.${{ inputs.package_version }}/${{ inputs.package_to_publish }}.${{ inputs.package_version }}.nupkg
           --source https://api.nuget.org/v3/index.json
-          --skip-duplicate
           --api-key ${{ steps.secrets.outputs.NUGET_PUBLIC_API_KEY }}
+          --skip-duplicate
