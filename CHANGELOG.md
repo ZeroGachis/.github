@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.53.1](https://github.com/ZeroGachis/.github/compare/v4.53.0...v4.53.1) (2025-03-31)
+
+
+### Bug Fixes
+
+* **workflow:** reorder GitHub Packages login step for clarity ([66bed4f](https://github.com/ZeroGachis/.github/commit/66bed4f592010894fa36ac79a803694a964797d7))
+* **workflow:** reorder GitHub Packages login step for clarity ([aa1dbde](https://github.com/ZeroGachis/.github/commit/aa1dbde3cc11babd01baa7f1a7c516409eb8f015))
+
 ## [4.53.0](https://github.com/ZeroGachis/.github/compare/v4.52.0...v4.53.0) (2025-03-28)
 
 
