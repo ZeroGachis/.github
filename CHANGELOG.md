@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.53.2](https://github.com/ZeroGachis/.github/compare/v4.53.1...v4.53.2) (2025-03-31)
+
+
+### Code Refactoring
+
+* **workflow:** update NuGet commands to use dotnet CLI for package management ([ced4dea](https://github.com/ZeroGachis/.github/commit/ced4deae0b3b96ed9e1435a79aece0a60147bcb0))
+* **workflow:** update NuGet commands to use dotnet CLI for package management ([ce99eb3](https://github.com/ZeroGachis/.github/commit/ce99eb3de35a371f29c93536ca033aa178c1ba44))
+
 ## [4.53.1](https://github.com/ZeroGachis/.github/compare/v4.53.0...v4.53.1) (2025-03-31)
 
 
