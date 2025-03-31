@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.53.3](https://github.com/ZeroGachis/.github/compare/v4.53.2...v4.53.3) (2025-03-31)
+
+
+### Miscellaneous Chores
+
+* **dotnet:** switch back publish workflow to ubuntu 22 ([18e6c25](https://github.com/ZeroGachis/.github/commit/18e6c25b4328e1b76de57e2ec025f201a87ad3d2))
+* **dotnet:** switch back publish workflow to ubuntu 22 ([6ac58fd](https://github.com/ZeroGachis/.github/commit/6ac58fdfa1deae795406247befb433cb24de2da2))
+
 ## [4.53.2](https://github.com/ZeroGachis/.github/compare/v4.53.1...v4.53.2) (2025-03-31)
 
 
