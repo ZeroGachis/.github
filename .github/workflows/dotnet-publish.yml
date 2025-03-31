@@ -36,15 +36,6 @@ jobs:
       CODEARTIFACT_DOMAIN: smartway
       CODEARTIFACT_REPOSITORY: nuget-release
     steps:
-      - name: Login to Github Packages
-        run: >-
-          nuget sources add
-          -Name github
-          -Source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
-          -Username ${{ github.actor }}
-          -Password ${{ secrets.GITHUB_TOKEN }}
-          -StorePasswordInClearText
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -104,6 +95,15 @@ jobs:
         with:
           nuget-api-key: ${{ steps.secrets.outputs.NUGET_PUBLIC_API_KEY }}
           nuget-version: latest
+
+      - name: Login to Github Packages
+        run: >-
+          nuget sources add
+          -Name github
+          -Source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+          -Username ${{ github.actor }}
+          -Password ${{ secrets.GITHUB_TOKEN }}
+          -StorePasswordInClearText
 
       - name: Download NuGet package
         run: >-
