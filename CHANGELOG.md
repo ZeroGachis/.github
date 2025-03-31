@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.53.4](https://github.com/ZeroGachis/.github/compare/v4.53.3...v4.53.4) (2025-03-31)
+
+
+### Miscellaneous Chores
+
+* **deps:** update dorny/test-reporter action to v2 ([4c751aa](https://github.com/ZeroGachis/.github/commit/4c751aa424327fd3390b9839eb8e3911d08853e7))
+
 ## [4.53.3](https://github.com/ZeroGachis/.github/compare/v4.53.2...v4.53.3) (2025-03-31)
 
 
