@@ -18,6 +18,10 @@ on:
       environment_name:
         required: false
         type: string
+      coverage_comment_enabled:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   run-pytest:
@@ -89,14 +93,14 @@ jobs:
       # https://docs.github.com/en/actions/sharing-automations/creating-actions/dockerfile-support-for-github-actions#workdir
       - name: Checkout
         uses: actions/checkout@v4
+        if: ${{ github.event_name == 'pull_request' && inputs.coverage_comment_enabled }}
       - name: Copy .coverage file
+        if: ${{ github.event_name == 'pull_request' && inputs.coverage_comment_enabled }}
         run: |
           cp ${{ inputs.workdir }}/.coverage ./.coverage
-
       - name: Coverage comment
         uses: py-cov-action/python-coverage-comment-action@v3
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && inputs.coverage_comment_enabled }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
-
