@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.54.0](https://github.com/ZeroGachis/.github/compare/v4.53.4...v4.54.0) (2025-04-08)
+
+
+### Features
+
+* Allow to disable code coverage comment in PR ([e2fe75a](https://github.com/ZeroGachis/.github/commit/e2fe75a830a38c411f9b0df2a4195ae0840759d8))
+
 ## [4.53.4](https://github.com/ZeroGachis/.github/compare/v4.53.3...v4.53.4) (2025-03-31)
 
 
