@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.55.0](https://github.com/ZeroGachis/.github/compare/v4.54.0...v4.55.0) (2025-04-11)
+
+
+### Features
+
+* active sarif by default ([68c5972](https://github.com/ZeroGachis/.github/commit/68c5972901334a64dc16b832beb73516e39849dd))
+* active sarif by default ([e975d3a](https://github.com/ZeroGachis/.github/commit/e975d3a21f0bb1c421e51557e5e8e8353af3e61c))
+
 ## [4.54.0](https://github.com/ZeroGachis/.github/compare/v4.53.4...v4.54.0) (2025-04-08)
 
 
