@@ -71,7 +71,7 @@ on:
       security_scan_output_format:
         required: false
         type: string
-        default: table
+        default: sarif
       trivy_exit-code:
         required: false
         type: string
