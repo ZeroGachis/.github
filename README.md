@@ -35,7 +35,7 @@ Below is the list of available templates and associated documentations:
 | Send Slack Github Actions Status | `.github/workflows/send_slack_gha_status.yaml` | Sends Slack notifications | [Documentation](.github/workflows/docs/send_slack_gha_status.md) |
 | Terraform | `.github/workflows/terraform.yml` | Manages Terraform infrastructure | [Documentation](.github/workflows/docs/terraform.md) |
 | Terraform Check Kube Enabled | `.github/workflows/terraform_check_kube_enabled.yml` | Checks Kubernetes enablement for Terraform | [Documentation](.github/workflows/docs/terraform-check-kube-enabled.md) |
-
+| Helm Testing | `.github/workflows/helm_testing.yaml` | Tests Helm charts | [Documentation](.github/workflows/docs/helm_testing.md) |
 Each workflow template has its own dedicated documentation page with detailed information about inputs, outputs, and usage examples.
 
 ## Release Management
