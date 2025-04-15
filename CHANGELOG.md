@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.56.0](https://github.com/ZeroGachis/.github/compare/v4.55.0...v4.56.0) (2025-04-15)
+
+
+### Features
+
+* add Helm testing workflow for chart validation ([a3cbc38](https://github.com/ZeroGachis/.github/commit/a3cbc3859dac2e388ed37d5c105311b4c0ec15cc))
+* add Helm testing workflow for chart validation ([3c3dcb6](https://github.com/ZeroGachis/.github/commit/3c3dcb6b2afaafb190d49886308ad3e305fe7cfe))
+
 ## [4.55.0](https://github.com/ZeroGachis/.github/compare/v4.54.0...v4.55.0) (2025-04-11)
 
 
