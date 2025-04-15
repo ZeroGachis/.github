@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.56.2](https://github.com/ZeroGachis/.github/compare/v4.56.1...v4.56.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* correct syntax for disabling version increment check in Helm testing workflow ([effde3c](https://github.com/ZeroGachis/.github/commit/effde3c3a4f881c0e039680b852869c9192988a0))
+
 ## [4.56.1](https://github.com/ZeroGachis/.github/compare/v4.56.0...v4.56.1) (2025-04-15)
 
 
