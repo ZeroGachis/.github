@@ -191,7 +191,7 @@ jobs:
             latest=false
 
       - name: Manual Trivy Setup
-        uses: aquasecurity/setup-trivy@v0.2.2
+        uses: aquasecurity/setup-trivy@v0.2.3
         with:
           cache: true
           version: v0.60.0
