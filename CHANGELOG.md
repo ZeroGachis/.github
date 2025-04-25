@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.57.0](https://github.com/ZeroGachis/.github/compare/v4.56.3...v4.57.0) (2025-04-25)
+
+
+### Features
+
+* **tailscale:** cache binary to avoid issue on downloading package ([b598871](https://github.com/ZeroGachis/.github/commit/b598871b51187635b8d1f93ac8a2a626f3993f23))
+
 ## [4.56.3](https://github.com/ZeroGachis/.github/compare/v4.56.2...v4.56.3) (2025-04-21)
 
 
