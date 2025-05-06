@@ -1,4 +1,4 @@
-name: 'Run Pytest'
+name: "Run Pytest"
 
 on:
   workflow_call:
@@ -25,14 +25,14 @@ on:
 
 jobs:
   run-pytest:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-large-latest
     permissions:
-        actions: write
-        checks: write
-        contents: write
-        id-token: write
-        packages: read
-        pull-requests: write
+      actions: write
+      checks: write
+      contents: write
+      id-token: write
+      packages: read
+      pull-requests: write
     environment:
       name: ${{ inputs.environment_name }}
     container:
@@ -49,7 +49,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
         ports:
-        - 5432:5432
+          - 5432:5432
     steps:
       - name: Run Pytest
         env:
@@ -66,17 +66,17 @@ jobs:
           path: reports/unit_tests_results.xml
           reporter: java-junit
           max-annotations: 0
-          list-tests: 'failed'
+          list-tests: "failed"
           working-directory: ${{ inputs.workdir }}
-      
+
       # HACK:
       # Github actions does not works well when WORKDIR is defined within a Docker image
       # which is our case most of the time.
       # To counter this we override the "working-directory" input from script steps (steps that 'run' a shell script)
       # but this does not work at all for steps that use custom action like dorny/test-reporter
       # or py-cov-action/python-coverage-comment-action .
-      # 
-      # dorny/test-reporter offers a workaround by exposing a working-directory input too, but 
+      #
+      # dorny/test-reporter offers a workaround by exposing a working-directory input too, but
       # py-cov-action/python-coverage-comment-action does not and the code is made so that
       # any of its path input MUST be within the current working directory: this means that this step does
       # dot see our code (which leaves in inputs.workdir) and so does not see the .coverage file either.
@@ -88,7 +88,7 @@ jobs:
       # I tried to implement this workaround directly within the py-cov-action/python-coverage-comment-action project
       # but as it also uses docker to run itself, things go crazy and I never manage to make something working
       # without refactoring the all codebase.
-      # 
+      #
       # See:
       # https://docs.github.com/en/actions/sharing-automations/creating-actions/dockerfile-support-for-github-actions#workdir
       - name: Checkout
