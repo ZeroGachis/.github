@@ -75,12 +75,19 @@ jobs:
               
               // Only request reviews if there are contributors
               if (uniqueContributors.length > 0) {
-                await github.rest.pulls.requestReviewers({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: prNumber,
-                  reviewers: uniqueContributors
-                });
+                try {
+                  await github.rest.pulls.requestReviewers({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: prNumber,
+                    reviewers: uniqueContributors
+                  });
+                } catch (error) {
+                  // Log the error but continue with the workflow
+                  console.log('Warning: Unable to assign all reviewers. Some users may not be collaborators.');
+                  console.log('Error details:', error.message);
+                  // Continue with the workflow - we still want their names in the PR
+                }
               }
               
               return uniqueContributors;
