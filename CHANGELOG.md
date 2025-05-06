@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.58.1](https://github.com/ZeroGachis/.github/compare/v4.58.0...v4.58.1) (2025-05-06)
+
+
+### Bug Fixes
+
+* **gotoprod:** handle errors when requesting PR reviewers ([c2a2a39](https://github.com/ZeroGachis/.github/commit/c2a2a3916aed125389a2d09345d3c9b7be88e040))
+
 ## [4.58.0](https://github.com/ZeroGachis/.github/compare/v4.57.0...v4.58.0) (2025-05-06)
 
 
