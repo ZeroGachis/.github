@@ -56,16 +56,33 @@ jobs:
                 repo: context.repo.repo,
                 pull_number: prNumber
               });
-              const contributors = commits.data
-                .map(commit => commit.author.login)
-                .filter(username => !username.includes('[bot]'));
-              const uniqueContributors = [...new Set(contributors)];
-              await github.rest.pulls.requestReviewers({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: prNumber,
-                reviewers: uniqueContributors
+              
+              // Collect both authors and committers
+              const contributors = [];
+              commits.data.forEach(commit => {
+                // Add author if available and not a bot
+                if (commit.author && commit.author.login && !commit.author.login.includes('[bot]')) {
+                  contributors.push(commit.author.login);
+                }
+                
+                // Add committer if available, different from author, and not a bot
+                if (commit.committer && commit.committer.login && !commit.committer.login.includes('[bot]')) {
+                  contributors.push(commit.committer.login);
+                }
               });
+              
+              const uniqueContributors = [...new Set(contributors)];
+              
+              // Only request reviews if there are contributors
+              if (uniqueContributors.length > 0) {
+                await github.rest.pulls.requestReviewers({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                  reviewers: uniqueContributors
+                });
+              }
+              
               return uniqueContributors;
             }
 
@@ -86,7 +103,9 @@ jobs:
                 `**Base**: \`${{ inputs.base }}\``,
                 '### :mag_right: Changes',
                 '### :busts_in_silhouette: Contributors',
-                '- ' + contributors.map(c => '@' + c).join('\n- ')
+                contributors.length > 0 
+                  ? '- ' + contributors.map(c => '@' + c).join('\n- ')
+                  : 'No human contributors identified'
               ];
 
               // Fetch list of changes (diffs)
