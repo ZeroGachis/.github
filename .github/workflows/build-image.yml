@@ -246,6 +246,7 @@ jobs:
             aws-secret-key=${{ steps.aws.outputs.aws-secret-access-key }}
             aws-session-token=${{ steps.aws.outputs.aws-session-token }}
             github-token=${{ inputs.vault_enabled && steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }}
+            GIT_AUTH_TOKEN=${{ inputs.vault_enabled && steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }}
 
       - name: Run Trivy vulnerability scanner
         if: inputs.security_scan_output_format != 'sarif'
