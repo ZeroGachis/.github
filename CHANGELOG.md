@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.59.0](https://github.com/ZeroGachis/.github/compare/v4.58.1...v4.59.0) (2025-05-12)
+
+
+### Features
+
+* add GIT_AUTh_TOKEN secret to ADD private repo in dockerfile ([1c52417](https://github.com/ZeroGachis/.github/commit/1c52417492a50b312953287ae0156ba155a168c1))
+* add GIT_AUTh_TOKEN secret to ADD private repo in dockerfile ([c6ca53e](https://github.com/ZeroGachis/.github/commit/c6ca53e812eb1212ec89d323b5a86576daf8eab1))
+
 ## [4.58.1](https://github.com/ZeroGachis/.github/compare/v4.58.0...v4.58.1) (2025-05-06)
 
 
