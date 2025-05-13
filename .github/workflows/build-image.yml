@@ -278,6 +278,9 @@ jobs:
         env:
           TRIVY_DISABLE_VEX_NOTICE: true
 
+
+      # https://github.com/aquasecurity/trivy/blob/main/docs/docs/configuration/others.md#exit-code
+      # No better way to do block only CRITICAL issues
       - name: Block critical issues
         id: trivy-scan-sarif
         uses: aquasecurity/trivy-action@0.30.0
