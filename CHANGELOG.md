@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.60.0](https://github.com/ZeroGachis/.github/compare/v4.59.0...v4.60.0) (2025-05-13)
+
+
+### Features
+
+* block critical issues ([23f7806](https://github.com/ZeroGachis/.github/commit/23f78061cdf20cb071877c343bf57196e4250526))
+* block critical issues ([a394490](https://github.com/ZeroGachis/.github/commit/a394490dcb0b4a33144106279478c56c6c4111ad))
+
+
+### Documentation
+
+* comment why we do 2 scans ([e60cc3f](https://github.com/ZeroGachis/.github/commit/e60cc3fd15eab03763bc79756ee95ebfd5046e4b))
+
 ## [4.59.0](https://github.com/ZeroGachis/.github/compare/v4.58.1...v4.59.0) (2025-05-12)
 
 
