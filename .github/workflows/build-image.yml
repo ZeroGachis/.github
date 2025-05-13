@@ -271,10 +271,10 @@ jobs:
           image-ref: ${{ steps.meta.outputs.tags }}
           format: "sarif"
           output: "trivy-results.sarif"
-          exit-code: ${{ inputs.trivy_exit-code }}
+          exit-code: 1
           ignore-unfixed: true
           vuln-type: "os,library"
-          severity: ${{ inputs.trivy_severity }}
+          severity: CRITICAL
         env:
           TRIVY_DISABLE_VEX_NOTICE: true
 
@@ -287,17 +287,3 @@ jobs:
           # Optional category for the results
           # Used to differentiate multiple results for one commit
           category: Trivy
-
-      # https://github.com/aquasecurity/trivy/blob/main/docs/docs/configuration/others.md#exit-code
-      # No better way to do block only CRITICAL issues
-      - name: Block critical issues test 4
-        id: trivy-block-critical
-        uses: aquasecurity/trivy-action@0.30.0
-        with:
-          image-ref: ${{ steps.meta.outputs.tags }}
-          exit-code: 1
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: CRITICAL
-        env:
-          TRIVY_DISABLE_VEX_NOTICE: true
