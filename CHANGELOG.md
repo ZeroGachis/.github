@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.60.2](https://github.com/ZeroGachis/.github/compare/v4.60.1...v4.60.2) (2025-05-13)
+
+
+### Bug Fixes
+
+* revert issue blocking ([797c198](https://github.com/ZeroGachis/.github/commit/797c1981c57705a8c7d8b1c7ce0c1791a5262555))
+* revert issue blocking ([b9fbe70](https://github.com/ZeroGachis/.github/commit/b9fbe70842c589fd83c3915540f86d08ad174c0c))
+
 ## [4.60.1](https://github.com/ZeroGachis/.github/compare/v4.60.0...v4.60.1) (2025-05-13)
 
 
