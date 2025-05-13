@@ -278,6 +278,21 @@ jobs:
         env:
           TRIVY_DISABLE_VEX_NOTICE: true
 
+
+      # https://github.com/aquasecurity/trivy/blob/main/docs/docs/configuration/others.md#exit-code
+      # No better way to do block only CRITICAL issues
+      - name: Block critical issues
+        id: trivy-scan-sarif
+        uses: aquasecurity/trivy-action@0.30.0
+        with:
+          image-ref: ${{ steps.meta.outputs.tags }}
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: CRITICAL
+        env:
+          TRIVY_DISABLE_VEX_NOTICE: true
+
       - name: Upload Trivy Sarif result
         if: inputs.security_scan_output_format == 'sarif'
         uses: github/codeql-action/upload-sarif@v3
