@@ -300,6 +300,5 @@ jobs:
           ignore-unfixed: true
           vuln-type: "os,library"
           severity: CRITICAL
-          skip-setup-trivy: true
         env:
           TRIVY_DISABLE_VEX_NOTICE: true
