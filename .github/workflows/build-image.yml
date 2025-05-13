@@ -282,7 +282,7 @@ jobs:
       # https://github.com/aquasecurity/trivy/blob/main/docs/docs/configuration/others.md#exit-code
       # No better way to do block only CRITICAL issues
       - name: Block critical issues
-        id: trivy-scan-sarif
+        id: trivy-block-critical
         uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: ${{ steps.meta.outputs.tags }}
