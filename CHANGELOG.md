@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.60.1](https://github.com/ZeroGachis/.github/compare/v4.60.0...v4.60.1) (2025-05-13)
+
+
+### Bug Fixes
+
+* same id was used twice ([be1793a](https://github.com/ZeroGachis/.github/commit/be1793a7737d452416229bf7ca4bdad6856e2ad6))
+* same id was used twice ([ec64ed8](https://github.com/ZeroGachis/.github/commit/ec64ed82e7df50cdcc9166d5f0e6bbe7564e5e7d))
+
 ## [4.60.0](https://github.com/ZeroGachis/.github/compare/v4.59.0...v4.60.0) (2025-05-13)
 
 
