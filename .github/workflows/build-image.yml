@@ -288,7 +288,7 @@ jobs:
           # Used to differentiate multiple results for one commit
           category: Trivy
 
-      - name: Run Trivy vulnerability block Critical
+      - name: Trivy vulnerability block Critical
         id: trivy-scan-block-critical
         uses: aquasecurity/trivy-action@0.30.0
         with:
