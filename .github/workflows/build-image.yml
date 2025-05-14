@@ -248,6 +248,19 @@ jobs:
             github-token=${{ inputs.vault_enabled && steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }}
             GIT_AUTH_TOKEN=${{ inputs.vault_enabled && steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }}
 
+      - name: Run Trivy vulnerability block Critical
+        id: trivy-scan-block-critical
+        uses: aquasecurity/trivy-action@0.30.0
+        with:
+          image-ref: ${{ steps.meta.outputs.tags }}
+          format: "table"
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "CRITICAL"
+        env:
+          TRIVY_DISABLE_VEX_NOTICE: true
+
       - name: Run Trivy vulnerability scanner
         if: inputs.security_scan_output_format != 'sarif'
         id: trivy-scan
