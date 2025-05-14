@@ -271,10 +271,12 @@ jobs:
           image-ref: ${{ steps.meta.outputs.tags }}
           format: "sarif"
           output: "trivy-results.sarif"
-          exit-code: ${{ inputs.trivy_exit-code }}
+          exit-code: 1
           ignore-unfixed: true
           vuln-type: "os,library"
-          severity: ${{ inputs.trivy_severity }}
+          # with format=sarif all serverities are reported
+          # Here only critical will block the PR
+          severity: CRITICAL
         env:
           TRIVY_DISABLE_VEX_NOTICE: true
 
