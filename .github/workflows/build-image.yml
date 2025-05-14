@@ -287,3 +287,18 @@ jobs:
           # Optional category for the results
           # Used to differentiate multiple results for one commit
           category: Trivy
+
+      - name: Trivy vulnerability block Critical
+        id: trivy-scan-block-critical
+        uses: aquasecurity/trivy-action@0.30.0
+        with:
+          image-ref: ${{ steps.meta.outputs.tags }}
+          # with format:table there is a bug, Trivy keeps format:sarif from previous run
+          # so we use format:json to avoid having the issue
+          format: "json"
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "CRITICAL"
+        env:
+          TRIVY_DISABLE_VEX_NOTICE: true
