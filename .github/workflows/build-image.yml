@@ -293,6 +293,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: ${{ steps.meta.outputs.tags }}
+          # with format: table there is a bug, trivay keep format: sarif from previous run
           format: "json"
           exit-code: 1
           ignore-unfixed: true
