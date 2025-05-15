@@ -114,19 +114,15 @@ jobs:
         with:
           repository: ZeroGachis/.github
           sparse-checkout: |
-            scripts
+            .github/scripts/
           path: github_workflow
           token: ${{ env.GH_ORG_READ_REPO_TOKEN }}
 
       - name: Run dbt tests
         run: |
-          ls
-          echo "SPLIT"
           ls ${{ github.workspace }}
           echo "SPLIT"
           ls ${{ github.workspace }}/github_workflow
-          echo "SPLIT"
-          ls ${{ github.workspace }}/scripts
           echo "SPLIT"
           ${{ github.workspace }}/scripts/run-dbt-tests.sh ${{ inputs.environment_name }} ${{ env.BACKUP_BUCKET_NAME }} ${{ github.workspace }} ${{ inputs.project_dir }} ${{ github.event.repository.name }}
 
