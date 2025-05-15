@@ -233,6 +233,29 @@ jobs:
         working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform apply -auto-approve -input=false -parallelism=${{ inputs.terraform_parallelism }} tfplan
 
+  security-scan:
+    name: "Security scan"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner in IaC mode
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'config'
+          hide-progress: true
+          format: 'sarif'
+          output: 'trivy-results-iac.sarif'
+          exit-code: '0'
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results-iac.sarif'
+          category: "Trivy Terraform"
+
   infracost-prerequisites:
     name: "Infracost Prerequisites"
     runs-on: ubuntu-latest
