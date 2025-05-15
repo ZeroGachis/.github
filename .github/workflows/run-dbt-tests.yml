@@ -120,6 +120,8 @@ jobs:
 
       - name: Run dbt tests
         run: |
+          ls
+          ls ${{ github.workspace }}
           ${{ github.workspace }}/github_workflow/run-dbt-tests.sh ${{ inputs.environment_name }} ${{ env.BACKUP_BUCKET_NAME }} ${{ github.workspace }} ${{ inputs.project_dir }} ${{ github.event.repository.name }}
 
 
