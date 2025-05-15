@@ -130,7 +130,7 @@ jobs:
           dbt compile --profile ${{ github.ref_name }} --project-dir smartway
           tar -czf smartway/target/valid_manifest.json.tar.gz -C smartway/target manifest.json
 
-      - name: upload manifest
+      - name: Upload manifest
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         run: |
           aws s3 cp smartway/target/valid_manifest.json.tar.gz s3://${{ env.BACKUP_BUCKET_NAME }}/${{ github.event.repository.name }}/
