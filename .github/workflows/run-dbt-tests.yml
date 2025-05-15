@@ -113,6 +113,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ZeroGachis/.github
+          ref: feat/add-run_dbt_tests-workflow
           path: github_workflow
           token: ${{ env.GH_ORG_READ_REPO_TOKEN }}
 
