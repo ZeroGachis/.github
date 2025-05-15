@@ -114,18 +114,18 @@ jobs:
         with:
           repository: ZeroGachis/.github
           ref: feat/add-run_dbt_tests-workflow
+          sparse-checkout: |
+            scripts
           path: github_workflow
           token: ${{ env.GH_ORG_READ_REPO_TOKEN }}
 
       - name: Run dbt tests
         run: |
-          ls ${{ github.workspace }}
+          ls github_workflow
           echo "SPLIT"
-          ls ${{ github.workspace }}/github_workflow
+          ls github_workflow/scripts
           echo "SPLIT"
-          ls ${{ github.workspace }}/github_workflow/scripts
-          echo "SPLIT"
-          ${{ github.workspace }}/github_workflow/scripts/run-dbt-tests.sh ${{ inputs.environment_name }} ${{ env.BACKUP_BUCKET_NAME }} ${{ github.workspace }} ${{ inputs.project_dir }} ${{ github.event.repository.name }}
+          ${{ github.workspace }}/github_workflow/run-dbt-tests.sh ${{ inputs.environment_name }} ${{ env.BACKUP_BUCKET_NAME }} ${{ github.workspace }} ${{ inputs.project_dir }} ${{ github.event.repository.name }}
 
 
       - name: Package Manifest
@@ -134,13 +134,10 @@ jobs:
           dbt compile --profile ${{ github.ref_name }} --project-dir smartway
           tar -czf smartway/target/valid_manifest.json.tar.gz -C smartway/target manifest.json
 
-      - uses: actions/upload-artifact@v4
+      - name: upload manifest
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-        with:
-          name: manifest-${{ github.run_id }}
-          path: ./smartway/target/valid_manifest.json.tar.gz
-          if-no-files-found: error
-          retention-days: 1
+        run: |
+          aws s3 cp smartway/target/valid_manifest.json.tar.gz s3://${{ env.BACKUP_BUCKET_NAME }}/${{ github.event.repository.name }}/
 
       - name: Drop snowflake test schema
         if: always()
