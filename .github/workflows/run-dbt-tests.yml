@@ -122,17 +122,10 @@ jobs:
         run: |
           ${{ github.workspace }}/github_workflow/scripts/run-dbt-tests.sh ${{ inputs.environment_name }} ${{ env.BACKUP_BUCKET_NAME }} ${{ github.workspace }} ${{ inputs.project_dir }} ${{ github.event.repository.name }}
 
-
-      - name: Package Manifest
-        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-        run: |
-          dbt compile --profile ${{ github.ref_name }} --project-dir smartway
-          tar -czf smartway/target/valid_manifest.json.tar.gz -C smartway/target manifest.json
-
       - name: Upload manifest
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         run: |
-          aws s3 cp smartway/target/valid_manifest.json.tar.gz s3://${{ env.BACKUP_BUCKET_NAME }}/${{ github.event.repository.name }}/
+          ${{ github.workspace }}/github_workflow/scripts/dbt-upload-manifest.sh ${{ github.workspace }} ${{ inputs.project_dir }} ${{ github.ref_name }} ${{ env.BACKUP_BUCKET_NAME }} ${{ github.event.repository.name }}
 
       - name: Drop snowflake test schema
         if: always()

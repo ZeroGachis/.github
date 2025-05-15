@@ -18,15 +18,17 @@ else
   COMMAND="run"
 fi
 
-printf "\n\nRunning run-dbt-clean.sh $WORKSPACE...\n"
-github_workflow/scripts/run-dbt-clean.sh $WORKSPACE $PROJECT_DIR_SUBFOLDER
+printf "\nCleaning dbt project...\n"
+cd $PROJECT_DIR
+dbt clean
+dbt deps --project-dir $PROJECT_DIR
+
 
 # Retreive remote manifest
 printf "\nRetreiving last valid manifest.json...\n"
 mkdir -p $REMOTE_FOLDER
 aws s3 cp s3://"${BACKUP_BUCKET_NAME}"/${REPO_NAME}/valid_manifest.json.tar.gz $REMOTE_FOLDER
 tar -xzf $REMOTE_FOLDER/valid_manifest.json.tar.gz -C $REMOTE_FOLDER
-
 
 
 # Only run models which differ from remote
