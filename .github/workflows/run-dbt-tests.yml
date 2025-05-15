@@ -121,11 +121,7 @@ jobs:
 
       - name: Run dbt tests
         run: |
-          ls github_workflow
-          echo "SPLIT"
-          ls github_workflow/scripts
-          echo "SPLIT"
-          ${{ github.workspace }}/github_workflow/run-dbt-tests.sh ${{ inputs.environment_name }} ${{ env.BACKUP_BUCKET_NAME }} ${{ github.workspace }} ${{ inputs.project_dir }} ${{ github.event.repository.name }}
+          ${{ github.workspace }}/github_workflow/scripts/run-dbt-tests.sh ${{ inputs.environment_name }} ${{ env.BACKUP_BUCKET_NAME }} ${{ github.workspace }} ${{ inputs.project_dir }} ${{ github.event.repository.name }}
 
 
       - name: Package Manifest
