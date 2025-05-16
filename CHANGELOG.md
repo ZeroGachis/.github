@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.63.0](https://github.com/ZeroGachis/.github/compare/v4.62.1...v4.63.0) (2025-05-16)
+
+
+### Features
+
+* remove trivy scan for iac ([4a25dea](https://github.com/ZeroGachis/.github/commit/4a25dea2124086514ac851045529d2e31baf2535))
+* remove trivy scan for iac ([6f59db1](https://github.com/ZeroGachis/.github/commit/6f59db18ff7f6a60053cd86e03908cc077ee9e5c))
+
 ## [4.62.1](https://github.com/ZeroGachis/.github/compare/v4.62.0...v4.62.1) (2025-05-16)
 
 
