@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.62.1](https://github.com/ZeroGachis/.github/compare/v4.62.0...v4.62.1) (2025-05-16)
+
+
+### Bug Fixes
+
+* **dbt workflow:** remove hardcoded dbt project dir ([e7d5282](https://github.com/ZeroGachis/.github/commit/e7d5282cbe71bff2c7543f0bc820fae277052412))
+* **dbt workflow:** remove hardcoded dbt project dir ([078310e](https://github.com/ZeroGachis/.github/commit/078310e6ccd3e8fdecb57318e3a04b8ead1e3371))
+
 ## [4.62.0](https://github.com/ZeroGachis/.github/compare/v4.61.0...v4.62.0) (2025-05-16)
 
 
