@@ -40,7 +40,6 @@ jobs:
       BACKUP_BUCKET_NAME: ${{ vars.BACKUP_BUCKET_NAME }}
       DBT_TYPE: snowflake
       SNOWFLAKE_DBT_SCHEMA: ${{ inputs.snowflake_dbt_schema }}
-      DBT_PROFILES_DIR: ${{ github.workspace }}/smartway
       VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
     permissions:
@@ -130,4 +129,4 @@ jobs:
       - name: Drop snowflake test schema
         if: always()
         run: |
-          dbt run-operation --project-dir smartway drop_schema --args '{schema_name: ${{ inputs.snowflake_dbt_schema }}}'
+          dbt run-operation --project-dir ${{ github.workspace }}/${{ inputs.project_dir }} drop_schema --args '{schema_name: ${{ inputs.snowflake_dbt_schema }}}'
