@@ -1,0 +1,31 @@
+name: 'Add committers to reviewers'
+
+on:
+  workflow_call:
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  reviewers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: run-command
+        run: |
+          uri=${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.number }}
+          committers=$(curl -H "Accept: application/vnd.github+json" \
+                  -H "Authorization: Bearer ${{ secrets.github_token }}" \
+                  -H "X-GitHub-Api-Version: 2022-11-28" \
+                  ${uri}/commits \
+                  | jq --arg filtre ${{ github.actor }} --compact-output '[.[].author.login | select(. != $filtre) | select(.)]')
+          requested_reviewers={\"reviewers\":$committers}
+          curl \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.github_token }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              ${uri}/requested_reviewers \
+              -d $requested_reviewers
