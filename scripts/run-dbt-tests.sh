@@ -1,12 +1,10 @@
 #!/bin/bash
 BASE_REF=$1
 BACKUP_BUCKET_NAME=$2
-WORKSPACE=$3
-PROJECT_DIR_SUBFOLDER=$4
-REPO_NAME=$5
+PROJECT_DIR=$3
+REPO_NAME=$4
 
-PROJECT_DIR="${WORKSPACE}/${PROJECT_DIR_SUBFOLDER}"
-REMOTE_FOLDER="${WORKSPACE}/${PROJECT_DIR_SUBFOLDER}/remote"
+REMOTE_FOLDER="${PROJECT_DIR}/remote"
 COMPARE_STATE="state:modified.body+1"
 NB_THREADS="15"
 WARN_ERROR_EXCLUDE='{"include": "all", "exclude": ["NoNodesForSelectionCriteria", "NothingToDo", "PackageMaterializationOverrideDeprecation", "LogTestResult"]}'
