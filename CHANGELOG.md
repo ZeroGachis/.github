@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.62.0](https://github.com/ZeroGachis/.github/compare/v4.61.0...v4.62.0) (2025-05-16)
+
+
+### Features
+
+* scan terraform code ([7f2ad35](https://github.com/ZeroGachis/.github/commit/7f2ad3582017503c42c8efab25c970e879ed6e7f))
+* scan terraform code ([066f3fe](https://github.com/ZeroGachis/.github/commit/066f3febfba551ac3a02897a00a215ec4bc6ca5c))
+
+
+### Miscellaneous Chores
+
+* add run-dbt-tests workflow ([#224](https://github.com/ZeroGachis/.github/issues/224)) ([d93dd04](https://github.com/ZeroGachis/.github/commit/d93dd0430645b20472e4b4bc4eb8711238b42f93))
+* start by a period of observation ([5528bf0](https://github.com/ZeroGachis/.github/commit/5528bf0f0dbc05b3e2ff09ba742d7d1a4c2ad4b0))
+
 ## [4.61.0](https://github.com/ZeroGachis/.github/compare/v4.60.2...v4.61.0) (2025-05-14)
 
 
