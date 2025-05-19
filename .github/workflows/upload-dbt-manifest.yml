@@ -121,11 +121,11 @@ jobs:
 
       - name: Poetry install dependancies
         run: |
-          poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi --no-root
+          poetry install --no-interaction --no-ansi --no-root
 
       - name: Upload manifest
         run: |
-          dbt deps --project-dir ${{ env.DBT_PROFILES_DIR }}
-          dbt compile --profile ${{ github.ref_name }} --project-dir ${{ env.DBT_PROFILES_DIR }}
+          poetry run dbt deps --project-dir ${{ env.DBT_PROFILES_DIR }}
+          poetry run dbt compile --profile ${{ github.ref_name }} --project-dir ${{ env.DBT_PROFILES_DIR }}
           tar -czf ${{ env.DBT_PROFILES_DIR }}/target/valid_manifest.json.tar.gz -C ${{ env.DBT_PROFILES_DIR }}/target manifest.json
           aws s3 cp ${{ env.DBT_PROFILES_DIR }}/target/valid_manifest.json.tar.gz s3://${{ env.BACKUP_BUCKET_NAME }}/${{ github.event.repository.name }}/
