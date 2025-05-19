@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.63.2](https://github.com/ZeroGachis/.github/compare/v4.63.1...v4.63.2) (2025-05-19)
+
+
+### Bug Fixes
+
+* **dbt:** split test and s3 upload workflows ([54ca340](https://github.com/ZeroGachis/.github/commit/54ca3408b52682c36d806b4987731aebee4791df))
+* **dbt:** split test and s3 upload workflows ([bab67e9](https://github.com/ZeroGachis/.github/commit/bab67e97bade967778c331690a2c6b44bcd9ea42))
+
+
+### Miscellaneous Chores
+
+* add docs ([fed7198](https://github.com/ZeroGachis/.github/commit/fed71984169c04d8d74b812fb0cf06068e2227d6))
+
 ## [4.63.1](https://github.com/ZeroGachis/.github/compare/v4.63.0...v4.63.1) (2025-05-16)
 
 
