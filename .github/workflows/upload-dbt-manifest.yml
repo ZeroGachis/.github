@@ -1,4 +1,4 @@
-name: "Run-Dbt-Tests"
+name: "Upload-Dbt-Manifest"
 
 on:
   workflow_call:
@@ -31,7 +31,7 @@ on:
         default: "3.12"
 
 jobs:
-  run-docker:
+  update-dbt-manifest:
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment_name }}
@@ -62,24 +62,38 @@ jobs:
           tags: tag:ci
           version: ${{ vars.TAILSCALE_VERSION }}
 
-      - name: Sleep for 10 seconds
-        run: sleep 10s
+      - name: Check DNS Resolution for Vault
+        run: |
+          extract_domain() {
+            echo "$1" | awk -F[/:] '{print $4}'
+          }
+          VAULT_DOMAIN=$(extract_domain "${{ vars.VAULT_URL }}")
+          for i in {1..100}; do
+            if nslookup $VAULT_DOMAIN; then
+              echo "DNS resolution successful"
+              break
+            else
+              echo "DNS resolution failed, retrying in 10 seconds..."
+              sleep 15
+            fi
+          done
+          # Exit with error if DNS resolution fails after retries
+          if ! nslookup $VAULT_DOMAIN; then
+            echo "DNS resolution failed after multiple attempts"
+            exit 1
+          fi
         shell: bash
 
       - name: Import Secrets
-        uses: Wandalen/wretry.action@v3
         id: secrets
+        uses: hashicorp/vault-action@v3
         with:
-          action: hashicorp/vault-action@v3
-          attempt_limit: 10
-          attempt_delay: 150
-          with: |
-            url: ${{ env.VAULT_URL }}
-            role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-            method: jwt
-            path: "github-actions"
-            exportToken: true
-            secrets: |
+          url: ${{ vars.VAULT_URL }}
+          role: ${{ vars.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          exportToken: true
+          secrets: |
               secret/data/snowflake/ecs SNOWFLAKE_ACCOUNT | SNOWFLAKE_ACCOUNT ;
               secret/data/dbt/github-actions SNOWFLAKE_DBNAME | SNOWFLAKE_DBNAME ;
               secret/data/dbt/github-actions SNOWFLAKE_DBT_PRIVATE_KEY | SNOWFLAKE_DBT_PRIVATE_KEY ;
@@ -99,10 +113,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ inputs.python_version }}
-  
-      - name: Poetry install
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v4
+        with:
+          poetry-version: latest
+
+      - name: Poetry install dependancies
         run: |
-          pip install poetry
           poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi --no-root
 
       - name: Upload manifest
