@@ -18,7 +18,7 @@ on:
       aws_github_role_name:
         required: false
         type: string
-        default: "github_oidc_readonly"
+        default: "github_oidc"
       aws_account_id:
         required: false
         type: string
@@ -105,24 +105,9 @@ jobs:
           pip install poetry
           poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi --no-root
 
-      - name: Run dbt-checkpoint
+      - name: Upload manifest
         run: |
-          pre-commit run --config .pre-commit-config-action.yaml
-
-      - name: Checkout dbt scripts
-        uses: actions/checkout@v4
-        with:
-          repository: ZeroGachis/.github
-          sparse-checkout: |
-            scripts
-          path: github_workflow
-          token: ${{ env.GH_ORG_READ_REPO_TOKEN }}
-
-      - name: Run dbt tests
-        run: |
-          ${{ github.workspace }}/github_workflow/scripts/run-dbt-tests.sh ${{ inputs.environment_name }} ${{ env.BACKUP_BUCKET_NAME }} ${{ env.DBT_PROFILES_DIR }} ${{ github.event.repository.name }}
-
-      - name: Drop snowflake test schema
-        if: always()
-        run: |
-          dbt run-operation --project-dir ${{ env.DBT_PROFILES_DIR }} drop_schema --args '{schema_name: ${{ inputs.snowflake_dbt_schema }}}'
+          dbt deps --project-dir ${{ env.DBT_PROFILES_DIR }}
+          dbt compile --profile ${{ github.ref_name }} --project-dir ${{ env.DBT_PROFILES_DIR }}
+          tar -czf ${{ env.DBT_PROFILES_DIR }}/target/valid_manifest.json.tar.gz -C ${{ env.DBT_PROFILES_DIR }}/target manifest.json
+          aws s3 cp ${{ env.DBT_PROFILES_DIR }}/target/valid_manifest.json.tar.gz s3://${{ env.BACKUP_BUCKET_NAME }}/${{ github.event.repository.name }}/
