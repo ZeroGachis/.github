@@ -62,7 +62,7 @@ jobs:
           --logger "trx"
 
       - name: Test Report - Unit Tests - Check Summary
-        uses: dorny/test-reporter@v2.0.0
+        uses: dorny/test-reporter@v2.1.0
         if: always()
         with:
           name: Unit Tests Results

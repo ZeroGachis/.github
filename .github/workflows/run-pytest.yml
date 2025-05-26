@@ -59,7 +59,7 @@ jobs:
           pytest --verbose --cov --junit-xml reports/unit_tests_results.xml ${{ inputs.directory_to_test }}
         working-directory: ${{ inputs.workdir }}
       - name: Test Report
-        uses: dorny/test-reporter@v2.0.0
+        uses: dorny/test-reporter@v2.1.0
         id: test-report
         with:
           name: "UT Report"
