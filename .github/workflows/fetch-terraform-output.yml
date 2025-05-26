@@ -3,36 +3,10 @@ name: "Fetch 1 Remote State Output Variable"
 on:
   workflow_call:
     inputs:
-      variable:
+      variable_name:
         description: "var to fetch from the state file"
         required: true
         type: string
-      workdir:
-        required: false
-        type: string
-        default: ${{ github.workspace }}
-      environment_name:
-        required: false
-        type: string
-      terraform_workspace:
-        required: false
-        type: string
-        default: ${{ github.ref_name }}
-      terraform_backend:
-        required: false
-        type: string
-      tailscale_enabled:
-        required: false
-        type: boolean
-        default: true
-      vault_enabled:
-        required: false
-        type: boolean
-        default: true
-      aws_github_role_name:
-        required: false
-        type: string
-        default: "github_oidc_readonly"
     outputs:
       TF_OUTPUT_VAR:
         description: "The value of the 1 variable passed as input"
@@ -40,93 +14,23 @@ on:
 jobs:
   fetch-vars:
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ inputs.environment_name }}
-    env:
-      VAULT_ADDR: ${{ vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
-      VAULT_GITHUB_ACTIONS_ROLE: ${{ vars.VAULT_GITHUB_ACTIONS_ROLE }}
-      AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
-      AWS_REGION: ${{ vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
-      TERRAFORM_DEFAULT_BACKEND: tfstate-${{ vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
     outputs:
       TF_OUTPUT_VAR: ${{ steps.set-variables.outputs.tf_output_var }}
 
     steps:
-      - name: Tailscale
-        if: inputs.tailscale_enabled || inputs.vault_enabled
-        uses: tailscale/github-action@v3
+      - uses: actions/cache/restore@v4
+        id: cache
         with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-          use-cache: true
-          version: ${{ vars.TAILSCALE_VERSION }}
+          path: tf-output.json
+          key: tf-output-${{ github.run_id }}-${{ github.run_attempt }}
 
-      - name: Check DNS Resolution for Vault
-        if: inputs.vault_enabled
-        run: |
-          extract_domain() {
-            echo "$1" | awk -F[/:] '{print $4}'
-          }
+      - name: Check cache hit
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: exit 1
 
-          VAULT_DOMAIN=$(extract_domain "${{ env.VAULT_ADDR }}")
-
-          for i in {1..100}; do
-            if nslookup $VAULT_DOMAIN; then
-              echo "DNS resolution successful"
-              break
-            else
-              echo "DNS resolution failed, retrying in 10 seconds..."
-              sleep 15
-            fi
-          done
-          # Exit with error if DNS resolution fails after retries
-          if ! nslookup $VAULT_DOMAIN; then
-            echo "DNS resolution failed after multiple attempts"
-            exit 1
-          fi
-        shell: bash
-
-      - name: Import Secrets
-        if: inputs.vault_enabled
-        id: secrets
-        uses: hashicorp/vault-action@v3
-        with:
-          url: ${{ env.VAULT_ADDR }}
-          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
-          method: jwt
-          path: "github-actions"
-          exportToken: true
-          secrets: |
-            github/token/read_repositories token | GITHUB_READ_REPO_TOKEN;
-
-      - uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ vars.TF_VERSION }}
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
-
-      - name: Terraform Init
-        id: init
-        working-directory: ${{ inputs.workdir || github.workspace	}}
-        run: terraform init -backend-config="bucket=${{ inputs.terraform_backend || env.TERRAFORM_DEFAULT_BACKEND }}"
-
-      - name: Terraform Workspace
-        id: workspace
-        working-directory: ${{ inputs.workdir || github.workspace	}}
-        run: terraform workspace select ${{ inputs.terraform_workspace }}
-
-      - name: Export json output
-        id: terraform-output
-        run: terraform output -json > output.json
+      - name: Check var presence
+        run: grep ${{ inputs.variable_name }} tf-output.json
 
       - name: Set variables
         id: set-variables
-        run: echo "tf_output_var=`jq -r '.${{ inputs.variable }}.value' output.json`" >> $GITHUB_OUTPUT
+        run: echo "tf_output_var=`jq -r '.${{ inputs.variable_name }}.value' tf-output.json`" >> $GITHUB_OUTPUT
