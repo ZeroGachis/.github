@@ -233,16 +233,19 @@ jobs:
       - name: Terraform Apply
         if: ${{ inputs.terraform_check_only == false }}
         working-directory: ${{ inputs.workdir || github.workspace	}}
-        run: terraform apply -auto-approve -input=false -parallelism=${{ inputs.terraform_parallelism }} tfplan
+        run: terraform apply -auto-approve -input=false -parallelism=${{ inputs.terraform_parallelism }} tfplan
 
       - name: Terraform Get Output
+        working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform output -json > tf-output.json
 
-      - name: Cache Output
-        uses: actions/cache@v4
+      - name: Save Output
+        uses: actions/upload-artifact@v4
         with:
-          path: tf-output.json
-          key: tf-output-${{ github.run_id }}-${{ github.run_attempt }}
+          name: tf-output-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ inputs.workdir || github.workspace }}/tf-output.json
+          if-no-files-found: error
+          retention-days: 1
 
   infracost-prerequisites:
     name: "Infracost Prerequisites"

@@ -18,15 +18,10 @@ jobs:
       TF_OUTPUT_VAR: ${{ steps.set-variables.outputs.tf_output_var }}
 
     steps:
-      - uses: actions/cache/restore@v4
-        id: cache
+      - name: Get Output
+        uses: actions/download-artifact@v4
         with:
-          path: tf-output.json
-          key: tf-output-${{ github.run_id }}-${{ github.run_attempt }}
-
-      - name: Check cache hit
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: exit 1
+          name: tf-output-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Check var presence
         run: grep ${{ inputs.variable_name }} tf-output.json >/dev/null
