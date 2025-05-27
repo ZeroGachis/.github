@@ -235,6 +235,15 @@ jobs:
         working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform apply -auto-approve -input=false -parallelism=${{ inputs.terraform_parallelism }} tfplan
 
+      - name: Terraform Get Output
+        run: terraform output -json > tf-output.json
+
+      - name: Cache Output
+        uses: actions/cache@v4
+        with:
+          path: tf-output.json
+          key: tf-output-${{ github.run_id }}-${{ github.run_attempt }}
+
   infracost-prerequisites:
     name: "Infracost Prerequisites"
     runs-on: ubuntu-latest
