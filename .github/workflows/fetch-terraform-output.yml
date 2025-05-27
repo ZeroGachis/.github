@@ -1,0 +1,36 @@
+name: "Fetch 1 Remote State Output Variable"
+
+on:
+  workflow_call:
+    inputs:
+      variable_name:
+        description: "var to fetch from the state file"
+        required: true
+        type: string
+    outputs:
+      TF_OUTPUT_VAR:
+        description: "The value of the 1 variable passed as input"
+        value: ${{ jobs.fetch-vars.outputs.TF_OUTPUT_VAR }}
+jobs:
+  fetch-vars:
+    runs-on: ubuntu-latest
+    outputs:
+      TF_OUTPUT_VAR: ${{ steps.set-variables.outputs.tf_output_var }}
+
+    steps:
+      - uses: actions/cache/restore@v4
+        id: cache
+        with:
+          path: tf-output.json
+          key: tf-output-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Check cache hit
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: exit 1
+
+      - name: Check var presence
+        run: grep ${{ inputs.variable_name }} tf-output.json >/dev/null
+
+      - name: Set variables
+        id: set-variables
+        run: echo "tf_output_var=`jq -r '.${{ inputs.variable_name }}.value' tf-output.json`" >> $GITHUB_OUTPUT
