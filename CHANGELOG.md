@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.64.0](https://github.com/ZeroGachis/.github/compare/v4.63.4...v4.64.0) (2025-05-27)
+
+
+### Features
+
+* create workflow to fetch one var from a tf remote state output ([c44ce2c](https://github.com/ZeroGachis/.github/commit/c44ce2c76f18562d0e2be1956d0f13f9cc730f62))
+* upload output cache ([d43220e](https://github.com/ZeroGachis/.github/commit/d43220e37d2930e2bdc6ee016dfb0f877571331f))
+
+
+### Bug Fixes
+
+* dont print output var ([a3d71bd](https://github.com/ZeroGachis/.github/commit/a3d71bd03f9ac1bc5ac6b441fa30b703e512e0ae))
+
+
+### Miscellaneous Chores
+
+* better naming ([c8691fd](https://github.com/ZeroGachis/.github/commit/c8691fd9dae7b7bb0152da76b5d0cff5b142e442))
+* **deps:** update dorny/test-reporter action to v2.1.0 ([2907b09](https://github.com/ZeroGachis/.github/commit/2907b09a3db57dfea443080c4be000349bd21d84))
+* simpler implementation with just cache ([c8691fd](https://github.com/ZeroGachis/.github/commit/c8691fd9dae7b7bb0152da76b5d0cff5b142e442))
+
 ## [4.63.4](https://github.com/ZeroGachis/.github/compare/v4.63.3...v4.63.4) (2025-05-21)
 
 
