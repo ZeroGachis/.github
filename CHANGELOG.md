@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.64.1](https://github.com/ZeroGachis/.github/compare/v4.64.0...v4.64.1) (2025-05-27)
+
+
+### Bug Fixes
+
+* remove cache and use artifact ([8c9832e](https://github.com/ZeroGachis/.github/commit/8c9832e3ba6d533b232ecac0cf80744b474bc2f7))
+
 ## [4.64.0](https://github.com/ZeroGachis/.github/compare/v4.63.4...v4.64.0) (2025-05-27)
 
 
