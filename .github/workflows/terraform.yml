@@ -242,7 +242,7 @@ jobs:
       - name: Save Output
         uses: actions/upload-artifact@v4
         with:
-          name: tf-output-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.action }}
+          name: tf-output-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
           path: ${{ inputs.workdir || github.workspace }}/tf-output.json
           if-no-files-found: error
           retention-days: 1
@@ -267,7 +267,7 @@ jobs:
               - '**.tf'
               - '**.tfvars'
       - name: Filter Terraform Args
-        if: ${{ inputs.terraform_args }}
+        if: ${{ inputs.terraform_args }}
         id: filter_args
         run: |
           filtered_args=$(echo '${{ inputs.terraform_args }}' | sed -e 's/.*"\(.*\)".*/\1/')
