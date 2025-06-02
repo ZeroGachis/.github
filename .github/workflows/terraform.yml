@@ -245,6 +245,7 @@ jobs:
           name: tf-output-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
           path: ${{ inputs.workdir || github.workspace }}/tf-output.json
           if-no-files-found: error
+          overwrite: true
           retention-days: 1
 
   infracost-prerequisites:
