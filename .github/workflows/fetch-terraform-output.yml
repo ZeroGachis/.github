@@ -7,6 +7,10 @@ on:
         description: "var to fetch from the state file"
         required: true
         type: string
+      artifact_id:
+        description: "id of needed previous terraform job"
+        required: true
+        type: string
     outputs:
       TF_OUTPUT_VAR:
         description: "The value of the 1 variable passed as input"
@@ -21,7 +25,7 @@ jobs:
       - name: Get Output
         uses: actions/download-artifact@v4
         with:
-          name: tf-output-${{ github.run_id }}-${{ github.run_attempt }}
+          name: tf-output-${{ github.run_id }}-${{ github.run_attempt }}-${{ inputs.artifact_id }}
 
       - name: Check var presence
         run: grep ${{ inputs.variable_name }} tf-output.json >/dev/null
