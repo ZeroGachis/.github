@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.64.2](https://github.com/ZeroGachis/.github/compare/v4.64.1...v4.64.2) (2025-06-02)
+
+
+### Bug Fixes
+
+* enable unique id of artifact un mutliple tf run ([7560c7d](https://github.com/ZeroGachis/.github/commit/7560c7d2d8dc570132627bf41a4e2d41391ad591))
+* enable unique id ofr artifact un mutliple tf run ([aaa1cc1](https://github.com/ZeroGachis/.github/commit/aaa1cc1c033182bb819dc585195c70a42d82a264))
+
 ## [4.64.1](https://github.com/ZeroGachis/.github/compare/v4.64.0...v4.64.1) (2025-05-27)
 
 
