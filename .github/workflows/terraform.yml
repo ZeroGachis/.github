@@ -179,8 +179,6 @@ jobs:
             secret/data/github-actions-common/argocd apikey | ARGOCD_AUTH_TOKEN;
 
       - uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ vars.TF_VERSION }}
 
       - name: Checkout
         uses: actions/checkout@v4
