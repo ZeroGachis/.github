@@ -64,6 +64,10 @@ on:
         required: false
         type: string
         default: error
+      security_scan_enabled:
+        required: false
+        type: boolean
+        default: true
       security_scan_failed_build:
         required: false
         type: boolean
@@ -249,7 +253,7 @@ jobs:
             GIT_AUTH_TOKEN=${{ inputs.vault_enabled && steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }}
 
       - name: Run Trivy vulnerability scanner
-        if: inputs.security_scan_output_format != 'sarif'
+        if: inputs.security_scan_enabled && inputs.security_scan_output_format != 'sarif'
         id: trivy-scan
         uses: aquasecurity/trivy-action@0.30.0
         with:
@@ -264,7 +268,7 @@ jobs:
           TRIVY_DISABLE_VEX_NOTICE: true
 
       - name: Run Trivy vulnerability scanner sarif
-        if: inputs.security_scan_output_format == 'sarif'
+        if: inputs.security_scan_enabled && inputs.security_scan_output_format == 'sarif'
         id: trivy-scan-sarif
         uses: aquasecurity/trivy-action@0.30.0
         with:
@@ -279,7 +283,7 @@ jobs:
           TRIVY_DISABLE_VEX_NOTICE: true
 
       - name: Upload Trivy Sarif result
-        if: inputs.security_scan_output_format == 'sarif'
+        if: inputs.security_scan_enabled && inputs.security_scan_output_format == 'sarif'
         uses: github/codeql-action/upload-sarif@v3
         with:
           # Path to SARIF file relative to the root of the repository
@@ -290,6 +294,7 @@ jobs:
 
       - name: Trivy vulnerability block Critical
         id: trivy-scan-block-critical
+        if: inputs.security_scan_enabled
         uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: ${{ steps.meta.outputs.tags }}
