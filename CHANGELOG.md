@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.65.0](https://github.com/ZeroGachis/.github/compare/v4.64.4...v4.65.0) (2025-06-06)
+
+
+### Features
+
+* add image name in trivy report ([82a4402](https://github.com/ZeroGachis/.github/commit/82a4402d7802a6ee78392c5a89e04a4e94995e28))
+* add image name in trivy report ([fd058d2](https://github.com/ZeroGachis/.github/commit/fd058d2fa3b9d642a652fafb0f100e9366a42aaa))
+
 ## [4.64.4](https://github.com/ZeroGachis/.github/compare/v4.64.3...v4.64.4) (2025-06-02)
 
 
