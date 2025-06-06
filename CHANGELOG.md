@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.66.0](https://github.com/ZeroGachis/.github/compare/v4.65.0...v4.66.0) (2025-06-06)
+
+
+### Features
+
+* add security scan toggle to build-image workflow ([65681ff](https://github.com/ZeroGachis/.github/commit/65681ff64d7f3ed76eaf54057d00f43f6cbe048c))
+
 ## [4.65.0](https://github.com/ZeroGachis/.github/compare/v4.64.4...v4.65.0) (2025-06-06)
 
 
