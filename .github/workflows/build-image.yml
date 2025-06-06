@@ -268,9 +268,10 @@ jobs:
         id: trivy-scan-sarif
         uses: aquasecurity/trivy-action@0.30.0
         with:
+          skip-setup-trivy: true
           image-ref: ${{ steps.meta.outputs.tags }}
           format: "sarif"
-          output: "trivy-results.sarif"
+          output: "trivy-results-${{ inputs.image_name }}.sarif"
           exit-code: ${{ inputs.trivy_exit-code }}
           ignore-unfixed: true
           vuln-type: "os,library"
@@ -283,15 +284,16 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           # Path to SARIF file relative to the root of the repository
-          sarif_file: "trivy-results.sarif"
+          sarif_file: "trivy-results-${{ inputs.image_name }}.sarif"
           # Optional category for the results
           # Used to differentiate multiple results for one commit
-          category: Trivy
+          category: Trivy-docker-${{ inputs.image_name }}
 
       - name: Trivy vulnerability block Critical
         id: trivy-scan-block-critical
         uses: aquasecurity/trivy-action@0.30.0
         with:
+          skip-setup-trivy: true
           image-ref: ${{ steps.meta.outputs.tags }}
           # with format:table there is a bug, Trivy keeps format:sarif from previous run
           # so we use format:json to avoid having the issue
