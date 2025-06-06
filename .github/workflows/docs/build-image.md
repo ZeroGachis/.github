@@ -41,6 +41,7 @@ jobs:
 | `linter_tool`                 | `hadolint`                            | Linter tool to use (hadolint/trivy)                     |
 | `linter_filter_mode`          | `added`                               | Filter mode for Hadolint (added/diff/file/nofilter)     |
 | `linter_fail_level`           | `error`                               | Minimum severity to fail the build (error/warning/info) |
+| `security_scan_enabled`       | `true`                                | Enable/Disable secu scan on image                       |
 | `security_scan_failed_build`  | `false`                               | Fail build on security scan issues                      |
 | `security_scan_output_format` | `table`                               | The format used by the security scanner (table or sarif |
 | `trivy_exit-code`             | `0`                                   | Job exits in error if an issue is found, 0 no, 1 yes    |
