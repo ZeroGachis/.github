@@ -279,23 +279,16 @@ jobs:
         env:
           TRIVY_DISABLE_VEX_NOTICE: true
 
-      - name: upload-sarif-files-before
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-before
-          path: trivy-results-${{ inputs.image_name }}.sarif
-          overwrite: true
-
       - name: Edit Trivy Sarif result
         run: |
-          jq ".runs[0].tool.driver.name = \"Trivy-iame-${{ inputs.image_name }}\"" ./trivy-results-${{ inputs.image_name }}.sarif > ./trivy-results-${{ inputs.image_name }}-edited.sarif
-      # https://github.com/ZeroGachis/base-docker-images/security/code-scanning?query=is%3Aopen+branch%3Amain+tool%3ATrivy
-      - name: upload-sarif-files-after
-        uses: actions/upload-artifact@v4
+          jq ".runs[0].tool.driver.name = \"Trivy-image-${{ inputs.image_name }}\"" ./trivy-results-${{ inputs.image_name }}.sarif > ./trivy-results-${{ inputs.image_name }}-edited.sarif
+
+      - name: Comment PR
+        if: github.event.pull_request
+        uses: thollander/actions-comment-pull-request@v3
         with:
-          name: trivy-after
-          path: trivy-results-${{ inputs.image_name }}-edited.sarif
-          overwrite: true
+          message: |
+            :shield: The security scan result of the image [${{ inputs.image_name }}](https://github.com/ZeroGachis/base-docker-images/security/code-scanning?query=is%3Aopen+pr%3A${{ github.event.pull_request.number }}+tool%3ATrivy-image-${{ inputs.image_name }}) is available.
 
       - name: Upload Trivy Sarif result
         if: inputs.security_scan_output_format == 'sarif'
