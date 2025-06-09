@@ -3,6 +3,13 @@ name: Security Scan Repo
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+      - master
+      - develop
+      - tools
+      - release/*
   workflow_call:
 
 permissions:
@@ -32,6 +39,7 @@ jobs:
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v3
+        if: github.event.pull_request
         with:
           message: |
             :shield: The security scan result of the repo (https://github.com/ZeroGachis/base-docker-images/security/code-scanning?query=is%3Aopen+pr%3A${{ github.event.pull_request.number }}+tool%3ATrivy-repo) is available.
