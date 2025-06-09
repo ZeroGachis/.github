@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.67.1](https://github.com/ZeroGachis/.github/compare/v4.67.0...v4.67.1) (2025-06-09)
+
+
+### Bug Fixes
+
+* update security scan result link format in workflow ([8e82389](https://github.com/ZeroGachis/.github/commit/8e823890ced27955fa1e7c1847d64fef7006b7fa))
+
 ## [4.67.0](https://github.com/ZeroGachis/.github/compare/v4.66.0...v4.67.0) (2025-06-09)
 
 
