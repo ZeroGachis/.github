@@ -42,7 +42,7 @@ jobs:
         if: github.event.pull_request
         with:
           message: |
-            :shield: The security scan result of the repo (https://github.com/ZeroGachis/base-docker-images/security/code-scanning?query=is%3Aopen+pr%3A${{ github.event.pull_request.number }}+tool%3ATrivy-repo) is available.
+            :shield: The security scan result of the repo (https://github.com/${{ github.repository }}/security/code-scanning?query=is%3Aopen+ref%3A${{ github.ref }}+tool%3ATrivy-repo) is available.
           # This is here to update the comment containing the string 'comment_tag' and avoid multiple comment per commit
           comment-tag: "The security scan result of the repo"
 
