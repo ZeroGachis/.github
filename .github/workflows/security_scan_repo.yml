@@ -1,6 +1,8 @@
 name: Security Scan Repo
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_call:
 
 permissions:
