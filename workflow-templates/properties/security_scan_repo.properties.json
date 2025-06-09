@@ -2,5 +2,5 @@
   "name": "Security Scan Repo",
   "description": "Security Scan Repo workflow template.",
   "iconName": "octicon shield-check",
-  "categories": ["Security"]
+  "categories": ["Code Scanning"]
 }
