@@ -5,6 +5,10 @@ on:
     branches:
       - develop
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   call-gotoprod-pr-workflow:
     uses: ZeroGachis/.github/.github/workflows/create-gotoprod-pr.yml@v4
