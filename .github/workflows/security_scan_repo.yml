@@ -1,0 +1,42 @@
+name: Security Scan Repo
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+  checks: write
+  actions: read
+
+jobs:
+  security_scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Security Scan
+        uses: aquasecurity/trivy-action@0.31.0
+        with:
+          scan-type: "fs"
+          format: "sarif"
+          output: "trivy-results.sarif"
+
+      - name: Edit Trivy Sarif result
+        run: |
+          jq ".runs[0].tool.driver.name = \"Trivy-repo\"" ./trivy-results.sarif > ./trivy-results-edited.sarif
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            :shield: The security scan result of the repo (https://github.com/ZeroGachis/base-docker-images/security/code-scanning?query=is%3Aopen+pr%3A${{ github.event.pull_request.number }}+tool%3ATrivy-repo) is available.
+          # This is here to update the comment containing the string 'comment_tag' and avoid multiple comment per commit
+          comment_tag: "The security scan result of the repo"
+
+      - name: Upload security scan report
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "trivy-results-edited.sarif"
