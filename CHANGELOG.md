@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.67.0](https://github.com/ZeroGachis/.github/compare/v4.66.0...v4.67.0) (2025-06-09)
+
+
+### Features
+
+* add security scan workflow of repo files for pull requests ([fcfcecd](https://github.com/ZeroGachis/.github/commit/fcfcecdf29c5555126b3fba4385e2df29a7dee9e))
+
+
+### Bug Fixes
+
+* correct comment tag syntax in security scan workflow ([0c6d63a](https://github.com/ZeroGachis/.github/commit/0c6d63a0e3b61344ab0634641cd31fe3b36212f0))
+* format JSON structure in security_scan_repo.properties.json for consistency ([4c28445](https://github.com/ZeroGachis/.github/commit/4c284454a0c9f157429564f90eb1f56b9dacbcdb))
+
+
+### Miscellaneous Chores
+
+* add pull request triggers to security scan workflow ([5390069](https://github.com/ZeroGachis/.github/commit/5390069bcee980ed775a1b70d03d0fa19361b2c0))
+* add push triggers for additional branches in security scan workflow ([1633378](https://github.com/ZeroGachis/.github/commit/1633378848f86c2bbfd3c5a9053ddb3f120681dc))
+* add push triggers for main, master, develop, tools, and release branches in security scan workflow ([43ea621](https://github.com/ZeroGachis/.github/commit/43ea6219ed02d32198f3b0f8338321feaa6e7c61))
+* update category in security_scan_repo.properties.json from "Security" to "Code Scanning" ([2e77d70](https://github.com/ZeroGachis/.github/commit/2e77d709ec60740eccc07ed13d83391b1b05b051))
+* update permissions in gotoprod-pr workflow to allow write access for contents and pull requests ([e4d2dc0](https://github.com/ZeroGachis/.github/commit/e4d2dc0b42df8762a9b966b3e7e88bcdd6e0bee0))
+
 ## [4.66.0](https://github.com/ZeroGachis/.github/compare/v4.65.0...v4.66.0) (2025-06-06)
 
 
