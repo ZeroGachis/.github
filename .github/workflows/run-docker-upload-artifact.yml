@@ -73,6 +73,7 @@ jobs:
       name: ${{ inputs.environment_name }}
     container:
       image: ${{ inputs.image_url }}
+      options: --user=root
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
