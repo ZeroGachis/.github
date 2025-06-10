@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.67.2](https://github.com/ZeroGachis/.github/compare/v4.67.1...v4.67.2) (2025-06-10)
+
+
+### Miscellaneous Chores
+
+* avoid to scan dockerfile (already done on build stage) ([a3cfa67](https://github.com/ZeroGachis/.github/commit/a3cfa6792e55f6fe509b8fff93eb71e34777eef3))
+
+
+### Code Refactoring
+
+* enhance security scan workflow to include separate scans for filesystem and configuration ([eb33cde](https://github.com/ZeroGachis/.github/commit/eb33cdea51d29a46d6433f217e61d4df132d5e02))
+
 ## [4.67.1](https://github.com/ZeroGachis/.github/compare/v4.67.0...v4.67.1) (2025-06-09)
 
 
