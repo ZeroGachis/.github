@@ -283,12 +283,33 @@ jobs:
         env:
           TRIVY_DISABLE_VEX_NOTICE: true
 
+      - name: Edit Trivy Sarif result
+        run: |
+          jq ".runs[0].tool.driver.name = \"Trivy-image-${{ inputs.image_name }}\"" ./trivy-results-${{ inputs.image_name }}.sarif > ./trivy-results-${{ inputs.image_name }}-edited.sarif
+
+      - name: Comment PR
+        if: github.event.pull_request && !github.repository == 'ZeroGachis/base-docker-images'
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            :shield: The security scan result of the image [${{ inputs.image_name }}](https://github.com/ZeroGachis/base-docker-images/security/code-scanning?query=is%3Aopen+pr%3A${{ github.event.pull_request.number }}+tool%3ATrivy-image-${{ inputs.image_name }}) is available.
+          # This is here to update the comment containing the string 'comment_tag' and avoid multiple comment per commit
+          comment_tag: "The security scan result of the image"
+
+      - name: Comment PR Base-image
+        # We cant update the comment on this specific repo as it will erase precedent report
+        if: github.event.pull_request && github.repository == 'ZeroGachis/base-docker-images'
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            :shield: The security scan result of the image [${{ inputs.image_name }}](https://github.com/ZeroGachis/base-docker-images/security/code-scanning?query=is%3Aopen+pr%3A${{ github.event.pull_request.number }}+tool%3ATrivy-image-${{ inputs.image_name }}) is available.
+
       - name: Upload Trivy Sarif result
         if: inputs.security_scan_enabled && inputs.security_scan_output_format == 'sarif'
         uses: github/codeql-action/upload-sarif@v3
         with:
           # Path to SARIF file relative to the root of the repository
-          sarif_file: "trivy-results-${{ inputs.image_name }}.sarif"
+          sarif_file: "trivy-results-${{ inputs.image_name }}-edited.sarif"
           # Optional category for the results
           # Used to differentiate multiple results for one commit
           category: Trivy-docker-${{ inputs.image_name }}
