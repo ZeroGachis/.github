@@ -26,16 +26,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Security Scan
+      - name: Security Scan FS
         uses: aquasecurity/trivy-action@0.31.0
         with:
           scan-type: "fs"
           format: "sarif"
-          output: "trivy-results.sarif"
+          output: "trivy-results-fs.sarif"
+
+      - name: Security Scan Config
+        uses: aquasecurity/trivy-action@0.31.0
+        with:
+          scan-type: "fs"
+          format: "sarif"
+          output: "trivy-results-config.sarif"
 
       - name: Edit Trivy Sarif result
         run: |
-          jq ".runs[0].tool.driver.name = \"Trivy-repo\"" ./trivy-results.sarif > ./trivy-results-edited.sarif
+          jq ".runs[0].tool.driver.name = \"Trivy-repo\"" ./trivy-results-fs.sarif > ./trivy-results-fs-edited.sarif
+          jq ".runs[0].tool.driver.name = \"Trivy-config\"" ./trivy-results-config.sarif > ./trivy-results-config-edited.sarif
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v3
@@ -46,7 +54,12 @@ jobs:
           # This is here to update the comment containing the string 'comment_tag' and avoid multiple comment per commit
           comment-tag: "The security scan result of the repo"
 
-      - name: Upload security scan report
+      - name: Upload security scan report FS
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: "trivy-results-edited.sarif"
+          sarif_file: "trivy-results-fs-edited.sarif"
+
+      - name: Upload security scan report Config
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "trivy-results-config-edited.sarif"
