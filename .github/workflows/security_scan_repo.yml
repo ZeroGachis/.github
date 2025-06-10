@@ -36,9 +36,10 @@ jobs:
       - name: Security Scan Config
         uses: aquasecurity/trivy-action@0.31.0
         with:
-          scan-type: "fs"
+          scan-type: "config"
           format: "sarif"
           output: "trivy-results-config.sarif"
+          skip-files: Dockerfile
 
       - name: Edit Trivy Sarif result
         run: |
@@ -50,8 +51,7 @@ jobs:
         if: github.event.pull_request
         with:
           message: |
-            :shield: The security scan result of the repo (https://github.com/${{ github.repository }}/security/code-scanning?query=is%3Aopen+ref%3A${{ github.ref }}+tool%3ATrivy-repo) is available.
-          # This is here to update the comment containing the string 'comment_tag' and avoid multiple comment per commit
+            :shield: The security scan result : [Repo](https://github.com/${{ github.repository }}/security/code-scanning?query=is%3Aopen+ref%3A${{ github.ref }}+tool%3ATrivy-repo) and [Config](https://github.com/${{ github.repository }}/security/code-scanning?query=is%3Aopen+ref%3A${{ github.ref }}+tool%3ATrivy-config)
           comment-tag: "The security scan result of the repo"
 
       - name: Upload security scan report FS
