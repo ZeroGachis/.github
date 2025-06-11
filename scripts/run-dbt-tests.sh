@@ -12,8 +12,10 @@ WARN_ERROR_EXCLUDE='{"include": "all", "exclude": ["NoNodesForSelectionCriteria"
 if [ "$BASE_REF" = "main" ]
 then
   COMMAND="build"
+  FAIL_FAST=""
 else
   COMMAND="run"
+  FAIL_FAST="--fail-fast"
 fi
 
 printf "\nCleaning dbt project...\n"
@@ -35,7 +37,7 @@ BUILD_STANDARD="dbt \
     --warn-error-options \"$WARN_ERROR_EXCLUDE\" \
     $COMMAND \
     --project-dir $PROJECT_DIR \
-    --fail-fast \
+    $FAIL_FAST \
     --defer \
     --select $COMPARE_STATE \
     --state $REMOTE_FOLDER \
@@ -50,7 +52,7 @@ BUILD_INCREMENTAL="dbt \
     --warn-error-options \"$WARN_ERROR_EXCLUDE\" \
     $COMMAND \
     --project-dir $PROJECT_DIR \
-    --fail-fast \
+    $FAIL_FAST \
     --defer \
     --select config.materialized:incremental,$COMPARE_STATE \
     --state $REMOTE_FOLDER \
