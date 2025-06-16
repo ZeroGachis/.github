@@ -284,6 +284,7 @@ jobs:
           TRIVY_DISABLE_VEX_NOTICE: true
 
       - name: Edit Trivy Sarif result
+        if: inputs.security_scan_enabled && inputs.security_scan_output_format == 'sarif'
         run: |
           jq ".runs[0].tool.driver.name = \"Trivy-image-${{ inputs.image_name }}\"" ./trivy-results-${{ inputs.image_name }}.sarif > ./trivy-results-${{ inputs.image_name }}-edited.sarif
 
