@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.67.5](https://github.com/ZeroGachis/.github/compare/v4.67.4...v4.67.5) (2025-06-16)
+
+
+### Miscellaneous Chores
+
+* **docker:** run 'run-pytest' container as root to avoid issue with permissions file access on CI ([6dd3a8a](https://github.com/ZeroGachis/.github/commit/6dd3a8a693ce9a4e882f36ae30df43317fa67a71))
+
 ## [4.67.4](https://github.com/ZeroGachis/.github/compare/v4.67.3...v4.67.4) (2025-06-16)
 
 
