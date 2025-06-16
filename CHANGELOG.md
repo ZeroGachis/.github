@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.67.4](https://github.com/ZeroGachis/.github/compare/v4.67.3...v4.67.4) (2025-06-16)
+
+
+### Bug Fixes
+
+* condition on trivy sarif edit job ([5ceb704](https://github.com/ZeroGachis/.github/commit/5ceb7040378736322bd2e7ebb011fddb98d767ee))
+
+
+### Miscellaneous Chores
+
+* **deps:** update aquasecurity/trivy-action action to v0.31.0 ([9760d22](https://github.com/ZeroGachis/.github/commit/9760d22742b6658fa917167fe00650ce9075e8e1))
+* **deps:** update aquasecurity/trivy-action action to v0.31.0 ([0e0518c](https://github.com/ZeroGachis/.github/commit/0e0518c63ae0cf2eb37cd3d5c062169ef7e54c3c))
+
 ## [4.67.3](https://github.com/ZeroGachis/.github/compare/v4.67.2...v4.67.3) (2025-06-10)
 
 
