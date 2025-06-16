@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.68.0](https://github.com/ZeroGachis/.github/compare/v4.67.5...v4.68.0) (2025-06-16)
+
+
+### Features
+
+* **dbt:** remove fail-fast parameter for gotoprod pr ([f31c4ff](https://github.com/ZeroGachis/.github/commit/f31c4ff9508d3e3adba52dc76102e41bdf4eec8b))
+
 ## [4.67.5](https://github.com/ZeroGachis/.github/compare/v4.67.4...v4.67.5) (2025-06-16)
 
 
