@@ -1,8 +1,6 @@
 name: Security Scan Repo
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
   push:
     branches:
       - main
@@ -10,6 +8,8 @@ on:
       - develop
       - tools
       - release/*
+  schedule:
+    - cron: "0 10 * * 1"
 
 permissions:
   contents: read
