@@ -1,8 +1,6 @@
 name: Security Scan Repo
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
   push:
     branches:
       - main
@@ -10,7 +8,8 @@ on:
       - develop
       - tools
       - release/*
-  workflow_call:
+  schedule:
+    - cron: "0 10 * * 1"
 
 permissions:
   contents: read
@@ -21,45 +20,5 @@ permissions:
 
 jobs:
   security_scan:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Security Scan FS
-        uses: aquasecurity/trivy-action@0.31.0
-        with:
-          scan-type: "fs"
-          format: "sarif"
-          output: "trivy-results-fs.sarif"
-
-      - name: Security Scan Config
-        uses: aquasecurity/trivy-action@0.31.0
-        with:
-          scan-type: "config"
-          format: "sarif"
-          output: "trivy-results-config.sarif"
-          skip-files: Dockerfile
-
-      - name: Edit Trivy Sarif result
-        run: |
-          jq ".runs[0].tool.driver.name = \"Trivy-repo\"" ./trivy-results-fs.sarif > ./trivy-results-fs-edited.sarif
-          jq ".runs[0].tool.driver.name = \"Trivy-config\"" ./trivy-results-config.sarif > ./trivy-results-config-edited.sarif
-
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v3
-        if: github.event.pull_request
-        with:
-          message: |
-            :shield: The security scan result : [Repo](https://github.com/${{ github.repository }}/security/code-scanning?query=is%3Aopen+ref%3A${{ github.ref }}+tool%3ATrivy-repo) and [Config](https://github.com/${{ github.repository }}/security/code-scanning?query=is%3Aopen+ref%3A${{ github.ref }}+tool%3ATrivy-config)
-          comment-tag: "The security scan result of the repo"
-
-      - name: Upload security scan report FS
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: "trivy-results-fs-edited.sarif"
-
-      - name: Upload security scan report Config
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: "trivy-results-config-edited.sarif"
+    uses: ZeroGachis/.github/.github/workflows/security_scan_repo.yml@v4
+    secrets: inherit
