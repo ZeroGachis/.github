@@ -38,6 +38,7 @@ jobs:
     env:
       AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
       BACKUP_BUCKET_NAME: ${{ vars.BACKUP_BUCKET_NAME }}
+      TECH_PORTAL_DATA_BUCKET_NAME: ${{ vars.TECH_PORTAL_DATA_BUCKET_NAME }}
       DBT_TYPE: snowflake
       DBT_PROFILES_DIR: ${{ github.workspace }}/${{ inputs.project_dir }}
       SNOWFLAKE_DBT_SCHEMA: ${{ inputs.snowflake_dbt_schema }}
@@ -129,3 +130,9 @@ jobs:
           poetry run dbt compile --profile ${{ github.ref_name }} --project-dir ${{ env.DBT_PROFILES_DIR }}
           tar -czf ${{ env.DBT_PROFILES_DIR }}/target/valid_manifest.json.tar.gz -C ${{ env.DBT_PROFILES_DIR }}/target manifest.json
           aws s3 cp ${{ env.DBT_PROFILES_DIR }}/target/valid_manifest.json.tar.gz s3://${{ env.BACKUP_BUCKET_NAME }}/${{ github.event.repository.name }}/
+
+      - name: Upload dbtdocs
+        run: |
+          poetry run dbt docs generate --profile ${{ github.ref_name }} --project-dir ${{ env.DBT_PROFILES_DIR }}
+          aws s3 cp ${{ env.DBT_PROFILES_DIR }}/target/manifest.json s3://${{ env.TECH_PORTAL_DATA_BUCKET_NAME }}/dbtdocs/${{ github.event.repository.name }}/${{ github.ref_name }}/
+          aws s3 cp ${{ env.DBT_PROFILES_DIR }}/target/catalog.json s3://${{ env.TECH_PORTAL_DATA_BUCKET_NAME }}/dbtdocs/${{ github.event.repository.name }}/${{ github.ref_name }}/
