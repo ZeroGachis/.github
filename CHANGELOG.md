@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.69.0](https://github.com/ZeroGachis/.github/compare/v4.68.0...v4.69.0) (2025-07-04)
+
+
+### Features
+
+* add security scan workflow ([56df154](https://github.com/ZeroGachis/.github/commit/56df154902f703d0b38039c1517922d07e52406e))
+* **dbtdoc:** Send dbtdocs to S3 to be serve on tech-portal ([28801cb](https://github.com/ZeroGachis/.github/commit/28801cbc4a36319cae90d85cdf1c6f47e401cdb6))
+* **dbtdoc:** Send dbtdocs to S3 to be serve on tech-portal ([a4327b1](https://github.com/ZeroGachis/.github/commit/a4327b1f210823f7427935366126e6b3e8a1c6f6))
+
+
+### Miscellaneous Chores
+
+* **workflow:** update security scan workflow to include scheduled runs ([82e5b46](https://github.com/ZeroGachis/.github/commit/82e5b46aadcf283891d6dc7ea27d4dc4701cd32e))
+
 ## [4.68.0](https://github.com/ZeroGachis/.github/compare/v4.67.5...v4.68.0) (2025-06-16)
 
 
