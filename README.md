@@ -19,7 +19,6 @@ Below is the list of available templates and associated documentations:
 | Dockerfile Linter | `.github/workflows/dockerfile-linter.yml` | Lints Dockerfile syntax | [Documentation](.github/workflows/docs/dockerfile-linter.md) |
 | GitHub Release Notes | `.github/workflows/gh-release-notes.yml` | Generates GitHub release notes | [Documentation](.github/workflows/docs/gh-release-notes.md) |
 | GitHub Release Please | `.github/workflows/gh-release-please.yml` | Automates release process | [Documentation](.github/workflows/docs/gh-release-please.md) |
-| Infra Cost | `.github/workflows/infra-cost.yml` | Calculates infrastructure costs | [Documentation](.github/workflows/docs/infra-cost.md) |
 | Publish APK to S3 | `.github/workflows/publish-apk-s3.yml` | Publishes Android APKs to S3 | [Documentation](.github/workflows/docs/publish-apk-s3.md) |
 | Python Publish | `.github/workflows/python-publish.yml` | Publishes Python packages | [Documentation](.github/workflows/docs/python-publish.md) |
 | Push Image GHCR to ECR | `.github/workflows/push-image-ghcr-to-ecr.yml` | Pushes images from GHCR to ECR | [Documentation](.github/workflows/docs/push-image-ghcr-to-ecr.md) |
