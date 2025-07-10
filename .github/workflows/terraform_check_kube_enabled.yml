@@ -61,13 +61,6 @@ on:
         required: false
         type: boolean
         default: true
-      infracost_enabled:
-        required: false
-        type: boolean
-        default: true
-      infracost_terraform_workspace:
-        type: string
-        default: "develop,main"
       argocd_enabled:
         type: boolean
         default: false
@@ -97,5 +90,4 @@ jobs:
       terraform_check_only: ${{ inputs.terraform_check_only }}
       vault_enabled: ${{ inputs.vault_enabled }}
       tailscale_enabled: ${{ inputs.tailscale_enabled }}
-      infracost_terraform_workspace: ${{ inputs.infracost_terraform_workspace }}
     secrets: inherit

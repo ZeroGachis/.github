@@ -1,6 +1,6 @@
 # Terraform Workflow
 
-This reusable workflow manages infrastructure deployments using Terraform, with support for multiple environments, cost estimation, and security integrations.
+This reusable workflow manages infrastructure deployments using Terraform, with support for multiple environments, and security integrations.
 
 ## Usage
 
@@ -37,21 +37,17 @@ jobs:
 | `aws_secrets`                   | -                         | AWS Secrets Manager secrets to fetch                 |
 | `aws_additional_secrets`        | -                         | Additional AWS secrets to fetch                      |
 | `tailscale_enabled`             | `true`                    | Enable Tailscale VPN                                 |
-| `infracost_enabled`             | `true`                    | Enable Infracost analysis                            |
 | `argocd_enabled`                | `false`                   | Enable ArgoCD sync after apply                       |
 | `argocd_server`                 | -                         | ArgoCD server URL                                    |
-| `infracost_terraform_workspace` | "develop,main"            | Workspaces to run Infracost analysis on              |
 
 ## Features
 
 - 🔒 Secure credential management with Vault and AWS
-- 💰 Cost estimation with Infracost
 - 🔄 Automated state management
 - 📝 Terraform formatting and validation
 - 🏗️ Plan and apply capabilities
 - 🌐 Multi-environment support
 - 🔑 Private module access
-- 📊 Cost analysis on pull requests
 
 ## Example Usage
 

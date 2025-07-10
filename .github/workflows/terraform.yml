@@ -61,10 +61,6 @@ on:
         required: false
         type: boolean
         default: true
-      infracost_enabled:
-        required: false
-        type: boolean
-        default: true
       argocd_enabled:
         required: false
         type: boolean
@@ -72,9 +68,7 @@ on:
       argocd_server:
         required: false
         type: string
-      infracost_terraform_workspace:
-        type: string
-        default: "develop,main"
+
 jobs:
   terraform:
     name: "Terraform"
@@ -245,38 +239,3 @@ jobs:
           if-no-files-found: error
           overwrite: true
           retention-days: 1
-
-  infracost-prerequisites:
-    name: "Infracost Prerequisites"
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' && inputs.infracost_enabled }}
-    outputs:
-      files_changed: ${{ steps.files_changed.outputs.terraform }}
-      terraform_vars: ${{ steps.filter_args.outputs.filtered_args}}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Check if .tf files changed
-        id: files_changed
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            terraform:
-              - '**.tf'
-              - '**.tfvars'
-      - name: Filter Terraform Args
-        if: ${{ inputs.terraform_args }}
-        id: filter_args
-        run: |
-          filtered_args=$(echo '${{ inputs.terraform_args }}' | sed -e 's/.*"\(.*\)".*/\1/')
-          echo "filtered_args=$filtered_args" >> "$GITHUB_OUTPUT"
-  infracost:
-    name: "Run Infracost Workflow"
-    needs: [infracost-prerequisites]
-    if: ${{ github.event_name == 'pull_request' && needs.infracost-prerequisites.outputs.files_changed == 'true' && inputs.infracost_enabled }}
-    uses: ZeroGachis/.github/.github/workflows/infra-cost.yml@v4
-    with:
-      infracost_terraform_workspace: ${{ inputs.infracost_terraform_workspace }}
-      terraform_vars: ${{ needs.infracost-prerequisites.outputs.terraform_vars }}
-    secrets: inherit
