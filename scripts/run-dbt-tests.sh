@@ -7,7 +7,7 @@ REPO_NAME=$4
 REMOTE_FOLDER="${PROJECT_DIR}/remote"
 COMPARE_STATE="state:modified.body+1"
 NB_THREADS="15"
-WARN_ERROR_EXCLUDE='{"include": "all", "exclude": ["NoNodesForSelectionCriteria", "NothingToDo", "PackageMaterializationOverrideDeprecation", "LogTestResult"]}'
+WARN_ERROR_EXCLUDE='{"error": "all", "warn": ["NoNodesForSelectionCriteria", "NothingToDo", "PackageMaterializationOverrideDeprecation", "LogTestResult"]}'
 
 if [ "$BASE_REF" = "main" ]
 then
