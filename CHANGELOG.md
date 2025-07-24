@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.69.2](https://github.com/ZeroGachis/.github/compare/v4.69.1...v4.69.2) (2025-07-24)
+
+
+### Miscellaneous Chores
+
+* **deps:** update aquasecurity/trivy-action action to v0.32.0 ([0e6e6f2](https://github.com/ZeroGachis/.github/commit/0e6e6f26f24c7be22d3f4e2439ac7b319e09c81b))
+* **deps:** update dorny/test-reporter action to v2.1.1 ([#358](https://github.com/ZeroGachis/.github/issues/358)) ([2873a40](https://github.com/ZeroGachis/.github/commit/2873a404a970d23129c10427e848b36bd0d43954))
+
 ## [4.69.1](https://github.com/ZeroGachis/.github/compare/v4.69.0...v4.69.1) (2025-07-10)
 
 
