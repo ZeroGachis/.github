@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.70.0](https://github.com/ZeroGachis/.github/compare/v4.69.2...v4.70.0) (2025-08-19)
+
+
+### Features
+
+* **workflow:** add terraform_version input to setup-terraform action ([8b59751](https://github.com/ZeroGachis/.github/commit/8b59751f87fd0377169c892e66df2ed927bca382))
+
 ## [4.69.2](https://github.com/ZeroGachis/.github/compare/v4.69.1...v4.69.2) (2025-07-24)
 
 
