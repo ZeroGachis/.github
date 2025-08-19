@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Get Output
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: tf-output-${{ github.run_id }}-${{ github.run_attempt }}-${{ inputs.artifact_id }}
 
