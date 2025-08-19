@@ -28,6 +28,10 @@ on:
       terraform_args:
         required: false
         type: string
+      terraform_version:
+        required: false
+        type: string
+        default: "latest"
       aws_account_id:
         required: false
         type: string
@@ -173,6 +177,8 @@ jobs:
             secret/data/github-actions-common/argocd apikey | ARGOCD_AUTH_TOKEN;
 
       - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
 
       - name: Checkout
         uses: actions/checkout@v4
