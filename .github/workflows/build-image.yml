@@ -123,7 +123,7 @@ jobs:
           version: ${{ vars.TAILSCALE_VERSION }}
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Check DNS Resolution for Vault
         if: inputs.vault_enabled
