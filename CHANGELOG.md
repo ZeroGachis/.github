@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.70.3](https://github.com/ZeroGachis/.github/compare/v4.70.2...v4.70.3) (2025-09-05)
+
+
+### Miscellaneous Chores
+
+* **deps:** update actions/setup-java action to v5 ([bba8d8e](https://github.com/ZeroGachis/.github/commit/bba8d8e075cd1cdb058c8c8c9efcb1965f22de36))
+
 ## [4.70.2](https://github.com/ZeroGachis/.github/compare/v4.70.1...v4.70.2) (2025-09-05)
 
 
