@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.70.1](https://github.com/ZeroGachis/.github/compare/v4.70.0...v4.70.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* rollback version of reviewdog-trivy to avoid blocking aspect on Dockerfile ([331ecfa](https://github.com/ZeroGachis/.github/commit/331ecfa67cde4615063a65f5c10884ea7fa36c25))
+
+
+### Miscellaneous Chores
+
+* update warn option for dbt 1.10 ([d79ef61](https://github.com/ZeroGachis/.github/commit/d79ef6192d3b9468469d14a3219af3226920fa53))
+* update warn option for dbt 1.10 ([29685d7](https://github.com/ZeroGachis/.github/commit/29685d7c6fdce2879a97f080368a493b8fd89615))
+
 ## [4.70.0](https://github.com/ZeroGachis/.github/compare/v4.69.2...v4.70.0) (2025-08-19)
 
 
