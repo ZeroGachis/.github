@@ -255,7 +255,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         if: inputs.security_scan_enabled && inputs.security_scan_output_format != 'sarif'
         id: trivy-scan
-        uses: aquasecurity/trivy-action@0.32.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           skip-setup-trivy: true
           image-ref: ${{ steps.meta.outputs.tags }}
@@ -270,7 +270,7 @@ jobs:
       - name: Run Trivy vulnerability scanner sarif
         if: inputs.security_scan_enabled && inputs.security_scan_output_format == 'sarif'
         id: trivy-scan-sarif
-        uses: aquasecurity/trivy-action@0.32.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           skip-setup-trivy: true
           image-ref: ${{ steps.meta.outputs.tags }}
@@ -318,7 +318,7 @@ jobs:
       - name: Trivy vulnerability block Critical
         id: trivy-scan-block-critical
         if: inputs.security_scan_enabled
-        uses: aquasecurity/trivy-action@0.32.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           skip-setup-trivy: true
           image-ref: ${{ steps.meta.outputs.tags }}
