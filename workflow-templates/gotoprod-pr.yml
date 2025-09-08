@@ -6,9 +6,20 @@ on:
       - develop
 
 permissions:
+  id-token: write
   contents: write
   pull-requests: write
+  actions: write
+  checks: write
+  security-events: write
 
 jobs:
   call-gotoprod-pr-workflow:
     uses: ZeroGachis/.github/.github/workflows/create-gotoprod-pr.yml@v4
+  security_scan:
+    needs: call-gotoprod-pr-workflow
+    if: needs.call-gotoprod-pr-workflow.outputs.pr_number != ''
+    uses: ZeroGachis/.github/.github/workflows/security_scan_repo.yml@v4
+    with:
+      pr_number: ${{ needs.call-gotoprod-pr-workflow.outputs.pr_number }}
+    secrets: inherit
