@@ -11,6 +11,11 @@ on:
       - tools
       - release/*
   workflow_call:
+    inputs:
+      pr_number:
+        description: 'Pull request number to scan'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -25,6 +30,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # If triggered via workflow_dispatch with PR number, checkout the PR branch
+          ref: ${{ github.event.inputs.pr_number && format('refs/pull/{0}/head', github.event.inputs.pr_number) || github.ref }}
 
       - name: Security Scan FS
         uses: aquasecurity/trivy-action@0.32.0
