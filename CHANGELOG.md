@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.71.0](https://github.com/ZeroGachis/.github/compare/v4.70.2...v4.71.0) (2025-09-22)
+
+
+### Features
+
+* **workflow:** add terraform_save_output input to control output saving ([c173e8e](https://github.com/ZeroGachis/.github/commit/c173e8eb001aabcee42bf132d1fde5d8921562d1))
+
+
+### Miscellaneous Chores
+
+* **deps:** update actions/checkout action to v5 ([779a25b](https://github.com/ZeroGachis/.github/commit/779a25b6e78a28dce5ffe0b3e7ff35b6e89bab26))
+* **deps:** update actions/download-artifact action to v5 ([e172395](https://github.com/ZeroGachis/.github/commit/e17239563468d0c6220468e89d1217247aba60e7))
+* **deps:** update actions/github-script action to v8 ([ff8d600](https://github.com/ZeroGachis/.github/commit/ff8d60022a684b76cbb8ed16d60a486d83f30e04))
+* **deps:** update actions/setup-java action to v5 ([bba8d8e](https://github.com/ZeroGachis/.github/commit/bba8d8e075cd1cdb058c8c8c9efcb1965f22de36))
+* **deps:** update actions/setup-node action to v5 ([f4a7453](https://github.com/ZeroGachis/.github/commit/f4a7453de300cfa31a9747fd8736834aed2381ae))
+* **deps:** update actions/setup-python action to v6 ([fad8048](https://github.com/ZeroGachis/.github/commit/fad8048d23f6d92d879044e42e3a573f45222cf2))
+* **deps:** update aquasecurity/setup-trivy action to v0.2.4 ([#369](https://github.com/ZeroGachis/.github/issues/369)) ([9e3e113](https://github.com/ZeroGachis/.github/commit/9e3e113f684ea4d78f6b9756700fce85fea588a0))
+* **deps:** update aquasecurity/trivy-action action to v0.33.1 ([dcd1498](https://github.com/ZeroGachis/.github/commit/dcd14981195cd44ea6eaf3df524695ea882c510c))
+* **deps:** update aws-actions/configure-aws-credentials action to v5 ([a729353](https://github.com/ZeroGachis/.github/commit/a729353696c561aa84d75fb8aea8ee6797df8828))
+
 ## [4.70.2](https://github.com/ZeroGachis/.github/compare/v4.70.1...v4.70.2) (2025-09-05)
 
 
