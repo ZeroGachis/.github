@@ -206,7 +206,7 @@ jobs:
 
       - name: Lint Dockerfile - Trivy
         if: inputs.linter_tool == 'trivy'
-        uses: reviewdog/action-trivy@v1.13.10
+        uses: reviewdog/action-trivy@v1.14.0
         with:
           trivy_command: config
           trivy_target: ${{ inputs.dockerfile_context }}/${{ inputs.file }}
