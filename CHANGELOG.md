@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.72.0](https://github.com/ZeroGachis/.github/compare/v4.71.0...v4.72.0) (2025-10-13)
+
+
+### Features
+
+* Use mise for dbt test workflow ([#379](https://github.com/ZeroGachis/.github/issues/379)) ([c396d1e](https://github.com/ZeroGachis/.github/commit/c396d1e40778ecb107f0c445c007aed5c36336f9))
+
 ## [4.71.0](https://github.com/ZeroGachis/.github/compare/v4.70.2...v4.71.0) (2025-09-22)
 
 
