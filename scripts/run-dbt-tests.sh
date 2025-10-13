@@ -42,7 +42,8 @@ BUILD_STANDARD="dbt \
     --select $COMPARE_STATE \
     --state $REMOTE_FOLDER \
     --threads $NB_THREADS \
-    --exclude source:* "
+    --exclude source:* \
+    --exclude elementary "
 echo $BUILD_STANDARD
 eval $BUILD_STANDARD || { echo 'Running or testing standard models failed'; exit 1; }
 
@@ -57,6 +58,7 @@ BUILD_INCREMENTAL="dbt \
     --select config.materialized:incremental,$COMPARE_STATE \
     --state $REMOTE_FOLDER \
     --threads $NB_THREADS \
-    --exclude source:* "
+    --exclude source:* \
+    --exclude elementary "
 echo $BUILD_INCREMENTAL
 eval $BUILD_INCREMENTAL || { echo 'Running or testing incremental models failed' ; exit 1; }
