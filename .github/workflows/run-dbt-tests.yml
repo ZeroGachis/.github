@@ -114,14 +114,14 @@ jobs:
         with:
           python-version: ${{ inputs.python_version }}
 
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v4
+      - name: Install Mise
+        uses: jdx/mise-action@v3
         with:
-          poetry-version: latest
+          experimental: true
 
-      - name: Poetry install dependancies
+      - name: Install dependancies
         run: |
-          poetry install --no-interaction --no-ansi --no-root
+          mise run init
 
       - name: Run dbt-checkpoint
         run: |
@@ -136,9 +136,13 @@ jobs:
           path: github_workflow
           token: ${{ env.GH_ORG_READ_REPO_TOKEN }}
 
-      - name: Run dbt tests
+      - name: Run generic dbt tests
         run: |
           poetry run ${{ github.workspace }}/github_workflow/scripts/run-dbt-tests.sh ${{ inputs.environment_name }} ${{ env.BACKUP_BUCKET_NAME }} ${{ env.DBT_PROFILES_DIR }} ${{ github.event.repository.name }}
+
+      - name: Run repo specific dbt tests
+        run: |
+          mise run specific-dbt-tests
 
       - name: Drop snowflake test schema
         if: always()
