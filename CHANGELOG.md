@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.72.1](https://github.com/ZeroGachis/.github/compare/v4.72.0...v4.72.1) (2025-10-14)
+
+
+### Bug Fixes
+
+* Use mise tasks for dbt upload-dbt-manifest ([#381](https://github.com/ZeroGachis/.github/issues/381)) ([7406e28](https://github.com/ZeroGachis/.github/commit/7406e28b950de9804e0e466ac4a6fe78258b21fb))
+
 ## [4.72.0](https://github.com/ZeroGachis/.github/compare/v4.71.0...v4.72.0) (2025-10-13)
 
 
