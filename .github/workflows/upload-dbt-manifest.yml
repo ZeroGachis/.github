@@ -115,14 +115,14 @@ jobs:
         with:
           python-version: ${{ inputs.python_version }}
 
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v4
+      - name: Install Mise
+        uses: jdx/mise-action@v3
         with:
-          poetry-version: latest
+          experimental: true
 
-      - name: Poetry install dependancies
+      - name: Install dependancies
         run: |
-          poetry install --no-interaction --no-ansi --no-root
+          mise run init
 
       - name: Upload manifest
         run: |
