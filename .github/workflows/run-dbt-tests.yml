@@ -119,6 +119,7 @@ jobs:
         with:
           install: true
           log_level: debug
+          cache: false
 
       - name: Install dependancies
         run: |
