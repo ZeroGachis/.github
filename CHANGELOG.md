@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.72.3](https://github.com/ZeroGachis/.github/compare/v4.72.2...v4.72.3) (2025-10-21)
+
+
+### Bug Fixes
+
+* **dbt:** Select models with associated macros changed ([#386](https://github.com/ZeroGachis/.github/issues/386)) ([7b10cf8](https://github.com/ZeroGachis/.github/commit/7b10cf80f851eea5b37ddeeb19cf2631df11fd39))
+
 ## [4.72.2](https://github.com/ZeroGachis/.github/compare/v4.72.1...v4.72.2) (2025-10-20)
 
 
