@@ -31,7 +31,7 @@ aws s3 cp s3://"${BACKUP_BUCKET_NAME}"/${REPO_NAME}/valid_manifest.json.tar.gz $
 tar -xzf $REMOTE_FOLDER/valid_manifest.json.tar.gz -C $REMOTE_FOLDER
 
 
-# Only run models which differ from remote
+# Only run models which differ from remote and models with associated macros change
 printf "\nRun standard models which differ from last valid manifest.json...\n"
 BUILD_STANDARD="dbt \
     --warn-error-options \"$WARN_ERROR_EXCLUDE\" \
@@ -39,7 +39,7 @@ BUILD_STANDARD="dbt \
     --project-dir $PROJECT_DIR \
     $FAIL_FAST \
     --defer \
-    --select $COMPARE_STATE \
+    --select state:modified.macros $COMPARE_STATE \
     --state $REMOTE_FOLDER \
     --threads $NB_THREADS \
     --exclude source:* \
