@@ -132,6 +132,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           repository: ZeroGachis/.github
+          ref: feat/add-snapshot-run-to-dbt-test-cu
           sparse-checkout: |
             scripts
           path: github_workflow

@@ -30,6 +30,22 @@ mkdir -p $REMOTE_FOLDER
 aws s3 cp s3://"${BACKUP_BUCKET_NAME}"/${REPO_NAME}/valid_manifest.json.tar.gz $REMOTE_FOLDER
 tar -xzf $REMOTE_FOLDER/valid_manifest.json.tar.gz -C $REMOTE_FOLDER
 
+# Run snapshot which differ from remote
+printf "\nRun snapshot models which differ from last valid manifest.json...\n"
+BUILD_SNAPSHOT="dbt \
+    --warn-error-options \"$WARN_ERROR_EXCLUDE\" \
+    snapshot \
+    --project-dir $PROJECT_DIR \
+    $FAIL_FAST \
+    --defer \
+    --select state:modified.body \
+    --state $REMOTE_FOLDER \
+    --threads $NB_THREADS \
+    --exclude source:* \
+    --exclude elementary "
+echo $BUILD_SNAPSHOT
+eval $BUILD_SNAPSHOT || { echo 'Running or testing snapshot models failed'; exit 1; }
+
 
 # Only run models which differ from remote and models with associated macros change
 printf "\nRun standard models which differ from last valid manifest.json...\n"
