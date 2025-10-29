@@ -35,6 +35,8 @@ jobs:
 
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.7.0
+        with:
+          yamale_version: "6.0.0"
 
       - name: Run chart-testing (lint)
         run: ct lint --chart-dirs ${{ inputs.charts_root_dir }} --target-branch ${{ inputs.target_branch }} --check-version-increment=false
