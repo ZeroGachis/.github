@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.72.4](https://github.com/ZeroGachis/.github/compare/v4.72.3...v4.72.4) (2025-10-29)
+
+
+### Bug Fixes
+
+* workaround for ct lint bug ([bce90af](https://github.com/ZeroGachis/.github/commit/bce90afa749fc5cc064bd14468ef20b883079da9))
+
 ## [4.72.3](https://github.com/ZeroGachis/.github/compare/v4.72.2...v4.72.3) (2025-10-21)
 
 
