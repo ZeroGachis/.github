@@ -307,7 +307,7 @@ jobs:
 
       - name: Upload Trivy Sarif result
         if: inputs.security_scan_enabled && inputs.security_scan_output_format == 'sarif'
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           # Path to SARIF file relative to the root of the repository
           sarif_file: "trivy-results-${{ inputs.image_name }}-edited.sarif"

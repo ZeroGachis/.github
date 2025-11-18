@@ -55,11 +55,11 @@ jobs:
           comment-tag: "The security scan result of the repo"
 
       - name: Upload security scan report FS
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: "trivy-results-fs-edited.sarif"
 
       - name: Upload security scan report Config
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: "trivy-results-config-edited.sarif"
