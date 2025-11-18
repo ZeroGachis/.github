@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.72.5](https://github.com/ZeroGachis/.github/compare/v4.72.4...v4.72.5) (2025-11-18)
+
+
+### Miscellaneous Chores
+
+* **deps:** update github/codeql-action action to v4 ([dfbd91c](https://github.com/ZeroGachis/.github/commit/dfbd91c405f9c371bb5de0278fa9d75eaf2068bd))
+* **deps:** update github/codeql-action action to v4 ([96bb4e4](https://github.com/ZeroGachis/.github/commit/96bb4e49675a4dccde052100f9363e86c0a5fd66))
+
 ## [4.72.4](https://github.com/ZeroGachis/.github/compare/v4.72.3...v4.72.4) (2025-10-29)
 
 
