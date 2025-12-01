@@ -139,7 +139,7 @@ jobs:
 
       - name: Checkout
         if: ${{ inputs.checkout_enabled }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Configure AWS Credentials
         if: inputs.aws_credentials_enabled
