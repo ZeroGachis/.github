@@ -1,0 +1,43 @@
+name: Poetry install dependencies
+description: |
+  Install python dependencies dependencies with poetry.
+
+  This action login on AWS in order to install
+  Smartway's private packages from AWS CodeArtifact.
+
+  Installed dependencies are cached.
+
+  Prerequisites: Python & poetry must be installed, and 
+  the repository must be checked-out.
+
+inputs:
+  aws_account_id:
+    required: true
+  install_options:
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Define a cache for the virtual environment based on the dependencies lock file
+      uses: actions/cache@v5
+      id: cache-python-deps
+      with:
+        path: ./.venv
+        key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}-${{ inputs.install_options }}
+    - name: Authenticate on AWS
+      if: steps.cache-python-deps.outputs.cache-hit != 'true'
+      id: aws
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        aws-region: eu-west-3
+        role-to-assume: arn:aws:iam::${{ inputs.aws_account_id }}:role/github_oidc_readonly
+        output-credentials: true
+    - name: Setup private repository credentials
+      run: ./scripts/setup_private_repo_credentials.sh
+      shell: bash
+      if: steps.cache-python-deps.outputs.cache-hit != 'true'
+    - name: Install dependencies
+      run: poetry install ${{ inputs.install_options }}
+      shell: bash
+      if: steps.cache-python-deps.outputs.cache-hit != 'true'
