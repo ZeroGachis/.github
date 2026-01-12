@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.73.0](https://github.com/ZeroGachis/.github/compare/v4.72.5...v4.73.0) (2026-01-12)
+
+
+### Features
+
+* Add action to install the python dependencies of a project with poetry ([df06a44](https://github.com/ZeroGachis/.github/commit/df06a4404aa5e56c56a5cee4aef9be7dbcff8bd6))
+* Add action to install the python dependencies of a project with poetry ([518ee0c](https://github.com/ZeroGachis/.github/commit/518ee0c61b7fab704f3ff59fdb3557f0d1a4db03))
+
 ## [4.72.5](https://github.com/ZeroGachis/.github/compare/v4.72.4...v4.72.5) (2025-11-18)
 
 
