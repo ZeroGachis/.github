@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0](https://github.com/ZeroGachis/.github/compare/v4.73.0...v5.0.0) (2026-01-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* use GitHub App token to auto-trigger workflows on PRs
+
+### Bug Fixes
+
+* use GitHub App token to auto-trigger workflows on PRs ([589a24b](https://github.com/ZeroGachis/.github/commit/589a24b5b5e58e5196f6563044e41f804a512be9))
+
+
+### Miscellaneous Chores
+
+* **deps:** update aquasecurity/setup-trivy action to v0.2.5 ([#403](https://github.com/ZeroGachis/.github/issues/403)) ([a3d3682](https://github.com/ZeroGachis/.github/commit/a3d3682e6152d43c59b046e22dd93d70cddf6ecf))
+* **deps:** update reviewdog/action-trivy action to v1.14.0 ([ded4e61](https://github.com/ZeroGachis/.github/commit/ded4e6182fb17b91b25552349e59abaaf09fb675))
+
 ## [4.73.0](https://github.com/ZeroGachis/.github/compare/v4.72.5...v4.73.0) (2026-01-12)
 
 
