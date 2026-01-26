@@ -16,12 +16,22 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      - name: Generate GitHub App Token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.SW_BOT_APP_ID }}
+          private-key: ${{ secrets.SW_BOT_APP_PRIVATE_KEY }}
+
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
 
       - name: Create Pull Request
         uses: actions/github-script@v8
         with:
+          github-token: ${{ steps.generate-token.outputs.token }}
           script: |
             const title = '🚀 Go to Production';
             const head = '${{ github.ref_name }}';
@@ -56,7 +66,7 @@ jobs:
                 repo: context.repo.repo,
                 pull_number: prNumber
               });
-              
+
               // Collect both authors and committers
               const contributors = [];
               commits.data.forEach(commit => {
@@ -64,15 +74,15 @@ jobs:
                 if (commit.author && commit.author.login && !commit.author.login.includes('[bot]')) {
                   contributors.push(commit.author.login);
                 }
-                
+
                 // Add committer if available, different from author, and not a bot
                 if (commit.committer && commit.committer.login && !commit.committer.login.includes('[bot]')) {
                   contributors.push(commit.committer.login);
                 }
               });
-              
+
               const uniqueContributors = [...new Set(contributors)];
-              
+
               // Only request reviews if there are contributors
               if (uniqueContributors.length > 0) {
                 try {
@@ -89,7 +99,7 @@ jobs:
                   // Continue with the workflow - we still want their names in the PR
                 }
               }
-              
+
               return uniqueContributors;
             }
 
@@ -110,7 +120,7 @@ jobs:
                 `**Base**: \`${{ inputs.base }}\``,
                 '### :mag_right: Changes',
                 '### :busts_in_silhouette: Contributors',
-                contributors.length > 0 
+                contributors.length > 0
                   ? '- ' + contributors.map(c => '@' + c).join('\n- ')
                   : 'No human contributors identified'
               ];
