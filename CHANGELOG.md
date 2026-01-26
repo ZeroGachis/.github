@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### ⚠ BREAKING CHANGES
 
-* use GitHub App token to auto-trigger workflows on PRs
+* use GitHub App token to auto-trigger workflows on PRs.  
+  💅 To be able to trigger Security Scans without the reopen trick, you can setup your workflow to *v5* and add `secrets: inherit` in this workflow call like [here](https://github.com/ZeroGachis/pricing-service/compare/57b2a4d553921c2e393f503f820795b362bfc0e9..e233820c4ef3440848222771773021f5ea112c13).
 
 ### Bug Fixes
 
