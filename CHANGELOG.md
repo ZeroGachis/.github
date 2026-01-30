@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.1](https://github.com/ZeroGachis/.github/compare/v5.0.0...v5.0.1) (2026-01-30)
+
+
+### Bug Fixes
+
+* **dbt:** Warn for CustomTopLevelKeyDeprecation errors ([#406](https://github.com/ZeroGachis/.github/issues/406)) ([61f9c3b](https://github.com/ZeroGachis/.github/commit/61f9c3b126b653e8301c3ac5999c6b3813b4e5e1))
+
 ## [5.0.0](https://github.com/ZeroGachis/.github/compare/v4.73.0...v5.0.0) (2026-01-26)
 
 
