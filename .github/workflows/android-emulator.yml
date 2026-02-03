@@ -1,0 +1,182 @@
+name: Android Emulator E2E
+
+on:
+  workflow_call:
+    inputs:
+      apk-artifact-name:
+        required: true
+        type: string
+      apk-name:
+        required: true
+        type: string
+      package-name:
+        required: true
+        type: string
+      node-version:
+        required: true
+        type: string
+      test-suite:
+        description: name of robot test suite to run
+        required: true
+        type: string
+      api-version:
+        required: false
+        type: string
+        default: '30'
+        
+env:
+  output_folder: ./TestsAutomation/Output
+
+jobs:
+  e2e-emulator-tests:
+    runs-on: ubuntu-large-emulator
+    continue-on-error: true
+    strategy:
+      matrix:
+        suite:
+          - 01_InitEnrollement
+          - 01_InitFirstSync
+          # - 02_SetupWorkspaces
+          # - 03_SDetAlerts
+          # - 03_SDetAlertsFilter
+          # - 03_2_SDetScan
+          # - 30_Diagnostic
+      fail-fast: false
+    env:
+      TZ: Europe/Paris
+      CI: true
+      ANDROID_HOME: ~/Android/Sdk
+      ANDROID_AVD: android-emulator
+      ANDROID_DEVICE: smartemu
+      arch: x86_64
+      APPIUM_TEST_SERVER_PORT: 4723
+      APPIUM_TEST_SERVER_HOST: 127.0.0.1
+      _FORCE_LOGS: 1
+      ANDROID_PACKAGE: ${{ inputs.package-name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache-dependency-path: "package-lock.json"
+          cache: npm
+        
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.9"
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      
+      - name: Gradle cache
+        uses: gradle/actions/setup-gradle@v5
+        
+      - name: Install XVFB
+        run: sudo apt -y install xvfb
+          
+      - name: Add Android SDK to PATH
+        run: |
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
+
+      - name: Setup Command Line Tools
+        run: |
+          mkdir -p $ANDROID_HOME/cmdline-tools/latest && cd $_
+          wget -O ./cltools.zip https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip
+          unzip ./cltools.zip && mv ./cmdline-tools/* . && rmdir  ./cmdline-tools
+          
+      - name: Accept Android SDK Licenses
+        run: |
+          yes | sdkmanager --licenses
+          
+      - name: Install Android SDK
+        run: |
+          sdkmanager --install sdkmanager "platform-tools" "platforms;android-${{ inputs.api-version }}" "system-images;android-${{ inputs.api-version }};google_apis;x86_64" "emulator"
+ 
+      # - name: AVD cache
+      #   uses: actions/cache@v5
+      #   id: avd-cache
+      #   with:
+      #     path: |
+      #       ~/.android/avd/*
+      #       ~/.android/adb*
+      #       ~/.android/sdk/system-images/*
+      #       ~/.android/debug.keystore
+      #     key: avd-${{ inputs.api-version }}-adm64
+      
+      - name: Create Android Emulator
+        run: |
+          avdmanager create avd -n $ANDROID_DEVICE -k "system-images;android-${{ inputs.api-version }};google_apis;x86_64" --device "pixel_8"
+
+      - name: Install Node dependencies
+        working-directory: TestsAutomation
+        run: |
+          npm install
+          echo "$PWD/node_modules/.bin/" >> $GITHUB_PATH
+
+      - name: Install Appium dependencies
+        working-directory: TestsAutomation
+        run: |
+          appium driver install espresso@${{ inputs.espresso-version }}
+
+      - name: Install python packages
+        working-directory: TestsAutomation
+        run: pip3 install -U -r pip_requirements.txt
+
+      - name: Download Artifact
+        uses: actions/Download-artifact@v7
+        with:
+          name: app-e2e.apk
+          path: .
+
+      - name: Start appium
+        run: |
+          xvfb-run appium -a 127.0.0.1 -p 4723 --base-path /wd/hub/ \
+            --allow-insecure=adb_shell \
+            --default-capabilities '{"appium:app": "${{ github.workspace }}/${{ env.smartway_apk_name }}"}'  \
+            --shell \
+            --log-timestamp \
+            --log ${{ env.output_folder }}/appium-server.log &
+          sleep 10
+          
+      #################################
+      # DEBUG MODE
+      #################################
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
+      - name: Run tests
+        working-directory: TestsAutomation/Suites
+        env:
+          ROOT_PROJECT_PATH: ${{ github.workspace }}/TestsAutomation
+        run: python3 -m robot -s 01_InitApplication -s ${{ matrix.suite }} -d ../Output/ --variable DEVICE_ADB_ID:$ANDROID_DEVICE --variable DEVICE_SERIAL:${ANDROID_SERIAL_ID} --variable APP_PACKAGE:ai.smartway.smartapp ./
+
+      - name: Upload Tests Report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: E2E-Fosapp-TestReport-${{ matrix.device-type }}-${{ matrix.api-version }}-${{ matrix.arch }}-${{ matrix.shard }}
+          path: |
+            ${{ github.workspace }}/e2e-tests/output/appium.log
+            ${{ github.workspace }}/e2e-tests/output/allure-report
+            ${{ github.workspace }}/e2e-tests/output/records
+
+      - name: Upload Tests Report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: RobotFramework-TestReport-${{ matrix.suite }}
+          path: ${{ env.output_folder }}
