@@ -56,27 +56,28 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
         
-      - uses: actions/setup-node@v6
+      - name: 📦 Setup Node
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           cache-dependency-path: src/
           cache: npm
         
-      - name: Setup Python
+      - name: 📦 Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.9"
 
-      - name: Setup Java
+      - name: 📦 Setup Java
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
       
-      - name: Gradle cache
+      - name: ♻️ Gradle cache
         uses: gradle/actions/setup-gradle@v5
         
-      - name: Install XVFB
+      - name: 📦 Install XVFB
         run: sudo apt -y install xvfb
           
       - name: Add Android SDK to PATH
@@ -88,7 +89,7 @@ jobs:
       - name: Add Android Emulator to PATH
         run: echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
       
-      - name: Restore Cache Android SDK
+      - name: ♻️ Restore Cache Android SDK
         id: cache-android-sdk
         uses: actions/cache/restore@v5
         with:
@@ -99,21 +100,21 @@ jobs:
             ${{ env.ANDROID_HOME }}/build-tools
           key: android-sdk-${{ inputs.api-version }}
       
-      - name: Restore Cache Android AVD
+      - name: ♻️ Restore Cache Android AVD
         id: cache-avd
         uses: actions/cache/restore@v5
         with:
           path: ${{ env.ANDROID_AVD_HOME }}
           key: android-avd-${{ inputs.api-version }}
           
-      - name: Restore Cache Appium Dependencies
+      - name: ♻️ Restore Cache Appium Dependencies
         id: cache-appium
         uses: actions/cache/restore@v5
         with:
           path: TestsAutomation/node_modules
           key: appium-node-modules-${{ hashFiles('TestsAutomation/package-lock.json') }}
           
-      - name: Setup Command Line Tools
+      - name: 📦 Setup Command Line Tools
         # if: steps.cache-android-sdk.outputs.cache-hit != 'true'
         run: |
           echo "➡️ Deleting default SDK setup"
@@ -133,7 +134,7 @@ jobs:
         run: |
           yes | sdkmanager --licenses
           
-      - name: Install Android SDK
+      - name: 📦 Install Android SDK
         if: steps.cache-android-sdk.outputs.cache-hit != 'true'
         run: |
           sdkmanager --install "platform-tools" "platforms;android-${{ inputs.api-version }}" "system-images;android-${{ inputs.api-version }};google_apis;x86_64" "build-tools;${{ inputs.api-version }}.0.0" "emulator"
@@ -142,22 +143,22 @@ jobs:
         if: steps.cache-avd.outputs.cache-hit != 'true'
         run: mkdir -p ${{ env.ANDROID_AVD_HOME }}
         
-      - name: Create Android Emulator
+      - name: Create AVD
         if: steps.cache-avd.outputs.cache-hit != 'true'
         run: |
           avdmanager create avd -n $ANDROID_DEVICE -k "system-images;android-${{ inputs.api-version }};google_apis;x86_64" --device "pixel_8"
 
-      - name: Install Node dependencies
+      - name: 📦 Install Node dependencies
         working-directory: TestsAutomation
         run: |
           npm install
           echo "$PWD/node_modules/.bin/" >> $GITHUB_PATH
 
-      - name: Install python packages
+      - name: 📦 Install python packages
         working-directory: TestsAutomation
         run: pip3 install -U -r pip_requirements.txt
 
-      - name: Install Appium dependencies
+      - name: 📦 Install Appium dependencies
         working-directory: TestsAutomation
         run: |
           appium driver install espresso@${{ inputs.espresso-version }}
@@ -213,7 +214,7 @@ jobs:
       #   if: always()
       #   uses: mxschmitt/action-tmate@v3
         
-      - name: Save Cache Android SDK
+      - name: ♻️ Save Cache Android SDK
         if: steps.cache-android-sdk.outputs.cache-hit != 'true' # && always() # REMOVE ALWAYS AFTER DEBUG
         uses: actions/cache/save@v5
         with:
@@ -222,21 +223,21 @@ jobs:
             ${{ env.ANDROID_HOME }}/emulator
           key: android-sdk-${{ inputs.api-version }}
       
-      - name: Save Cache Android AVD
+      - name: ♻️ Save Cache Android AVD
         if: steps.cache-avd.outputs.cache-hit != 'true' # && always() # REMOVE ALWAYS AFTER DEBUG
         uses: actions/cache/save@v5
         with:
           path: ${{ env.ANDROID_AVD_HOME }}
           key: android-avd-${{ inputs.api-version }}
       
-      - name: Save Appium Cache
+      - name: ♻️ Save Appium Cache
         if: steps.cache-appium.outputs.cache-hit != 'true' # && always() # REMOVE ALWAYS AFTER DEBUG
         uses: actions/cache/save@v5
         with:
           path: TestsAutomation/node_modules
           key: appium-node-modules-${{ hashFiles('TestsAutomation/package-lock.json') }}
       
-      - name: Upload Appium Server Logs
+      - name: 📋 Upload Appium Server Logs
         if: always()
         uses: actions/upload-artifact@v5
         with:
@@ -244,7 +245,7 @@ jobs:
           path: ./TestsAutomation/appium-server.log
           if-no-files-found: warn
 
-      - name: Upload Tests Report
+      - name: 📋 Upload Tests Report
         if: always()
         uses: actions/upload-artifact@v5
         with:
