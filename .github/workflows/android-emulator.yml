@@ -27,12 +27,12 @@ jobs:
       matrix:
         suite:
           - 01_InitEnrollement
-          # - 01_InitFirstSync
-          # - 02_SetupWorkspaces
-          # - 03_SDetAlerts
-          # - 03_SDetAlertsFilter
-          # - 03_2_SDetScan
-          # - 30_Diagnostic
+          - 01_InitFirstSync
+          - 02_SetupWorkspaces
+          - 03_SDetAlerts
+          - 03_SDetAlertsFilter
+          - 03_2_SDetScan
+          - 30_Diagnostic
       fail-fast: false
     env:
       TZ: Europe/Paris
