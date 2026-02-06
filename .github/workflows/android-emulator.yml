@@ -163,7 +163,7 @@ jobs:
       #   uses: actions/Download-artifact@v7
       #   with:
       #     name: app-e2e.apk
-      #     path: .
+      #     path: TestsAutomation/
 
       - name: Start appium
         working-directory: TestsAutomation
@@ -206,9 +206,9 @@ jobs:
       ################################
       # DEBUG MODE
       #################################
-      - name: Setup tmate session
-        if: always()
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   if: always()
+      #   uses: mxschmitt/action-tmate@v3
         
       - name: Save Cache Android SDK
         if: steps.cache-android-sdk.outputs.cache-hit != 'true' && always() # REMOVE ALWAYS AFTER DEBUG
