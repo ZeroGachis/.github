@@ -88,7 +88,7 @@ jobs:
       - name: Add Android Emulator to PATH
         run: echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
       
-      - name: Cache Android SDK
+      - name: Restore Cache Android SDK
         id: cache-android-sdk
         uses: actions/cache/restore@v5
         with:
@@ -99,14 +99,14 @@ jobs:
             ${{ env.ANDROID_HOME }}/build-tools
           key: android-sdk-${{ inputs.api-version }}
       
-      - name: Cache Android AVD
+      - name: Restore Cache Android AVD
         id: cache-avd
         uses: actions/cache/restore@v5
         with:
           path: ${{ env.ANDROID_AVD_HOME }}
           key: android-avd-${{ inputs.api-version }}
           
-      - name: Cache Appium Dependencies
+      - name: Restore Cache Appium Dependencies
         id: cache-appium
         uses: actions/cache/restore@v5
         with:
@@ -124,6 +124,9 @@ jobs:
           wget --progress=bar:force:noscroll -O ./cltools.zip https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip
           echo "➡️ Uncompressing Command Line Tools"
           unzip -q ./cltools.zip && mv ./cmdline-tools/* . && rmdir  ./cmdline-tools
+          echo "➡️ Deleting AVD lock files"
+          rm -rf $ANDROID_AVD_HOME/*/*.lock
+          
         
       - name: Accept Android SDK Licenses
         if: steps.cache-android-sdk.outputs.cache-hit != 'true'
@@ -211,7 +214,7 @@ jobs:
       #   uses: mxschmitt/action-tmate@v3
         
       - name: Save Cache Android SDK
-        if: steps.cache-android-sdk.outputs.cache-hit != 'true' && always() # REMOVE ALWAYS AFTER DEBUG
+        if: steps.cache-android-sdk.outputs.cache-hit != 'true' # && always() # REMOVE ALWAYS AFTER DEBUG
         uses: actions/cache/save@v5
         with:
           path: |
@@ -220,14 +223,14 @@ jobs:
           key: android-sdk-${{ inputs.api-version }}
       
       - name: Save Cache Android AVD
-        if: steps.cache-avd.outputs.cache-hit != 'true' && always() # REMOVE ALWAYS AFTER DEBUG
+        if: steps.cache-avd.outputs.cache-hit != 'true' # && always() # REMOVE ALWAYS AFTER DEBUG
         uses: actions/cache/save@v5
         with:
           path: ${{ env.ANDROID_AVD_HOME }}
           key: android-avd-${{ inputs.api-version }}
       
       - name: Save Appium Cache
-        if: steps.cache-appium.outputs.cache-hit != 'true' && always() # REMOVE ALWAYS AFTER DEBUG
+        if: steps.cache-appium.outputs.cache-hit != 'true' # && always() # REMOVE ALWAYS AFTER DEBUG
         uses: actions/cache/save@v5
         with:
           path: TestsAutomation/node_modules
