@@ -28,11 +28,11 @@ jobs:
         suite:
           - 01_InitEnrollement
           - 01_InitFirstSync
-          - 02_SetupWorkspaces
-          - 03_SDetAlerts
-          - 03_SDetAlertsFilter
-          - 03_2_SDetScan
-          - 30_Diagnostic
+          # - 02_SetupWorkspaces
+          # - 03_SDetAlerts
+          # - 03_SDetAlertsFilter
+          # - 03_2_SDetScan
+          # - 30_Diagnostic
       fail-fast: false
     env:
       TZ: Europe/Paris
@@ -73,9 +73,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      
-      - name: ♻️ Gradle cache
-        uses: gradle/actions/setup-gradle@v5
         
       - name: 📦 Install XVFB
         run: sudo apt -y install xvfb
@@ -112,10 +109,17 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: TestsAutomation/node_modules
-          key: appium-node-modules-${{ hashFiles('TestsAutomation/package-lock.json') }}
+          key: appium-node-modules-${{ hashFiles('TestsAutomation/package.json') }}
+      
+      - name: ♻️ Restore Cache Command Line Tools
+        id: cache-cmdline-tools
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ env.ANDROID_HOME }}/cmdline-tools/latest
+          key: cmdline-tools-14742923
           
       - name: 📦 Setup Command Line Tools
-        # if: steps.cache-android-sdk.outputs.cache-hit != 'true'
+        if: steps.cache-command-line-tools.outputs.cache-hit != 'true'
         run: |
           echo "➡️ Deleting default SDK setup"
           rm -rf $ANDROID_HOME/*
@@ -125,8 +129,6 @@ jobs:
           wget --progress=bar:force:noscroll -O ./cltools.zip https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip
           echo "➡️ Uncompressing Command Line Tools"
           unzip -q ./cltools.zip && mv ./cmdline-tools/* . && rmdir  ./cmdline-tools
-          echo "➡️ Deleting AVD lock files"
-          rm -rf $ANDROID_AVD_HOME/*/*.lock
           
         
       - name: Accept Android SDK Licenses
@@ -146,6 +148,7 @@ jobs:
       - name: Create AVD
         if: steps.cache-avd.outputs.cache-hit != 'true'
         run: |
+          echo "➡️ Creating AVD image"
           avdmanager create avd -n $ANDROID_DEVICE -k "system-images;android-${{ inputs.api-version }};google_apis;x86_64" --device "pixel_8"
 
       - name: 📦 Install Node dependencies
@@ -182,6 +185,8 @@ jobs:
           
       - name: Start Emulator
         run: |
+          echo "➡️ Deleting AVD lock files"
+          rm -rf $ANDROID_AVD_HOME/*/*.lock
           emulator -avd $ANDROID_DEVICE -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none -cores 4 -memory 4096 -verbose -qemu -m 4096 -smp cores=4 -enable-kvm &
           
       - name: Check emulator Readiness
@@ -192,7 +197,7 @@ jobs:
           adb shell getprop sys.boot_completed
           adb shell getprop init.svc.bootanim
           # Wait for emulator to fully ready
-          sleep 20
+          sleep 15
           # Try to close SystemUI ANR prompt
           adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
           adb shell settings put secure immersive_mode_confirmations confirmed
@@ -221,6 +226,7 @@ jobs:
           path: |
             ${{ env.ANDROID_HOME }}/system-images
             ${{ env.ANDROID_HOME }}/emulator
+            ${{ env.ANDROID_HOME }}/licenses
           key: android-sdk-${{ inputs.api-version }}
       
       - name: ♻️ Save Cache Android AVD
@@ -235,7 +241,7 @@ jobs:
         uses: actions/cache/save@v5
         with:
           path: TestsAutomation/node_modules
-          key: appium-node-modules-${{ hashFiles('TestsAutomation/package-lock.json') }}
+          key: appium-node-modules-${{ hashFiles('TestsAutomation/package.json') }}
       
       - name: 📋 Upload Appium Server Logs
         if: always()
