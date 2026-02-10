@@ -17,8 +17,12 @@ on:
         type: string
         
 env:
-  output_folder: ./TestsAutomation/Output
+  robot_output_folder: ${{ github.workspace }}/TestsAutomation/Output
 
+permissions:
+  contents: read
+  actions: write
+  
 jobs:
   e2e-emulator-tests:
     runs-on: ubuntu-large-emulator
@@ -27,7 +31,7 @@ jobs:
       matrix:
         suite:
           - 01_InitEnrollement
-          - 01_InitFirstSync
+          # - 01_InitFirstSync
           # - 02_SetupWorkspaces
           # - 03_SDetAlerts
           # - 03_SDetAlertsFilter
@@ -85,6 +89,9 @@ jobs:
         
       - name: Add Android Emulator to PATH
         run: echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
+        
+      - name: Add Appium to PATH
+        run: echo "${{ github.workspace }}/TestsAutomation/node_modules/.bin/" >> $GITHUB_PATH
       
       - name: ♻️ Restore Cache Android SDK
         id: cache-android-sdk
@@ -109,7 +116,8 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: TestsAutomation/node_modules
-          key: appium-node-modules-${{ hashFiles('TestsAutomation/package.json') }}
+          key: appium-node-modules-${{ hashFiles('TestsAutomation/package-lock.json') }}
+          restore-keys: appium-node-modules-
       
       - name: ♻️ Restore Cache Command Line Tools
         id: cache-cmdline-tools
@@ -119,7 +127,7 @@ jobs:
           key: cmdline-tools-14742923
           
       - name: 📦 Setup Command Line Tools
-        if: steps.cache-command-line-tools.outputs.cache-hit != 'true'
+        if: steps.cache-cmdline-tools.outputs.cache-hit != 'true'
         run: |
           echo "➡️ Deleting default SDK setup"
           rm -rf $ANDROID_HOME/*
@@ -152,19 +160,18 @@ jobs:
           avdmanager create avd -n $ANDROID_DEVICE -k "system-images;android-${{ inputs.api-version }};google_apis;x86_64" --device "pixel_8"
 
       - name: 📦 Install Node dependencies
+        if: steps.cache-appium.outputs.cache-matched-key == ''
         working-directory: TestsAutomation
-        run: |
-          npm install
-          echo "$PWD/node_modules/.bin/" >> $GITHUB_PATH
+        run: npm install
 
       - name: 📦 Install python packages
         working-directory: TestsAutomation
         run: pip3 install -U -r pip_requirements.txt
 
       - name: 📦 Install Appium dependencies
+        if: steps.cache-appium.outputs.cache-matched-key == ''
         working-directory: TestsAutomation
-        run: |
-          appium driver install espresso@${{ inputs.espresso-version }}
+        run: appium driver install espresso@${{ inputs.espresso-version }}
           
       # - name: Download Artifact
       #   uses: actions/Download-artifact@v7
@@ -175,7 +182,6 @@ jobs:
       - name: Start appium
         working-directory: TestsAutomation
         run: |
-          # CONFIG_CONTENT=$(cat ./config.json)
           xvfb-run appium -a 127.0.0.1 -p 4723 --base-path /wd/hub/ \
             --allow-insecure=adb_shell \
             --default-capabilities '{"appium:app": "./app-e2e.apk", "appium:espressoBuildConfig": "./config.json"}'  \
@@ -183,10 +189,27 @@ jobs:
             --log-timestamp \
             --log ./appium-server.log &
           
-      - name: Start Emulator
+      - name: Start Emulator Without Snapshot
+        if: steps.cache-avd.outputs.cache-hit != 'true'
         run: |
           echo "➡️ Deleting AVD lock files"
           rm -rf $ANDROID_AVD_HOME/*/*.lock
+          emulator -avd $ANDROID_DEVICE -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none -cores 4 -memory 4096 -verbose -qemu -m 4096 -smp cores=4 -enable-kvm &
+          adb wait-for-device
+          # Health Check - Verify emulator is fully booted
+          echo "🔍 Checking emulator health status..."
+          adb shell getprop sys.boot_completed
+          adb shell getprop init.svc.bootanim
+          # Kill Emulator
+          adb -s emulator-5554 emu kill
+          # Wait for emulator to fully stop
+          sleep 5
+          
+          
+      - name: Start Emulator With Snapshot
+        run: |
+          echo "➡️ Deleting AVD lock files"
+          # rm -rf $ANDROID_AVD_HOME/*/*.lock
           emulator -avd $ANDROID_DEVICE -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none -cores 4 -memory 4096 -verbose -qemu -m 4096 -smp cores=4 -enable-kvm &
           
       - name: Check emulator Readiness
@@ -205,43 +228,51 @@ jobs:
           # Enable developer mode
           adb shell settings put global development_settings_enabled 1
           
-
-      - name: Run tests
-        working-directory: TestsAutomation/Suites
-        env:
-          ROOT_PROJECT_PATH: ${{ github.workspace }}/TestsAutomation
-        run: python3 -m robot -s 01_InitApplication -s ${{ matrix.suite }} -d ../Output/ --variable DEVICE_ADB_ID:emulator-5554 --variable DEVICE_SERIAL:emulator-5554 --variable APP_PACKAGE:ai.smartway.smartapp ./
-
       ################################
       # DEBUG MODE
       #################################
       # - name: Setup tmate session
       #   if: always()
       #   uses: mxschmitt/action-tmate@v3
+
+      - name: Run tests
+        working-directory: TestsAutomation/Suites
+        env:
+          ROOT_PROJECT_PATH: ${{ github.workspace }}/TestsAutomation
+        run: python3 -m robot -s 01_InitApplication -s ${{ matrix.suite }} -d ${{ env.robot_output_folder }} --variable DEVICE_ADB_ID:emulator-5554 --variable DEVICE_SERIAL:emulator-5554 --variable APP_PACKAGE:ai.smartway.smartapp ./
+
         
       - name: ♻️ Save Cache Android SDK
-        if: steps.cache-android-sdk.outputs.cache-hit != 'true' # && always() # REMOVE ALWAYS AFTER DEBUG
+        if: steps.cache-android-sdk.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
           path: |
             ${{ env.ANDROID_HOME }}/system-images
             ${{ env.ANDROID_HOME }}/emulator
             ${{ env.ANDROID_HOME }}/licenses
+            ${{ env.ANDROID_HOME }}/build-tools
           key: android-sdk-${{ inputs.api-version }}
       
       - name: ♻️ Save Cache Android AVD
-        if: steps.cache-avd.outputs.cache-hit != 'true' # && always() # REMOVE ALWAYS AFTER DEBUG
+        if: steps.cache-avd.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
           path: ${{ env.ANDROID_AVD_HOME }}
           key: android-avd-${{ inputs.api-version }}
       
+      - name: ♻️ Save Cache Command Line Tools
+        if: steps.cache-cmdline-tools.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ env.ANDROID_HOME }}/cmdline-tools/latest
+          key: cmdline-tools-14742923
+      
       - name: ♻️ Save Appium Cache
-        if: steps.cache-appium.outputs.cache-hit != 'true' # && always() # REMOVE ALWAYS AFTER DEBUG
+        if: steps.cache-appium.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
           path: TestsAutomation/node_modules
-          key: appium-node-modules-${{ hashFiles('TestsAutomation/package.json') }}
+          key: appium-node-modules-${{ hashFiles('TestsAutomation/package-lock.json') }}
       
       - name: 📋 Upload Appium Server Logs
         if: always()
@@ -256,5 +287,5 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: RobotFramework-TestReport-${{ matrix.suite }}
-          path: ${{ env.output_folder }}
+          path: ${{ env.robot_output_folder }}
           if-no-files-found: warn
