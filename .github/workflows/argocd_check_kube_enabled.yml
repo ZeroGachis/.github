@@ -24,7 +24,7 @@ jobs:
   argocd-sync:
     needs: [check-kube-enabled]
     if: ${{ needs.check-kube-enabled.outputs.kube_enabled == 'true' }}
-    uses: ZeroGachis/.github/.github/workflows/argocd_sync.yml@v4
+    uses: ZeroGachis/.github/.github/workflows/argocd_sync.yml@v5
     with:
       app_name: ${{ inputs.app_name }}
       environment_name: ${{ github.ref_name }}
