@@ -31,7 +31,7 @@ runs:
         path: ./.venv
         key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}-${{ inputs.install_options }}
     - name: Authenticate on AWS
-      if: steps.cache-python-deps.outputs.cache-hit != 'true' && ${{ inputs.depends_on_private_packages == true }}
+      if: inputs.depends_on_private_packages == true && steps.cache-python-deps.outputs.cache-hit != 'true'
       id: aws
       uses: aws-actions/configure-aws-credentials@v5
       with:
@@ -41,7 +41,7 @@ runs:
     - name: Setup private repository credentials
       run: ./scripts/setup_private_repo_credentials.sh
       shell: bash
-      if: steps.cache-python-deps.outputs.cache-hit != 'true' && ${{ inputs.depends_on_private_packages == true }}
+      if: inputs.depends_on_private_packages == true && steps.cache-python-deps.outputs.cache-hit != 'true'
     - name: Install dependencies
       run: poetry install ${{ inputs.install_options }}
       shell: bash
