@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.2](https://github.com/ZeroGachis/.github/compare/v5.0.1...v5.0.2) (2026-02-11)
+
+
+### Code Refactoring
+
+* Allow project with no dependency on private packages to be able to use poetry-install action ([46537ca](https://github.com/ZeroGachis/.github/commit/46537ca198c44798460a49237f47852c8215d294))
+
 ## [5.0.1](https://github.com/ZeroGachis/.github/compare/v5.0.0...v5.0.1) (2026-01-30)
 
 
