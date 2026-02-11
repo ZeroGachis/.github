@@ -190,7 +190,7 @@ jobs:
             --log ./appium-server.log &
           
       - name: 📲 Start Emulator Without Snapshot
-        # if: steps.cache-avd.outputs.cache-hit != 'true'
+        if: steps.cache-avd.outputs.cache-hit != 'true'
         run: |
           echo "➡️ Deleting AVD lock files"
           rm -rf $ANDROID_AVD_HOME/*/*.lock
@@ -219,7 +219,7 @@ jobs:
           adb shell getprop sys.boot_completed
           adb shell getprop init.svc.bootanim
           # Wait for emulator to fully ready
-          sleep 15
+          sleep 5
           # Try to close SystemUI ANR prompt
           adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
           adb shell settings put secure immersive_mode_confirmations confirmed
@@ -240,6 +240,10 @@ jobs:
           ROOT_PROJECT_PATH: ${{ github.workspace }}/TestsAutomation
         run: python3 -m robot -s 01_InitApplication -s ${{ matrix.suite }} -d ${{ env.robot_output_folder }} --variable DEVICE_ADB_ID:emulator-5554 --variable DEVICE_SERIAL:emulator-5554 --variable APP_PACKAGE:ai.smartway.smartapp ./
 
+      - name: Edit perms for dumb github runner cache
+        run: |
+          sudo chmod -R 755 ${{ env.ANDROID_HOME }}
+          sudo chmod -R 755 ${{ env.ANDROID_AVD_HOME }}
         
       - name: ♻️ Save Cache Android SDK
         if: steps.cache-android-sdk.outputs.cache-hit != 'true'
