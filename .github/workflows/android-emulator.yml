@@ -190,7 +190,7 @@ jobs:
             --log ./appium-server.log &
           
       - name: Start Emulator Without Snapshot
-        if: steps.cache-avd.outputs.cache-hit != 'true'
+        # if: steps.cache-avd.outputs.cache-hit != 'true'
         run: |
           echo "➡️ Deleting AVD lock files"
           rm -rf $ANDROID_AVD_HOME/*/*.lock
