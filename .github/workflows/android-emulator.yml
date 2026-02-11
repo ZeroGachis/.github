@@ -92,6 +92,20 @@ jobs:
         
       - name: Add Appium to PATH
         run: echo "${{ github.workspace }}/TestsAutomation/node_modules/.bin/" >> $GITHUB_PATH
+
+      ###############################
+      # DEBUG MODE
+      ################################
+      # - name: Setup tmate session
+      #   if: always()
+      #   uses: mxschmitt/action-tmate@v3
+        
+      - name: Setup ANDROID_HOME
+        run: |
+          echo "➡️ Deleting default SDK setup"
+          rm -rf $ANDROID_HOME/*
+          sudo chown -R runner:runner ${{ env.ANDROID_HOME }}
+
       
       - name: ♻️ Restore Cache Android SDK
         id: cache-android-sdk
@@ -102,6 +116,7 @@ jobs:
             ${{ env.ANDROID_HOME }}/emulator
             ${{ env.ANDROID_HOME }}/licenses
             ${{ env.ANDROID_HOME }}/build-tools
+            ${{ env.ANDROID_HOME }}/platform-tools
           key: android-sdk-${{ inputs.api-version }}
       
       - name: ♻️ Restore Cache Android AVD
@@ -208,7 +223,7 @@ jobs:
       - name: 📱 Start Emulator With Snapshot
         run: |
           echo "➡️ Deleting AVD lock files"
-          # rm -rf $ANDROID_AVD_HOME/*/*.lock
+          rm -rf $ANDROID_AVD_HOME/*/*.lock
           emulator -avd $ANDROID_DEVICE -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none -cores 4 -memory 4096 -verbose -qemu -m 4096 -smp cores=4 -enable-kvm &
           
       - name: Check emulator Readiness
@@ -227,12 +242,6 @@ jobs:
           # Enable developer mode
           adb shell settings put global development_settings_enabled 1
           
-      ################################
-      # DEBUG MODE
-      #################################
-      # - name: Setup tmate session
-      #   if: always()
-      #   uses: mxschmitt/action-tmate@v3
 
       - name: Run tests
         working-directory: TestsAutomation/Suites
@@ -242,6 +251,7 @@ jobs:
 
       - name: Edit perms for dumb github runner cache
         run: |
+          adb -s emulator-5554 emu kill
           sudo chmod -R 755 ${{ env.ANDROID_HOME }}
           sudo chmod -R 755 ${{ env.ANDROID_AVD_HOME }}
         
@@ -254,6 +264,7 @@ jobs:
             ${{ env.ANDROID_HOME }}/emulator
             ${{ env.ANDROID_HOME }}/licenses
             ${{ env.ANDROID_HOME }}/build-tools
+            ${{ env.ANDROID_HOME }}/platform-tools
           key: android-sdk-${{ inputs.api-version }}
       
       - name: ♻️ Save Cache Android AVD
