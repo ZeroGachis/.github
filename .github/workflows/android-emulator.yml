@@ -204,7 +204,7 @@ jobs:
           adb shell getprop sys.boot_completed
           adb shell getprop init.svc.bootanim
           # Wait for emulator to fully ready
-          sleep 5
+          sleep 10
           # Kill Emulator
           adb -s emulator-5554 emu kill
           # Wait for emulator to fully stop
@@ -218,13 +218,9 @@ jobs:
 
       - name: Check emulator Readiness
         run: |
-          adb wait-for-device
           # Health Check - Verify emulator is fully booted
           echo "🔍 Checking emulator health status..."
-          adb shell getprop sys.boot_completed
-          adb shell getprop init.svc.bootanim
-          # Wait for emulator to fully ready
-          sleep 5
+          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]] ; do sleep 1; done'
           # Try to close SystemUI ANR prompt
           adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
           adb shell settings put secure immersive_mode_confirmations confirmed
