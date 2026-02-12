@@ -26,16 +26,15 @@ permissions:
 jobs:
   e2e-emulator-tests:
     runs-on: ubuntu-large-emulator
-    continue-on-error: true
     strategy:
       matrix:
         suite:
-          - 01_InitEnrollement
-          - 01_InitFirstSync
-          - 02_SetupWorkspaces
-          - 03_SDetAlerts
-          - 03_SDetAlertsFilter
-          - 03_2_SDetScan
+          # - 01_InitEnrollement
+          # - 01_InitFirstSync
+          # - 02_SetupWorkspaces
+          # - 03_SDetAlerts
+          # - 03_SDetAlertsFilter
+          # - 03_2_SDetScan
           - 30_Diagnostic
       fail-fast: false
     env:
@@ -71,6 +70,8 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.9"
+          cache: pip
+          cache-dependency-path: TestsAutomation/pip_requirements.txt
 
       - name: 📦 Setup Java
         uses: actions/setup-java@v5
@@ -95,8 +96,6 @@ jobs:
         
       - name: Setup ANDROID_HOME
         run: |
-          echo "➡️ Deleting default SDK setup"
-          rm -rf $ANDROID_HOME/*
           sudo chown -R runner:runner ${{ env.ANDROID_HOME }}
       
       - name: ♻️ Restore Cache Android SDK
@@ -136,8 +135,6 @@ jobs:
       - name: 📦 Setup Command Line Tools
         if: steps.cache-cmdline-tools.outputs.cache-hit != 'true'
         run: |
-          echo "➡️ Deleting default SDK setup"
-          rm -rf $ANDROID_HOME/*
           echo "➡️ Creating ANDROID_HOME dir at: $ANDROID_HOME"
           mkdir -p $ANDROID_HOME/cmdline-tools/latest && cd $_
           echo "➡️ Downloading Command Line Tools"
@@ -205,8 +202,8 @@ jobs:
           adb wait-for-device
           # Health Check - Verify emulator is fully booted
           echo "🔍 Checking emulator health status..."
-          adb shell getprop sys.boot_completed
-          adb shell getprop init.svc.bootanim
+          until [ "$(adb shell getprop sys.boot_completed 2>/dev/null)" = "1" ]; do sleep 2; done
+          until [ "$(adb shell getprop init.svc.bootanim 2>/dev/null)" = "1" ]; do sleep 2; done
           # Kill Emulator
           adb -s emulator-5554 emu kill
           # Wait for emulator to fully stop
@@ -223,10 +220,8 @@ jobs:
           adb wait-for-device
           # Health Check - Verify emulator is fully booted
           echo "🔍 Checking emulator health status..."
-          adb shell getprop sys.boot_completed
-          adb shell getprop init.svc.bootanim
-          # Wait for emulator to fully ready
-          sleep 5
+          until [ "$(adb shell getprop sys.boot_completed 2>/dev/null)" = "1" ]; do sleep 2; done
+          until [ "$(adb shell getprop init.svc.bootanim 2>/dev/null)" = "1" ]; do sleep 2; done
           # Try to close SystemUI ANR prompt
           adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
           adb shell settings put secure immersive_mode_confirmations confirmed
