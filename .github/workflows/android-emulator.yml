@@ -31,12 +31,12 @@ jobs:
       matrix:
         suite:
           - 01_InitEnrollement
-          # - 01_InitFirstSync
-          # - 02_SetupWorkspaces
-          # - 03_SDetAlerts
-          # - 03_SDetAlertsFilter
-          # - 03_2_SDetScan
-          # - 30_Diagnostic
+          - 01_InitFirstSync
+          - 02_SetupWorkspaces
+          - 03_SDetAlerts
+          - 03_SDetAlertsFilter
+          - 03_2_SDetScan
+          - 30_Diagnostic
       fail-fast: false
     env:
       TZ: Europe/Paris
@@ -92,20 +92,12 @@ jobs:
         
       - name: Add Appium to PATH
         run: echo "${{ github.workspace }}/TestsAutomation/node_modules/.bin/" >> $GITHUB_PATH
-
-      ###############################
-      # DEBUG MODE
-      ################################
-      # - name: Setup tmate session
-      #   if: always()
-      #   uses: mxschmitt/action-tmate@v3
         
       - name: Setup ANDROID_HOME
         run: |
           echo "➡️ Deleting default SDK setup"
           rm -rf $ANDROID_HOME/*
           sudo chown -R runner:runner ${{ env.ANDROID_HOME }}
-
       
       - name: ♻️ Restore Cache Android SDK
         id: cache-android-sdk
