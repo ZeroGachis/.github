@@ -1,0 +1,289 @@
+name: Android Emulator E2E
+
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        required: false
+        type: string
+      api-version:
+        required: false
+        type: string
+        default: "29"
+      espresso-version:
+        description: espresso version to use
+        required: false
+        default: 3.5.1
+        type: string
+
+env:
+  robot_output_folder: ${{ github.workspace }}/TestsAutomation/Output
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  e2e-emulator-tests:
+    runs-on: ubuntu-large-emulator
+    strategy:
+      matrix:
+        suite:
+          - 01_InitEnrollement
+          - 01_InitFirstSync
+          - 02_SetupWorkspaces
+          - 03_SDetAlerts
+          - 03_SDetAlertsFilter
+          - 03_2_SDetScan
+          - 30_Diagnostic
+      fail-fast: false
+    env:
+      TZ: Europe/Paris
+      CI: true
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_AVD_HOME: /home/runner/.config/.android/avd
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+      ANDROID_DEVICE: smartemu
+      arch: x86_64
+      APPIUM_TEST_SERVER_PORT: 4723
+      APPIUM_TEST_SERVER_HOST: 127.0.0.1
+      _FORCE_LOGS: 1
+      ANDROID_PACKAGE: ${{ inputs.package-name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: 📦 Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache-dependency-path: src/
+          cache: npm
+
+      - name: 📦 Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.9"
+          cache: pip
+          cache-dependency-path: TestsAutomation/pip_requirements.txt
+
+      - name: 📦 Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: 📦 Install XVFB
+        run: sudo apt -y install xvfb
+
+      - name: Add Android SDK to PATH
+        run: echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
+
+      - name: Add Android Platform-tools to PATH
+        run: echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+
+      - name: Add Android Emulator to PATH
+        run: echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
+
+      - name: Add Appium to PATH
+        run: echo "${{ github.workspace }}/TestsAutomation/node_modules/.bin/" >> $GITHUB_PATH
+
+      - name: Setup ANDROID_HOME
+        run: sudo chown -R runner:runner ${{ env.ANDROID_HOME }}
+
+      - name: ♻️ Restore Cache Android SDK
+        id: cache-android-sdk
+        uses: actions/cache/restore@v5
+        with:
+          path: |
+            ${{ env.ANDROID_HOME }}/system-images
+            ${{ env.ANDROID_HOME }}/emulator
+            ${{ env.ANDROID_HOME }}/licenses
+            ${{ env.ANDROID_HOME }}/build-tools
+            ${{ env.ANDROID_HOME }}/platform-tools
+          key: android-sdk-${{ inputs.api-version }}
+
+      - name: ♻️ Restore Cache Android AVD
+        id: cache-avd
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ env.ANDROID_AVD_HOME }}
+          key: android-avd-${{ inputs.api-version }}
+
+      - name: ♻️ Restore Cache Appium Dependencies
+        id: cache-appium
+        uses: actions/cache/restore@v5
+        with:
+          path: TestsAutomation/node_modules
+          key: appium-node-modules-${{ hashFiles('TestsAutomation/package-lock.json') }}
+          restore-keys: appium-node-modules-
+
+      - name: ♻️ Restore Cache Command Line Tools
+        id: cache-cmdline-tools
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ env.ANDROID_HOME }}/cmdline-tools/latest
+          key: cmdline-tools-14742923
+
+      - name: 📦 Setup Command Line Tools
+        if: steps.cache-cmdline-tools.outputs.cache-hit != 'true'
+        run: |
+          echo "➡️ Creating ANDROID_HOME dir at: $ANDROID_HOME"
+          mkdir -p $ANDROID_HOME/cmdline-tools/latest && cd $_
+          echo "➡️ Downloading Command Line Tools"
+          wget --progress=bar:force:noscroll -O ./cltools.zip https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip
+          echo "➡️ Uncompressing Command Line Tools"
+          unzip -q ./cltools.zip && mv ./cmdline-tools/* . && rmdir  ./cmdline-tools
+
+      - name: Accept Android SDK Licenses
+        if: steps.cache-android-sdk.outputs.cache-hit != 'true'
+        run: |
+          yes | sdkmanager --licenses
+
+      - name: 📦 Install Android SDK
+        if: steps.cache-android-sdk.outputs.cache-hit != 'true'
+        run: |
+          sdkmanager --install "platform-tools" "platforms;android-${{ inputs.api-version }}" "system-images;android-${{ inputs.api-version }};google_apis;x86_64" "build-tools;${{ inputs.api-version }}.0.0" "emulator"
+
+      - name: Create AVD Home Directory
+        if: steps.cache-avd.outputs.cache-hit != 'true'
+        run: mkdir -p ${{ env.ANDROID_AVD_HOME }}
+
+      - name: Create AVD
+        if: steps.cache-avd.outputs.cache-hit != 'true'
+        run: |
+          echo "➡️ Creating AVD image"
+          avdmanager create avd -n $ANDROID_DEVICE -k "system-images;android-${{ inputs.api-version }};google_apis;x86_64" --device "pixel_8"
+
+      - name: 📦 Install Node dependencies
+        if: steps.cache-appium.outputs.cache-matched-key == ''
+        working-directory: TestsAutomation
+        run: npm install
+
+      - name: 📦 Install python packages
+        if: steps.set.outputs.cache-hit != 'true'
+        working-directory: TestsAutomation
+        run: pip3 install -U -r pip_requirements.txt
+
+      - name: 📦 Install Appium dependencies
+        if: steps.cache-appium.outputs.cache-matched-key == ''
+        working-directory: TestsAutomation
+        run: appium driver install espresso@${{ inputs.espresso-version }}
+
+      - name: Download Artifact
+        uses: actions/Download-artifact@v7
+        with:
+          name: app-e2e.apk
+          path: TestsAutomation/
+
+      - name: Start appium
+        working-directory: TestsAutomation
+        run: |
+          xvfb-run appium -a 127.0.0.1 -p 4723 --base-path /wd/hub/ \
+            --allow-insecure=adb_shell \
+            --default-capabilities '{"appium:app": "./app-e2e.apk", "appium:espressoBuildConfig": "./config.json"}'  \
+            --shell \
+            --log-timestamp \
+            --log ./appium-server.log &
+
+      - name: 📲 Start Emulator Without Snapshot
+        if: steps.cache-avd.outputs.cache-hit != 'true'
+        run: |
+          echo "➡️ Deleting AVD lock files"
+          rm -rf $ANDROID_AVD_HOME/*/*.lock
+          emulator -avd $ANDROID_DEVICE -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none -cores 4 -memory 4096 -verbose -qemu -m 4096 -smp cores=4 -enable-kvm &
+          echo "🔍 Checking emulator health status..."
+          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]] ; do sleep 2; done'
+          adb shell getprop init.svc.bootanim
+          # Kill Emulator
+          adb -s emulator-5554 emu kill
+          # Wait for emulator to fully stop
+          sleep 5
+
+      - name: 📱 Start Emulator With Snapshot
+        run: |
+          echo "➡️ Deleting AVD lock files"
+          rm -rf $ANDROID_AVD_HOME/*/*.lock
+          emulator -avd $ANDROID_DEVICE -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none -cores 4 -memory 4096 -verbose -qemu -m 4096 -smp cores=4 -enable-kvm &
+
+      - name: Check emulator Readiness
+        run: |
+          echo "🔍 Checking emulator health status..."
+          adb wait-for-device
+          while ! adb shell input keyevent 0 >/dev/null 2>&1; do sleep 2 && echo "waiting for touch input..."; done
+          # Wait for boot_completed flag (required for broadcasts)
+          while [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" != "1" ]; do sleep 2 && echo "waiting for boot_completed..."; done
+          # Try to close SystemUI ANR prompt
+          adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
+          adb shell settings put secure immersive_mode_confirmations confirmed
+          adb shell input keyevent 3
+          # Enable developer mode
+          adb shell settings put global development_settings_enabled 1
+
+      - name: Run tests
+        working-directory: TestsAutomation/Suites
+        env:
+          ROOT_PROJECT_PATH: ${{ github.workspace }}/TestsAutomation
+        run: python3 -m robot -s 01_InitApplication -s ${{ matrix.suite }} -d ${{ env.robot_output_folder }} --variable DEVICE_ADB_ID:emulator-5554 --variable DEVICE_SERIAL:emulator-5554 --variable APP_PACKAGE:ai.smartway.smartapp ./
+
+      - name: Edit perms for dumb github runner cache
+        if: steps.cache-android-sdk.outputs.cache-hit != 'true'
+        run: |
+          adb -s emulator-5554 emu kill
+          sudo chmod -R 755 ${{ env.ANDROID_HOME }}
+          sudo chmod -R 755 ${{ env.ANDROID_AVD_HOME }}
+
+      - name: ♻️ Save Cache Android SDK
+        if: steps.cache-android-sdk.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: |
+            ${{ env.ANDROID_HOME }}/system-images
+            ${{ env.ANDROID_HOME }}/emulator
+            ${{ env.ANDROID_HOME }}/licenses
+            ${{ env.ANDROID_HOME }}/build-tools
+            ${{ env.ANDROID_HOME }}/platform-tools
+          key: android-sdk-${{ inputs.api-version }}
+
+      - name: ♻️ Save Cache Android AVD
+        if: steps.cache-avd.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ env.ANDROID_AVD_HOME }}
+          key: android-avd-${{ inputs.api-version }}
+
+      - name: ♻️ Save Cache Command Line Tools
+        if: steps.cache-cmdline-tools.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ env.ANDROID_HOME }}/cmdline-tools/latest
+          key: cmdline-tools-14742923
+
+      - name: ♻️ Save Appium Cache
+        if: steps.cache-appium.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: TestsAutomation/node_modules
+          key: appium-node-modules-${{ hashFiles('TestsAutomation/package-lock.json') }}
+
+      - name: 📋 Upload Appium Server Logs
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: Appium-Server-Logs-${{ matrix.suite }}
+          path: ./TestsAutomation/appium-server.log
+          if-no-files-found: warn
+
+      - name: 📋 Upload Tests Report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: RobotFramework-TestReport-${{ matrix.suite }}
+          path: ${{ env.robot_output_folder }}
+          if-no-files-found: warn
