@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.0](https://github.com/ZeroGachis/.github/compare/v5.0.4...v5.1.0) (2026-02-16)
+
+
+### Features
+
+* enable android emulator on E2E tests ([273d558](https://github.com/ZeroGachis/.github/commit/273d558d421f4d29c0de508996f6d4fa543f4f9d))
+* enable snapshot for emulator ([c3a6364](https://github.com/ZeroGachis/.github/commit/c3a6364ea7d2a372b408499fb3d58fa819d8c546))
+* implemant caching for sdk and avd ([3ad6051](https://github.com/ZeroGachis/.github/commit/3ad605126d67e4511cd47c301330b8886ebba71d))
+
+
+### Bug Fixes
+
+* add cache permissions ([f39c03d](https://github.com/ZeroGachis/.github/commit/f39c03db24b9856128139cab5e493e75fb9c3603))
+* add permissions for caches ([a714042](https://github.com/ZeroGachis/.github/commit/a7140424bd0a9ba13adac80268b628636cf71a41))
+* emulator healtcheck ([fcf6488](https://github.com/ZeroGachis/.github/commit/fcf64887e56f10e2598a65043cedbffa349fd55a))
+* emulator startup script ([ed23164](https://github.com/ZeroGachis/.github/commit/ed23164497c7ccd1d8418d9edab4e25740e97c63))
+* use multiple emulators with same AVDs ([fc78075](https://github.com/ZeroGachis/.github/commit/fc78075e3d98e146a97cad3208b33c1c811bcfeb))
+* wait for emulator readiness ([53ce31d](https://github.com/ZeroGachis/.github/commit/53ce31d0c426803b2bbc13e85ade384adcce670f))
+
+
+### Miscellaneous Chores
+
+* add all tests ([f05b75a](https://github.com/ZeroGachis/.github/commit/f05b75ae084e29c7bede9ada0a56669313d25e87))
+* add x86 build for e2e apk ([ac17a31](https://github.com/ZeroGachis/.github/commit/ac17a312c805ae370b2a9689efe670e82d1db157))
+* pretty ([433089a](https://github.com/ZeroGachis/.github/commit/433089a2e8771cff89db46abf262bd8cefb70f6a))
+* test ([fc78075](https://github.com/ZeroGachis/.github/commit/fc78075e3d98e146a97cad3208b33c1c811bcfeb))
+* test ([ac17a31](https://github.com/ZeroGachis/.github/commit/ac17a312c805ae370b2a9689efe670e82d1db157))
+* tweak caches ([731a7fc](https://github.com/ZeroGachis/.github/commit/731a7fc66fb90e0a2f0f1e3d420216cfc990d791))
+
 ## [5.0.4](https://github.com/ZeroGachis/.github/compare/v5.0.3...v5.0.4) (2026-02-12)
 
 
