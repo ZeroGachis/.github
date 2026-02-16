@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.1](https://github.com/ZeroGachis/.github/compare/v5.1.0...v5.1.1) (2026-02-16)
+
+
+### Bug Fixes
+
+* android home path error ([16326d1](https://github.com/ZeroGachis/.github/commit/16326d17aa95d4990fd15e9aa72257a1f1ab34f5))
+
+
+### Miscellaneous Chores
+
+* **deps:** update actions/checkout action to v6 ([442ad6f](https://github.com/ZeroGachis/.github/commit/442ad6fb44ac809984aa75889ebed877565919f5))
+* **deps:** update helm/chart-testing-action action to v2.8.0 ([aece5f3](https://github.com/ZeroGachis/.github/commit/aece5f33e17b6ecf62812741de28bd60a2f768e6))
+* **deps:** update tailscale/github-action action to v4 ([887d61f](https://github.com/ZeroGachis/.github/commit/887d61f5ef4ec5b77030b9a8755fc7c1ca5529b1))
+* **deps:** update zerogachis/.github action to v5 ([028841f](https://github.com/ZeroGachis/.github/commit/028841f010848fbc508bf547936945a6f0c17adf))
+
 ## [5.1.0](https://github.com/ZeroGachis/.github/compare/v5.0.4...v5.1.0) (2026-02-16)
 
 
