@@ -50,7 +50,7 @@ jobs:
       steps:
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         id: creds
         with:
           aws-region: ${{ env.AWS_REGION }}
