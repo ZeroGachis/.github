@@ -134,12 +134,14 @@ jobs:
       - name: 📦 Setup Command Line Tools
         if: steps.cache-cmdline-tools.outputs.cache-hit != 'true'
         run: |
+          echo "➡️ delete default install"
+          rm -rf $ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/cmdline-tools/latest/lib 
           echo "➡️ Creating ANDROID_HOME dir at: $ANDROID_HOME"
           mkdir -p $ANDROID_HOME/cmdline-tools/latest && cd $_
           echo "➡️ Downloading Command Line Tools"
           wget --progress=bar:force:noscroll -O ./cltools.zip https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip
           echo "➡️ Uncompressing Command Line Tools"
-          unzip -q ./cltools.zip && mv ./cmdline-tools/* . && rmdir  ./cmdline-tools
+          unzip -q ./cltools.zip && mv ./cmdline-tools/* . && rmdir ./cmdline-tools
 
       - name: Accept Android SDK Licenses
         if: steps.cache-android-sdk.outputs.cache-hit != 'true'
