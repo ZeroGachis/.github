@@ -242,7 +242,7 @@ jobs:
         run: terraform output -json > tf-output.json
 
       - name: Save Output
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: inputs.terraform_save_output
         with:
           name: tf-output-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}

@@ -276,7 +276,7 @@ jobs:
 
       - name: 📋 Upload Appium Server Logs
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: Appium-Server-Logs-${{ matrix.suite }}
           path: ./TestsAutomation/appium-server.log
@@ -284,7 +284,7 @@ jobs:
 
       - name: 📋 Upload Tests Report
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: RobotFramework-TestReport-${{ matrix.suite }}
           path: ${{ env.robot_output_folder }}
