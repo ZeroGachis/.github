@@ -33,7 +33,7 @@ runs:
     - name: Authenticate on AWS
       if: inputs.depends_on_private_packages == 'true' && steps.cache-python-deps.outputs.cache-hit != 'true'
       id: aws
-      uses: aws-actions/configure-aws-credentials@v5
+      uses: aws-actions/configure-aws-credentials@v6
       with:
         aws-region: eu-west-3
         role-to-assume: arn:aws:iam::${{ inputs.aws_account_id }}:role/github_oidc_readonly
