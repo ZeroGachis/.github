@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.4](https://github.com/ZeroGachis/.github/compare/v5.1.3...v5.1.4) (2026-02-18)
+
+
+### Bug Fixes
+
+* bad condition on bot key secret ([d4573fb](https://github.com/ZeroGachis/.github/commit/d4573fb7b8d64df9d4d2544ed81672b078c14d4e))
+
 ## [5.1.3](https://github.com/ZeroGachis/.github/compare/v5.1.2...v5.1.3) (2026-02-18)
 
 
