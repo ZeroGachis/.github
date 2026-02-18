@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.3](https://github.com/ZeroGachis/.github/compare/v5.1.2...v5.1.3) (2026-02-18)
+
+
+### Bug Fixes
+
+* add condition on bot secret ([b2d3d5c](https://github.com/ZeroGachis/.github/commit/b2d3d5c75a20bfa931364278e12f9d83e353aafc))
+* conditional operator ([0fdd509](https://github.com/ZeroGachis/.github/commit/0fdd5097c2f8fcb94ca951a886d626dd917876fa))
+* use smartway bot token for release please ([9c18e43](https://github.com/ZeroGachis/.github/commit/9c18e437262a5504a504ba563bdb3a062d0e51c1))
+
 ## [5.1.2](https://github.com/ZeroGachis/.github/compare/v5.1.1...v5.1.2) (2026-02-17)
 
 
