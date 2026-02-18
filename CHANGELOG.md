@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [6.0.0](https://github.com/ZeroGachis/.github/compare/v5.1.2...v6.0.0) (2026-02-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* use smartway bot token for release please
+
+### Bug Fixes
+
+* add condition on bot secret ([b2d3d5c](https://github.com/ZeroGachis/.github/commit/b2d3d5c75a20bfa931364278e12f9d83e353aafc))
+* bad condition on bot key secret ([d4573fb](https://github.com/ZeroGachis/.github/commit/d4573fb7b8d64df9d4d2544ed81672b078c14d4e))
+* conditional operator ([8989cf3](https://github.com/ZeroGachis/.github/commit/8989cf3019a2025ee4f3485657c7f9956f239ce0))
+* conditional operator ([0fdd509](https://github.com/ZeroGachis/.github/commit/0fdd5097c2f8fcb94ca951a886d626dd917876fa))
+* revert breaking changes on release please ([26f4889](https://github.com/ZeroGachis/.github/commit/26f48896430e48a385e8c0e3f895fe3e655bafb7))
+* use smartway bot token for release please ([6261dde](https://github.com/ZeroGachis/.github/commit/6261ddec7d2d09eb8df684a498608cf5b73d6304))
+* use smartway bot token for release please ([9c18e43](https://github.com/ZeroGachis/.github/commit/9c18e437262a5504a504ba563bdb3a062d0e51c1))
+
+
+### Documentation
+
+* update release please and gotoprod ([a41a2f0](https://github.com/ZeroGachis/.github/commit/a41a2f09ee9f85e055f45c840aa5121e401e463c))
+
+
+### Miscellaneous Chores
+
+* add condition for release please ([c92313f](https://github.com/ZeroGachis/.github/commit/c92313f8ecd85eb624aae1759dbc4f20b80dc294))
+* **main:** release 5.1.3 ([ece883a](https://github.com/ZeroGachis/.github/commit/ece883a36f34437fa908b9ec555a7a8be4ba570f))
+* **main:** release 5.1.4 ([6f59d94](https://github.com/ZeroGachis/.github/commit/6f59d9479051b96461ea9709289d8ec654fc7e7e))
+
 ## [5.1.2](https://github.com/ZeroGachis/.github/compare/v5.1.1...v5.1.2) (2026-02-17)
 
 
