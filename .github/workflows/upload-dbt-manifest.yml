@@ -102,6 +102,7 @@ jobs:
               secret/data/dbt/github-actions SNOWFLAKE_DBT_ROLE | SNOWFLAKE_DBT_ROLE ;
               secret/data/dbt/github-actions SNOWFLAKE_DBT_USERNAME | SNOWFLAKE_DBT_USERNAME ;
               secret/data/dbt/github-actions SNOWFLAKE_DBT_WAREHOUSE | SNOWFLAKE_DBT_WAREHOUSE ;
+              secret/data/dbt/github-actions SNOWFLAKE_DBT_WAREHOUSE_FOS | SNOWFLAKE_DBT_WAREHOUSE_FOS ;
               github/token/read_repositories token | GH_ORG_READ_REPO_TOKEN ;
 
       - name: Configure AWS Credentials
