@@ -227,7 +227,6 @@ jobs:
             sleep 2 && echo "waiting for touch input... (${ELAPSED}s/${TIMEOUT}s)";
             ELAPSED=$((ELAPSED + 2));
           done
-          # Wait for boot_completed flag (required for broadcasts);
           ELAPSED=0;
           while [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" != "1" ];
           do
