@@ -226,7 +226,7 @@ jobs:
             if [ "$ELAPSED" -ge "$TIMEOUT" ]; then echo "❌ Timed out after 5 minutes waiting for touch input"; exit 1; fi;
             sleep 2 && echo "waiting for touch input... (${ELAPSED}s/${TIMEOUT}s)";
             ELAPSED=$((ELAPSED + 2));
-          done
+          done;
           ELAPSED=0;
           while [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" != "1" ];
           do
