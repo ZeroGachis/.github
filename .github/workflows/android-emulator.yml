@@ -202,7 +202,14 @@ jobs:
           rm -rf $ANDROID_AVD_HOME/*/*.lock
           emulator -avd $ANDROID_DEVICE -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none -cores 4 -memory 4096 -verbose -qemu -m 4096 -smp cores=4 -enable-kvm &
           echo "🔍 Checking emulator health status..."
-          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]] ; do sleep 2; done'
+          adb wait-for-device
+          TIMEOUT=300
+          ELAPSED=0
+          while [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" != "1" ]; do
+            if [ "$ELAPSED" -ge "$TIMEOUT" ]; then echo "❌ Timed out after 5 minutes waiting for boot_completed"; exit 1; fi
+            sleep 2 && echo "waiting for boot_completed... (${ELAPSED}s/${TIMEOUT}s)"
+            ELAPSED=$((ELAPSED + 2))
+          done
           adb shell getprop init.svc.bootanim
           # Kill Emulator
           adb -s emulator-5554 emu kill
