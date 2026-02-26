@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [6.0.9](https://github.com/ZeroGachis/.github/compare/v6.0.8...v6.0.9) (2026-02-26)
+
+
+### Bug Fixes
+
+* malformed loop for cold boot emulator ([0a57015](https://github.com/ZeroGachis/.github/commit/0a5701599c9159d91fa3f37078fb1904a077908f))
+
 ## [6.0.8](https://github.com/ZeroGachis/.github/compare/v6.0.7...v6.0.8) (2026-02-25)
 
 
