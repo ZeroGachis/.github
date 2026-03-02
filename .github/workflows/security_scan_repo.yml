@@ -29,6 +29,7 @@ jobs:
       - name: Security Scan FS
         uses: aquasecurity/trivy-action@0.34.1
         with:
+          version: v0.69.2  #remove this once fix is released https://github.com/aquasecurity/trivy-action/issues/517
           scan-type: "fs"
           format: "sarif"
           output: "trivy-results-fs.sarif"
@@ -36,6 +37,7 @@ jobs:
       - name: Security Scan Config
         uses: aquasecurity/trivy-action@0.34.1
         with:
+          version: v0.69.2   #remove this once fix is released https://github.com/aquasecurity/trivy-action/issues/517
           scan-type: "config"
           format: "sarif"
           output: "trivy-results-config.sarif"
