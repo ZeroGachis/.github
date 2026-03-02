@@ -257,6 +257,7 @@ jobs:
         id: trivy-scan
         uses: aquasecurity/trivy-action@0.34.1
         with:
+          version: v0.69.2
           skip-setup-trivy: true
           image-ref: ${{ steps.meta.outputs.tags }}
           format: "table"
@@ -272,6 +273,7 @@ jobs:
         id: trivy-scan-sarif
         uses: aquasecurity/trivy-action@0.34.1
         with:
+          version: v0.69.2  #remove this once fix is released https://github.com/aquasecurity/trivy-action/issues/517
           skip-setup-trivy: true
           image-ref: ${{ steps.meta.outputs.tags }}
           format: "sarif"
@@ -320,6 +322,7 @@ jobs:
         if: inputs.security_scan_enabled
         uses: aquasecurity/trivy-action@0.34.1
         with:
+          version: v0.69.2  #remove this once fix is released https://github.com/aquasecurity/trivy-action/issues/517
           skip-setup-trivy: true
           image-ref: ${{ steps.meta.outputs.tags }}
           # with format:table there is a bug, Trivy keeps format:sarif from previous run
