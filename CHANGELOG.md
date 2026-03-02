@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [6.0.10](https://github.com/ZeroGachis/.github/compare/v6.0.9...v6.0.10) (2026-03-02)
+
+
+### Bug Fixes
+
+* update trivy version for missing release ([7b22296](https://github.com/ZeroGachis/.github/commit/7b22296fc7b09ce56bca148ae13051ecdb86bcdf))
+
+
+### Miscellaneous Chores
+
+* **deps:** update aquasecurity/trivy-action action to v0.34.1 ([8f0945b](https://github.com/ZeroGachis/.github/commit/8f0945b5e80fdd17f47aecc883f9e85678376cd5))
+
 ## [6.0.9](https://github.com/ZeroGachis/.github/compare/v6.0.8...v6.0.9) (2026-02-26)
 
 
