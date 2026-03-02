@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [6.0.11](https://github.com/ZeroGachis/.github/compare/v6.0.10...v6.0.11) (2026-03-02)
+
+
+### Bug Fixes
+
+* update trivy version for build image ([2373e80](https://github.com/ZeroGachis/.github/commit/2373e800b863aedfd043e3d9cbb8a57c3e79e57a))
+
 ## [6.0.10](https://github.com/ZeroGachis/.github/compare/v6.0.9...v6.0.10) (2026-03-02)
 
 
