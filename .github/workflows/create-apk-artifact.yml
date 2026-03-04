@@ -145,7 +145,7 @@ jobs:
             secret/data/smartapp/keystore S3_BUCKET | KEYSTORE_BUCKET_S3
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
