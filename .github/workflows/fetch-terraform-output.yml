@@ -3,14 +3,30 @@ name: "Fetch 1 Remote State Output Variable"
 on:
   workflow_call:
     inputs:
+      workdir:
+        required: false
+        type: string
+        default: ${{ github.workspace }}
       variable_name:
         description: "var to fetch from the state file"
         required: true
         type: string
-      artifact_id:
-        description: "id of needed previous terraform job"
-        required: true
+      terraform_version:
+        required: false
         type: string
+        default: "latest"
+      aws_github_role_name:
+        required: false
+        type: string
+        default: "github_oidc_readonly"
+      environment_name:
+        required: false
+        type: string
+        default: ${{ github.base_ref }}
+      terraform_workspace:
+        required: false
+        type: string
+        default: ${{ github.base_ref || github.ref_name }}
     outputs:
       TF_OUTPUT_VAR:
         description: "The value of the 1 variable passed as input"
@@ -18,18 +34,51 @@ on:
 jobs:
   fetch-vars:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment_name }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.workdir || github.workspace }}
+    env:
+      TERRAFORM_DEFAULT_BACKEND: tfstate-${{ vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
+      AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
     outputs:
       TF_OUTPUT_VAR: ${{ steps.set-variables.outputs.tf_output_var }}
-
     steps:
-      - name: Get Output
-        uses: actions/download-artifact@v5
+      - name: Checkout
+        uses: actions/checkout@v6
+        
+      - uses: hashicorp/setup-terraform@v3
         with:
-          name: tf-output-${{ github.run_id }}-${{ github.run_attempt }}-${{ inputs.artifact_id }}
+          terraform_version: ${{ inputs.terraform_version }}
+          terraform_wrapper: false
+          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
+          
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend-config="bucket=${{ env.TERRAFORM_DEFAULT_BACKEND }}"
 
-      - name: Check var presence
-        run: grep ${{ inputs.variable_name }} tf-output.json >/dev/null
+      - name: Terraform Workspace
+        id: workspace
+        run: terraform workspace select ${{ inputs.terraform_workspace }}
+
+      - name: Terraform Get Output
+        run: terraform output -json > tf-output.json
 
       - name: Set variables
         id: set-variables
-        run: echo "tf_output_var=`jq -r '.${{ inputs.variable_name }}.value' tf-output.json`" >> $GITHUB_OUTPUT
+        env:
+          VAR_NAME: ${{ inputs.variable_name }}
+        run: |
+          value=$(jq -r --arg key "$VAR_NAME" '.[$key].value' tf-output.json)
+          if [ "$value" = "null" ] || [ -z "$value" ]; then
+            echo "::error::Variable '$VAR_NAME' not found in terraform output"
+            exit 1
+          fi
+          echo "tf_output_var=$value" >> "$GITHUB_OUTPUT"
