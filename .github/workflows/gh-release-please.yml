@@ -27,8 +27,8 @@ on:
         default: main
       create_gh_release:
         required: false
-        type: boolean
-        default: true
+        type: string
+        default: "true"
     outputs:
       release_created:
         description: "Whether a release was created"
