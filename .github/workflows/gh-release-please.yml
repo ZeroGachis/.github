@@ -9,6 +9,10 @@ on:
       release_type:
         required: false
         type: string
+      release_please_command:
+        required: false
+        type: string
+        default: ""
       release_please_config_file:
         required: false
         type: string
@@ -21,6 +25,10 @@ on:
         required: false
         type: string
         default: main
+      create_gh_release:
+        required: false
+        type: boolean
+        default: true
     outputs:
       release_created:
         description: "Whether a release was created"
@@ -28,6 +36,9 @@ on:
       release_number:
         description: "The release number"
         value: ${{ jobs.github-releaseplease.outputs.release_number }}
+      paths_released:
+        description: "The paths released"
+        value: ${{ jobs.github-releaseplease.outputs.paths_released }}
   push:
     branches:
       - "main"
@@ -41,6 +52,7 @@ jobs:
     outputs:
       release_created: ${{ steps.release.outputs.releases_created }}
       release_number: ${{ steps.release.outputs.tag_name }}
+      paths_released: ${{ steps.release.outputs.paths_released }}
     env:
       major_and_minor_tags: ${{ inputs.major_and_minor_tags || true }}
     steps:
@@ -63,9 +75,10 @@ jobs:
           manifest-file: ${{ inputs.release_please_manifest_file }}
           target-branch: ${{ inputs.target_branch }}
           token: ${{ steps.generate-token.outputs.token }}
+          command: ${{ inputs.release_please_command }}
           
       - name: tag major and minor versions
-        if: ${{ steps.release.outputs.releases_created == 'true' && env.major_and_minor_tags == 'true' }}
+        if: ${{ steps.release.outputs.releases_created == 'true' && env.major_and_minor_tags == 'true' && inputs.create_gh_release == 'true' }}
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
