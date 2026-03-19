@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [6.2.0](https://github.com/ZeroGachis/.github/compare/v6.1.0...v6.2.0) (2026-03-19)
+
+
+### Features
+
+* add optional gh release to release please ([3bbd8e8](https://github.com/ZeroGachis/.github/commit/3bbd8e8e64fe004859af4fd24afa997200f943c4))
+
+
+### Bug Fixes
+
+* backward compat for tf fetch output ([6a96693](https://github.com/ZeroGachis/.github/commit/6a966938cbf5d36afec347d6aba53b94176fcbed))
+
 ## [6.1.0](https://github.com/ZeroGachis/.github/compare/v6.0.11...v6.1.0) (2026-03-19)
 
 
