@@ -36,6 +36,7 @@ jobs:
           - 03_SDetAlertsFilter
           - 03_2_SDetScan
           - 03_1_SDetInventory
+          - 20_SDisPairPrinter
           - 30_Diagnostic
       fail-fast: false
     env:
