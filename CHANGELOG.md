@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [6.2.4](https://github.com/ZeroGachis/.github/compare/v6.2.3...v6.2.4) (2026-03-19)
+
+
+### Miscellaneous Chores
+
+* set test suite as workflow input ([81e9b93](https://github.com/ZeroGachis/.github/commit/81e9b93a42cb0e1336c5fb66fa915697441b4163))
+
 ## [6.2.3](https://github.com/ZeroGachis/.github/compare/v6.2.2...v6.2.3) (2026-03-19)
 
 
