@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [6.2.3](https://github.com/ZeroGachis/.github/compare/v6.2.2...v6.2.3) (2026-03-19)
+
+
+### Bug Fixes
+
+* bad condition 2 ([e28bd16](https://github.com/ZeroGachis/.github/commit/e28bd167199813d87fd34daa85a9d663063c5edf))
+
 ## [6.2.2](https://github.com/ZeroGachis/.github/compare/v6.2.1...v6.2.2) (2026-03-19)
 
 
