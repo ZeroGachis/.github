@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [6.2.1](https://github.com/ZeroGachis/.github/compare/v6.2.0...v6.2.1) (2026-03-19)
+
+
+### Bug Fixes
+
+* tf backend for fetching output ([2d9c6ba](https://github.com/ZeroGachis/.github/commit/2d9c6ba0c6ffc3a49d6ff086f67103e891785b31))
+
 ## [6.2.0](https://github.com/ZeroGachis/.github/compare/v6.1.0...v6.2.0) (2026-03-19)
 
 
