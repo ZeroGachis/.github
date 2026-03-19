@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [6.1.0](https://github.com/ZeroGachis/.github/compare/v6.0.11...v6.1.0) (2026-03-19)
+
+
+### Features
+
+* update tf output workflow to fetch from state ([05c32e4](https://github.com/ZeroGachis/.github/commit/05c32e49da26e9b4e2039c78326797be004c3e3c))
+
+
+### Miscellaneous Chores
+
+* **deps:** update aquasecurity/trivy-action action to v0.34.2 ([#449](https://github.com/ZeroGachis/.github/issues/449)) ([f00171a](https://github.com/ZeroGachis/.github/commit/f00171a08c21ae99ed90920319df3cce281fc32d))
+
+
+### Tests
+
+* **fwms:** Add an suite on end to end tests ([dbdf37c](https://github.com/ZeroGachis/.github/commit/dbdf37c59e55297ac46f5d133bfcf3a9f1544719))
+* **fwms:** Add an suite on end to end tests ([e4ca20a](https://github.com/ZeroGachis/.github/commit/e4ca20a0b842cf76d1ec26badbddddbb294acff3))
+
 ## [6.0.11](https://github.com/ZeroGachis/.github/compare/v6.0.10...v6.0.11) (2026-03-02)
 
 
