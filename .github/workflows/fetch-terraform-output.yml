@@ -27,6 +27,10 @@ on:
         required: false
         type: string
         default: ${{ github.base_ref || github.ref_name }}
+      artifact_id:
+        description: "not needed anymore, only here for backward compatibility"
+        required: false
+        type: string
     outputs:
       TF_OUTPUT_VAR:
         description: "The value of the 1 variable passed as input"
