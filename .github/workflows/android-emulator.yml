@@ -15,6 +15,9 @@ on:
         required: false
         default: 3.5.1
         type: string
+      test-suite:
+        required: true
+        type: string
 
 env:
   robot_output_folder: ${{ github.workspace }}/TestsAutomation/Output
@@ -26,19 +29,6 @@ permissions:
 jobs:
   e2e-emulator-tests:
     runs-on: ubuntu-large-emulator
-    strategy:
-      matrix:
-        suite:
-          - 01_InitEnrollement
-          - 01_InitFirstSync
-          - 02_SetupWorkspaces
-          - 03_SDetAlerts
-          - 03_SDetAlertsFilter
-          - 03_2_SDetScan
-          - 03_1_SDetInventory
-          - 20_SDisPairPrinter
-          - 30_Diagnostic
-      fail-fast: false
     env:
       TZ: Europe/Paris
       CI: true
@@ -254,7 +244,7 @@ jobs:
         working-directory: TestsAutomation/Suites
         env:
           ROOT_PROJECT_PATH: ${{ github.workspace }}/TestsAutomation
-        run: python3 -m robot -s 01_InitApplication -s ${{ matrix.suite }} -d ${{ env.robot_output_folder }} --variable DEVICE_ADB_ID:emulator-5554 --variable DEVICE_SERIAL:emulator-5554 --variable APP_PACKAGE:ai.smartway.smartapp ./
+        run: python3 -m robot -s 01_InitApplication -s ${{ inputs.test-suite }} -d ${{ env.robot_output_folder }} --variable DEVICE_ADB_ID:emulator-5554 --variable DEVICE_SERIAL:emulator-5554 --variable APP_PACKAGE:ai.smartway.smartapp ./
 
       - name: Edit perms for dumb github runner cache
         if: steps.cache-android-sdk.outputs.cache-hit != 'true'
@@ -300,7 +290,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: Appium-Server-Logs-${{ matrix.suite }}
+          name: Appium-Server-Logs-${{ inputs.test-suite }}
           path: ./TestsAutomation/appium-server.log
           if-no-files-found: warn
 
@@ -308,6 +298,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: RobotFramework-TestReport-${{ matrix.suite }}
+          name: RobotFramework-TestReport-${{ inputs.test-suite }}
           path: ${{ env.robot_output_folder }}
           if-no-files-found: warn
