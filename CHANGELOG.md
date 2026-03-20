@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [6.2.5](https://github.com/ZeroGachis/.github/compare/v6.2.4...v6.2.5) (2026-03-20)
+
+
+### Miscellaneous Chores
+
+* **deps:** update aquasecurity/trivy-action action to v0.35.0 ([0e1df3b](https://github.com/ZeroGachis/.github/commit/0e1df3bb51214ebeb0f2e38cbefb421eeecdfa3d))
+
 ## [6.2.4](https://github.com/ZeroGachis/.github/compare/v6.2.3...v6.2.4) (2026-03-19)
 
 
