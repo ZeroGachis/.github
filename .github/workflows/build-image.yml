@@ -257,7 +257,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         if: inputs.security_scan_enabled && inputs.security_scan_output_format != 'sarif'
         id: trivy-scan
-        uses: aquasecurity/trivy-action@0.34.2
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           version: v0.69.2 #remove this once fix is released https://github.com/aquasecurity/trivy-action/issues/517
           skip-setup-trivy: true
@@ -273,7 +273,7 @@ jobs:
       - name: Run Trivy vulnerability scanner sarif
         if: inputs.security_scan_enabled && inputs.security_scan_output_format == 'sarif'
         id: trivy-scan-sarif
-        uses: aquasecurity/trivy-action@0.34.2
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           version: v0.69.2  #remove this once fix is released https://github.com/aquasecurity/trivy-action/issues/517
           skip-setup-trivy: true
@@ -322,7 +322,7 @@ jobs:
       - name: Trivy vulnerability block Critical
         id: trivy-scan-block-critical
         if: inputs.security_scan_enabled
-        uses: aquasecurity/trivy-action@0.34.2
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           version: v0.69.2  #remove this once fix is released https://github.com/aquasecurity/trivy-action/issues/517
           skip-setup-trivy: true
