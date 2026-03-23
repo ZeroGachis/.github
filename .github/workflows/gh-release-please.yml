@@ -55,6 +55,7 @@ jobs:
       paths_released: ${{ steps.release.outputs.paths_released }}
     env:
       major_and_minor_tags: ${{ inputs.major_and_minor_tags || true }}
+      create_gh_release: ${{ inputs.create_gh_release || 'true' }}
     steps:
       - name: Generate GitHub App Token
         id: generate-token
@@ -77,7 +78,7 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           
       - name: tag major and minor versions
-        if: ${{ steps.release.outputs.release_created == 'true' && env.major_and_minor_tags == 'true' && inputs.create_gh_release == 'true' }}
+        if: ${{ steps.release.outputs.release_created == 'true' && env.major_and_minor_tags == 'true' && env.create_gh_release == 'true' }}
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
