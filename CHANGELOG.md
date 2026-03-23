@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.0.0](https://github.com/ZeroGachis/.github/compare/v6.2.7...v7.0.0) (2026-03-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* workspace_key_prefix is now a required input and must match the workspace_key_prefix in the project Terraform backend config. Inputs workdir, terraform_version, and artifact_id have been removed.
+
+### Features
+
+* replace terraform init with direct S3 fetch in fetch-terraform-output ([ce37309](https://github.com/ZeroGachis/.github/commit/ce37309d93ee77ba095cadc3d23921564498e024))
+
 ## [6.2.7](https://github.com/ZeroGachis/.github/compare/v6.2.6...v6.2.7) (2026-03-23)
 
 
