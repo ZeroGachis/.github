@@ -100,7 +100,7 @@ jobs:
           thresholds: ${{ inputs.code_coverage_threshold }}
 
       - name: Add Coverage PR Comment
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         if: github.event_name == 'pull_request' && inputs.code_coverage_enabled
         with:
           recreate: true
