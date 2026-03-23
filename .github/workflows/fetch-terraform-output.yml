@@ -64,15 +64,23 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
           
-      - name: Pull State
-        run: aws s3 cp "s3://tfstate-${{ env.AWS_ACCOUNT_ID }}/$(basename ${{ github.repository }})/${{ inputs.terraform_workspace }}/infra.tfstate" .
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend-config="bucket=${{ env.TERRAFORM_DEFAULT_BACKEND }}"
+
+      - name: Terraform Workspace
+        id: workspace
+        run: terraform workspace select ${{ inputs.terraform_workspace }}
+
+      - name: Terraform Get Output
+        run: terraform output -json > tf-output.json
 
       - name: Set variables
         id: set-variables
         env:
           VAR_NAME: ${{ inputs.variable_name }}
         run: |
-          value=$(jq -r --arg key "$VAR_NAME" '.outputs.[$key].value' infra.tfstate)
+          value=$(jq -r --arg key "$VAR_NAME" '.[$key].value' tf-output.json)
           if [ "$value" = "null" ] || [ -z "$value" ]; then
             echo "::error::Variable '$VAR_NAME' not found in terraform output"
             exit 1
