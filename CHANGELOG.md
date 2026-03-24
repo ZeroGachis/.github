@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.1.2](https://github.com/ZeroGachis/.github/compare/v7.1.1...v7.1.2) (2026-03-24)
+
+
+### Bug Fixes
+
+* Specify the shell to use in create-linear-issue action ([6a0e4fd](https://github.com/ZeroGachis/.github/commit/6a0e4fd9ee4831e77f5750bdcedf4364892367c6))
+
 ## [7.1.1](https://github.com/ZeroGachis/.github/compare/v7.1.0...v7.1.1) (2026-03-24)
 
 
