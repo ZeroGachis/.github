@@ -62,8 +62,8 @@ runs:
         TEAM_ID: ${{ steps.get_team.outputs.team_id }}
       shell: bash
       run: |
-        TITLE="${{ github.event.inputs.title }}"
-        DESCRIPTION="${{ github.event.inputs.description }}"
+        TITLE="${{ inputs.title }}"
+        DESCRIPTION="${{ inputs.description }}"
 
         RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
           -H "Content-Type: application/json" \
