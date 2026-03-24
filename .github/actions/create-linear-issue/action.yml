@@ -22,6 +22,7 @@ runs:
       env:
         LINEAR_CLIENT_ID: ${{ inputs.linear_client_id }}
         LINEAR_CLIENT_SECRET: ${{ inputs.linear_client_secret }}
+      shell: bash
       run: |
         RESPONSE=$(curl -s -X POST https://api.linear.app/oauth/token \
           -H "Content-Type: application/x-www-form-urlencoded" \
@@ -43,6 +44,7 @@ runs:
       id: get_team
       env:
         ACCESS_TOKEN: ${{ steps.get_access_token.outputs.access_token }}
+      shell: bash
       run: |
         RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
           -H "Content-Type: application/json" \
@@ -57,6 +59,7 @@ runs:
       env:
         ACCESS_TOKEN: ${{ steps.get_access_token.outputs.access_token }}
         TEAM_ID: ${{ steps.get_team.outputs.team_id }}
+      shell: bash
       run: |
         TITLE="${{ github.event.inputs.title }}"
         DESCRIPTION="${{ github.event.inputs.description }}"
