@@ -15,65 +15,64 @@ inputs:
     required: false
 
 runs:
-  create-linear-issue:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get Linear access token
-        id: get_access_token
-        env:
-          LINEAR_CLIENT_ID: ${{ inputs.linear_client_id }}
-          LINEAR_CLIENT_SECRET: ${{ inputs.linear_client_secret }}
-        run: |
-          RESPONSE=$(curl -s -X POST https://api.linear.app/oauth/token \
-            -H "Content-Type: application/x-www-form-urlencoded" \
-            --data-urlencode "grant_type=client_credentials" \
-            --data-urlencode "client_id=$LINEAR_CLIENT_ID" \
-            --data-urlencode "client_secret=$LINEAR_CLIENT_SECRET")
+  using: "composite"
+  steps:
+    - name: Get Linear access token
+      id: get_access_token
+      env:
+        LINEAR_CLIENT_ID: ${{ inputs.linear_client_id }}
+        LINEAR_CLIENT_SECRET: ${{ inputs.linear_client_secret }}
+      run: |
+        RESPONSE=$(curl -s -X POST https://api.linear.app/oauth/token \
+          -H "Content-Type: application/x-www-form-urlencoded" \
+          --data-urlencode "grant_type=client_credentials" \
+          --data-urlencode "client_id=$LINEAR_CLIENT_ID" \
+          --data-urlencode "client_secret=$LINEAR_CLIENT_SECRET")
 
-          ACCESS_TOKEN=$(echo $RESPONSE | jq -r '.access_token')
+        ACCESS_TOKEN=$(echo $RESPONSE | jq -r '.access_token')
 
-          if [ "$ACCESS_TOKEN" == "null" ] || [ -z "$ACCESS_TOKEN" ]; then
-            echo "Failed to obtain Linear access token"
-            exit 1
-          fi
+        if [ "$ACCESS_TOKEN" == "null" ] || [ -z "$ACCESS_TOKEN" ]; then
+          echo "Failed to obtain Linear access token"
+          exit 1
+        fi
 
-          echo "::add-mask::$ACCESS_TOKEN" # Mask the token so it doesn't appear in logs
-          echo "access_token=$ACCESS_TOKEN" >> $GITHUB_OUTPUT
+        echo "::add-mask::$ACCESS_TOKEN" # Mask the token so it doesn't appear in logs
+        echo "access_token=$ACCESS_TOKEN" >> $GITHUB_OUTPUT
 
-      - name: Get Linear Team ID
-        id: get_team
-        env:
-          ACCESS_TOKEN: ${{ steps.get_access_token.outputs.access_token }}
-        run: |
-          RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $ACCESS_TOKEN" \
-            --data '{ "query": "{ teams { nodes { id name } } }" }')
+    - name: Get Linear Team ID
+      id: get_team
+      env:
+        ACCESS_TOKEN: ${{ steps.get_access_token.outputs.access_token }}
+      run: |
+        RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $ACCESS_TOKEN" \
+          --data '{ "query": "{ teams { nodes { id name } } }" }')
 
-          # Grab the first team's ID — adjust with jq if you have multiple teams
-          TEAM_ID=$(echo $RESPONSE | jq -r '.data.teams.nodes[0].id')
-          echo "team_id=$TEAM_ID" >> $GITHUB_OUTPUT
+        # Grab the first team's ID — adjust with jq if you have multiple teams
+        TEAM_ID=$(echo $RESPONSE | jq -r '.data.teams.nodes[0].id')
+        echo "team_id=$TEAM_ID" >> $GITHUB_OUTPUT
 
-      - name: Create Linear issue
-        env:
-          ACCESS_TOKEN: ${{ steps.get_access_token.outputs.access_token }}
-          TEAM_ID: ${{ steps.get_team.outputs.team_id }}
-        run: |
-          TITLE="${{ github.event.inputs.title }}"
-          DESCRIPTION="${{ github.event.inputs.description }}"
+    - name: Create Linear issue
+      env:
+        ACCESS_TOKEN: ${{ steps.get_access_token.outputs.access_token }}
+        TEAM_ID: ${{ steps.get_team.outputs.team_id }}
+      run: |
+        TITLE="${{ github.event.inputs.title }}"
+        DESCRIPTION="${{ github.event.inputs.description }}"
 
-          RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $ACCESS_TOKEN" \
-            --data "{
-              \"query\": \"mutation CreateIssue(\$title: String!, \$description: String, \$teamId: String!) { issueCreate(input: { title: \$title, description: \$description, teamId: \$teamId }) { success issue { id identifier url } } }\",
-              \"variables\": {
-                \"title\": \"$TITLE\",
-                \"description\": \"$DESCRIPTION\",
-                \"teamId\": \"$TEAM_ID\"
-              }
-            }")
+        RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $ACCESS_TOKEN" \
+          --data "{
+            \"query\": \"mutation CreateIssue(\$title: String!, \$description: String, \$teamId: String!) { issueCreate(input: { title: \$title, description: \$description, teamId: \$teamId }) { success issue { id identifier url } } }\",
+            \"variables\": {
+              \"title\": \"$TITLE\",
+              \"description\": \"$DESCRIPTION\",
+              \"teamId\": \"$TEAM_ID\"
+            }
+          }")
 
-          echo "Response: $RESPONSE"
-          ISSUE_URL=$(echo $RESPONSE | jq -r '.data.issueCreate.issue.url')
-          echo "✅ Created issue: $ISSUE_URL"
+        echo "Response: $RESPONSE"
+        ISSUE_URL=$(echo $RESPONSE | jq -r '.data.issueCreate.issue.url')
+        echo "✅ Created issue: $ISSUE_URL"
