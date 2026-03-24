@@ -28,7 +28,8 @@ runs:
           -H "Content-Type: application/x-www-form-urlencoded" \
           --data-urlencode "grant_type=client_credentials" \
           --data-urlencode "client_id=$LINEAR_CLIENT_ID" \
-          --data-urlencode "client_secret=$LINEAR_CLIENT_SECRET")
+          --data-urlencode "client_secret=$LINEAR_CLIENT_SECRET" \
+          --data-urlencode "scope=read write")
 
         ACCESS_TOKEN=$(echo $RESPONSE | jq -r '.access_token')
 
