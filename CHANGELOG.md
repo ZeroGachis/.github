@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.1.5](https://github.com/ZeroGachis/.github/compare/v7.1.4...v7.1.5) (2026-03-26)
+
+
+### Bug Fixes
+
+* **fetch-terraform-output:** default environment_name to ref_name on push events ([2970504](https://github.com/ZeroGachis/.github/commit/2970504ea6c354275fc8cf752e4c963ec8ebaa07))
+* **gh-release-please:** resolve create_gh_release input not evaluated on push trigger ([7009fa3](https://github.com/ZeroGachis/.github/commit/7009fa3183f202ace76e02fd11b920e28fdca545))
+
 ## [7.1.4](https://github.com/ZeroGachis/.github/compare/v7.1.3...v7.1.4) (2026-03-24)
 
 
