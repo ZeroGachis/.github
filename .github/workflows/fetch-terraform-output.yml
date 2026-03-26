@@ -23,7 +23,7 @@ on:
       environment_name:
         required: false
         type: string
-        default: ${{ github.base_ref }}
+        default: ${{ github.base_ref || github.ref_name }}
       terraform_workspace:
         required: false
         type: string
