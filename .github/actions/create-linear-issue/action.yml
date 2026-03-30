@@ -74,7 +74,7 @@ runs:
 
         lowercased_code_owner=$(echo $CODE_OWNER | tr '[:upper:]' '[:lower:]')
 
-        if [[ -v linear_teams[lowercased_code_owner] ]]; then
+        if [[ -v linear_teams[$lowercased_code_owner] ]]; then
           echo "Code owner matched a linear team"
           linear_team_name="${linear_teams[lowercased_code_owner]}"
         else
