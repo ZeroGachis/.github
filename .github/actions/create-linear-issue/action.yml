@@ -24,21 +24,32 @@ runs:
         LINEAR_CLIENT_SECRET: ${{ inputs.linear_client_secret }}
       shell: bash
       run: |
-        RESPONSE=$(curl -s -X POST https://api.linear.app/oauth/token \
+        # Separate HTTP status code from body using -w and a delimiter
+        RESPONSE=$(curl -s -w "\n%{http_code}" -X POST https://api.linear.app/oauth/token \
           -H "Content-Type: application/x-www-form-urlencoded" \
           --data-urlencode "grant_type=client_credentials" \
           --data-urlencode "client_id=$LINEAR_CLIENT_ID" \
           --data-urlencode "client_secret=$LINEAR_CLIENT_SECRET" \
           --data-urlencode "scope=read write")
 
-        ACCESS_TOKEN=$(echo $RESPONSE | jq -r '.access_token')
+        HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+        BODY=$(echo "$RESPONSE" | head -n -1)
 
-        if [ "$ACCESS_TOKEN" == "null" ] || [ -z "$ACCESS_TOKEN" ]; then
-          echo "Failed to obtain Linear access token"
+        if [ "$HTTP_STATUS" -ne 200 ]; then
+          echo "::error::Linear OAuth token request failed (HTTP $HTTP_STATUS)"
+          echo "::error::Response body: $BODY"
           exit 1
         fi
 
-        echo "::add-mask::$ACCESS_TOKEN" # Mask the token so it doesn't appear in logs
+        ACCESS_TOKEN=$(echo "$BODY" | jq -r '.access_token')
+
+        if [ "$ACCESS_TOKEN" == "null" ] || [ -z "$ACCESS_TOKEN" ]; then
+          echo "::error::Linear OAuth succeeded (HTTP 200) but no access_token in response"
+          echo "::error::Response body: $BODY"
+          exit 1
+        fi
+
+        echo "::add-mask::$ACCESS_TOKEN"
         echo "access_token=$ACCESS_TOKEN" >> $GITHUB_OUTPUT
 
     - name: Get code owner
@@ -46,12 +57,17 @@ runs:
       shell: bash
       run: |
         if [ ! -f ".github/CODEOWNERS" ]; then
-          echo "Error: .github/CODEOWNERS file not found" >&2
+          echo "::error::file=.github/CODEOWNERS::.github/CODEOWNERS file not found"
           exit 1
         fi
 
-        # Get the first code owner for the '*' pattern
         CODE_OWNER=$(cat .github/CODEOWNERS | grep '^\*' | awk '{print $2}')
+
+        if [ -z "$CODE_OWNER" ]; then
+          echo "::error::No wildcard (*) entry found in .github/CODEOWNERS"
+          exit 1
+        fi
+
         echo "Code owner is: '${CODE_OWNER}'"
         echo "code_owner=$CODE_OWNER" >> $GITHUB_OUTPUT
 
@@ -78,19 +94,41 @@ runs:
           echo "Code owner matched a linear team"
           linear_team_name="${linear_teams[lowercased_code_owner]}"
         else
-          # Default to the platform team when code owner does not match
-          echo "Code owner did not match a linear team; default to 'Platform'"
+          echo "::warning::Code owner '$CODE_OWNER' did not match any known team; defaulting to 'Platform'"
           linear_team_name="Platform"
         fi
 
         echo "Linear team name is: '$linear_team_name'"
 
-        TEAM_ID=$(curl -s -X POST \
+        RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer $LINEAR_ACCESS_TOKEN" \
           --data '{"query": "query { teams(filter: { name: { eqIgnoreCase: \"'"$linear_team_name"'\" } }) { nodes { id name key } } }"}' \
-          https://api.linear.app/graphql \
-          | jq -r '.data.teams.nodes[0].id')
+          https://api.linear.app/graphql)
+
+        HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+        BODY=$(echo "$RESPONSE" | head -n -1)
+
+        if [ "$HTTP_STATUS" -ne 200 ]; then
+          echo "::error::Linear GraphQL request failed when fetching team (HTTP $HTTP_STATUS)"
+          echo "::error::Response body: $BODY"
+          exit 1
+        fi
+
+        # GraphQL errors come back as HTTP 200 with an "errors" field
+        GQL_ERRORS=$(echo "$BODY" | jq -r '.errors // empty')
+        if [ -n "$GQL_ERRORS" ]; then
+          echo "::error::Linear GraphQL returned errors when fetching team '$linear_team_name'"
+          echo "::error::GraphQL errors: $GQL_ERRORS"
+          exit 1
+        fi
+
+        TEAM_ID=$(echo "$BODY" | jq -r '.data.teams.nodes[0].id')
+
+        if [ "$TEAM_ID" == "null" ] || [ -z "$TEAM_ID" ]; then
+          echo "::error::No Linear team found with name '$linear_team_name'"
+          exit 1
+        fi
 
         echo "Linear team ID is: '$TEAM_ID'"
         echo "team_id=$TEAM_ID" >> $GITHUB_OUTPUT
@@ -104,7 +142,7 @@ runs:
         TITLE="${{ inputs.title }}"
         DESCRIPTION="${{ inputs.description }}"
 
-        RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
+        RESPONSE=$(curl -s -w "\n%{http_code}" -X POST https://api.linear.app/graphql \
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer $ACCESS_TOKEN" \
           --data "{
@@ -116,6 +154,28 @@ runs:
             }
           }")
 
-        echo "Response: $RESPONSE"
-        ISSUE_URL=$(echo $RESPONSE | jq -r '.data.issueCreate.issue.url')
+        HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+        BODY=$(echo "$RESPONSE" | head -n -1)
+
+        if [ "$HTTP_STATUS" -ne 200 ]; then
+          echo "::error::Linear GraphQL request failed when creating issue (HTTP $HTTP_STATUS)"
+          echo "::error::Response body: $BODY"
+          exit 1
+        fi
+
+        GQL_ERRORS=$(echo "$BODY" | jq -r '.errors // empty')
+        if [ -n "$GQL_ERRORS" ]; then
+          echo "::error::Linear GraphQL returned errors when creating issue"
+          echo "::error::GraphQL errors: $GQL_ERRORS"
+          exit 1
+        fi
+
+        SUCCESS=$(echo "$BODY" | jq -r '.data.issueCreate.success')
+        if [ "$SUCCESS" != "true" ]; then
+          echo "::error::Linear reported issueCreate.success=false"
+          echo "::error::Response body: $BODY"
+          exit 1
+        fi
+
+        ISSUE_URL=$(echo "$BODY" | jq -r '.data.issueCreate.issue.url')
         echo "✅ Created issue: $ISSUE_URL"
