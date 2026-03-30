@@ -88,9 +88,7 @@ runs:
         TEAM_ID=$(curl -s -X POST \
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer $LINEAR_ACCESS_TOKEN" \
-          --data "{
-            \"query\": \"query { teams(filter: { name: { eqIgnoreCase: \"$linear_team_name\" } }) { nodes { id name } } }\"
-          }" \
+          --data '{"query": "query { teams(filter: { name: { eqIgnoreCase: \"'"$linear_team_name"'\" } }) { nodes { id name key } } }"}' \
           https://api.linear.app/graphql \
           | jq -r '.data.teams.nodes[0].id')
 
