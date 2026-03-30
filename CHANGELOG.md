@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.1.11](https://github.com/ZeroGachis/.github/compare/v7.1.10...v7.1.11) (2026-03-30)
+
+
+### Miscellaneous Chores
+
+* **ci:** Add proper error handling for HTTP requests ([d1b543c](https://github.com/ZeroGachis/.github/commit/d1b543c62ca706f11eb246cee3c198f8ce82fa0e))
+* **ci:** Fix string interpolation when matching the linear team ([0cdff03](https://github.com/ZeroGachis/.github/commit/0cdff03c665fec05dc61c3f272e65e43787222f3))
+
 ## [7.1.10](https://github.com/ZeroGachis/.github/compare/v7.1.9...v7.1.10) (2026-03-30)
 
 
