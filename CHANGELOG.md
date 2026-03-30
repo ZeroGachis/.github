@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.1.10](https://github.com/ZeroGachis/.github/compare/v7.1.9...v7.1.10) (2026-03-30)
+
+
+### Miscellaneous Chores
+
+* **ci:** Fix bash interpolation once again ([ffcb9a9](https://github.com/ZeroGachis/.github/commit/ffcb9a9081ffc6c2d7334d28eaf8d5ed32af6916))
+
 ## [7.1.9](https://github.com/ZeroGachis/.github/compare/v7.1.8...v7.1.9) (2026-03-30)
 
 
