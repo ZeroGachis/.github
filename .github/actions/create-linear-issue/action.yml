@@ -41,25 +41,60 @@ runs:
         echo "::add-mask::$ACCESS_TOKEN" # Mask the token so it doesn't appear in logs
         echo "access_token=$ACCESS_TOKEN" >> $GITHUB_OUTPUT
 
-    - name: Get Linear Team ID
-      id: get_team
-      env:
-        ACCESS_TOKEN: ${{ steps.get_access_token.outputs.access_token }}
+    - name: Get code owner
+      id: get_code_owner
       shell: bash
       run: |
-        RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
-          -H "Content-Type: application/json" \
-          -H "Authorization: Bearer $ACCESS_TOKEN" \
-          --data '{ "query": "{ teams { nodes { id name } } }" }')
+        if [ ! -f ".github/CODEOWNERS" ]; then
+          echo "Error: .github/CODEOWNERS file not found" >&2
+          exit 1
+        fi
 
-        # Grab the first team's ID — adjust with jq if you have multiple teams
-        TEAM_ID=$(echo $RESPONSE | jq -r '.data.teams.nodes[0].id')
+        # Get the first code owner for the '*' pattern
+        CODE_OWNER=$(cat .github/CODEOWNERS | grep '^\*' | awk '{print $2}')
+        echo "code_owner=$CODE_OWNER" >> $GITHUB_OUTPUT
+
+    - name: Get linear team associated to the code owner
+      id: get_linear_team
+      shell: bash
+      env:
+        LINEAR_ACCESS_TOKEN: ${{ steps.get_access_token.outputs.access_token }}
+        CODE_OWNER: ${{ steps.get_code_owner.outputs.code_owner }}
+      run: |
+        declare -A linear_teams
+
+        linear_teams["@zerogachis/dataanalysts"] = "Data Engineering"
+        linear_teams["@zerogachis/dataengineers"] = "Data Engineering"
+        linear_teams["@zerogachis/datascientists"] = "Data Engineering"
+        linear_teams["@zerogachis/devops"] = "Platform"
+        linear_teams["@zerogachis/fos_squad"] = "FOS App"
+        linear_teams["@zerogachis/fwms_squad"] = "FWMS"
+        linear_teams["@zerogachis/platform_squad"] = "Platform"
+
+        lowercased_code_owner = $CODE_OWNER | tr '[:upper:]' '[:lower:]'
+
+        if [[ -v linear_teams[lowercased_code_owner] ]]; then
+          linear_team_name = ${linear_teams[lowercased_code_owner]}
+        else
+          # Default to the platform team when code owner does not match
+          linear_team_name = "Platform"
+        fi
+
+        TEAM_ID=$(curl -s -X POST \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $LINEAR_ACCESS_TOKEN" \
+          --data '{
+            "query": "query { teams(filter: { name: { eqIgnoreCase: \"$linear_team_name\" } }) { nodes { id name } } }"
+          }' \
+          https://api.linear.app/graphql \
+          | jq -r '.data.teams.nodes[0].id')
+
         echo "team_id=$TEAM_ID" >> $GITHUB_OUTPUT
 
     - name: Create Linear issue
       env:
         ACCESS_TOKEN: ${{ steps.get_access_token.outputs.access_token }}
-        TEAM_ID: ${{ steps.get_team.outputs.team_id }}
+        TEAM_ID: ${{ steps.get_linear_team.outputs.team_id }}
       shell: bash
       run: |
         TITLE="${{ inputs.title }}"
