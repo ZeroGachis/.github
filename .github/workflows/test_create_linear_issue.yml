@@ -1,0 +1,36 @@
+name: "Test create linear issue"
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test_create_linear_issue:
+    runs-on: ubuntu-latest
+    env:
+      VAULT_ADDR: ${{ vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_GITHUB_ACTIONS_ROLE: ${{ vars.VAULT_GITHUB_ACTIONS_ROLE }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Get Linear client secret
+        uses: hashicorp/vault-action@v3
+        id: linear_secrets
+        with:
+          url: ${{ env.VAULT_ADDR }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          exportToken: true
+          secrets: |
+            secret/data/github-actions-common/linear CLIENT_ID | LINEAR_CLIENT_ID;
+            secret/data/github-actions-common/linear CLIENT_SECRET | LINEAR_CLIENT_SECRET;
+      - name: Create linear issue
+        uses: .github/actions/create-linear-issue
+        with:
+          linear_client_id: ${{ env.LINEAR_CLIENT_ID }}
+          linear_client_secret: ${{ env.LINEAR_CLIENT_SECRET }}
+          title: Test from Guillaume
+          description: This is a test issue created by Guillaume from a Github Action workflow <3
