@@ -71,7 +71,7 @@ runs:
         linear_teams["@zerogachis/fwms_squad"]="FWMS"
         linear_teams["@zerogachis/platform_squad"]="Platform"
 
-        lowercased_code_owner=$($CODE_OWNER | tr '[:upper:]' '[:lower:]')
+        lowercased_code_owner=$(echo $CODE_OWNER | tr '[:upper:]' '[:lower:]')
 
         if [[ -v linear_teams[lowercased_code_owner] ]]; then
           linear_team_name="${linear_teams[lowercased_code_owner]}"
