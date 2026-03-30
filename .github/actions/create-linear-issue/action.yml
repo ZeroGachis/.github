@@ -63,21 +63,21 @@ runs:
       run: |
         declare -A linear_teams
 
-        linear_teams["@zerogachis/dataanalysts"] = "Data Engineering"
-        linear_teams["@zerogachis/dataengineers"] = "Data Engineering"
-        linear_teams["@zerogachis/datascientists"] = "Data Engineering"
-        linear_teams["@zerogachis/devops"] = "Platform"
-        linear_teams["@zerogachis/fos_squad"] = "FOS App"
-        linear_teams["@zerogachis/fwms_squad"] = "FWMS"
-        linear_teams["@zerogachis/platform_squad"] = "Platform"
+        linear_teams["@zerogachis/dataanalysts"]="Data Engineering"
+        linear_teams["@zerogachis/dataengineers"]="Data Engineering"
+        linear_teams["@zerogachis/datascientists"]="Data Engineering"
+        linear_teams["@zerogachis/devops"]="Platform"
+        linear_teams["@zerogachis/fos_squad"]="FOS App"
+        linear_teams["@zerogachis/fwms_squad"]="FWMS"
+        linear_teams["@zerogachis/platform_squad"]="Platform"
 
-        lowercased_code_owner = $CODE_OWNER | tr '[:upper:]' '[:lower:]'
+        lowercased_code_owner=$($CODE_OWNER | tr '[:upper:]' '[:lower:]')
 
         if [[ -v linear_teams[lowercased_code_owner] ]]; then
-          linear_team_name = ${linear_teams[lowercased_code_owner]}
+          linear_team_name="${linear_teams[lowercased_code_owner]}"
         else
           # Default to the platform team when code owner does not match
-          linear_team_name = "Platform"
+          linear_team_name="Platform"
         fi
 
         TEAM_ID=$(curl -s -X POST \
