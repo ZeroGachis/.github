@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.1.9](https://github.com/ZeroGachis/.github/compare/v7.1.8...v7.1.9) (2026-03-30)
+
+
+### Miscellaneous Chores
+
+* **ci:** Improve logs + use double quotes to properly expand ([43d0cbf](https://github.com/ZeroGachis/.github/commit/43d0cbf4d004acccd7926fb7ac49aa71febabb23))
+
 ## [7.1.8](https://github.com/ZeroGachis/.github/compare/v7.1.7...v7.1.8) (2026-03-30)
 
 
