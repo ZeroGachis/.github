@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.1.6](https://github.com/ZeroGachis/.github/compare/v7.1.5...v7.1.6) (2026-03-30)
+
+
+### Bug Fixes
+
+* Select the linear team based on the repo's code owner ([70c0c74](https://github.com/ZeroGachis/.github/commit/70c0c7414662e097a1d50f0d3c08bf48190ef442))
+
 ## [7.1.5](https://github.com/ZeroGachis/.github/compare/v7.1.4...v7.1.5) (2026-03-26)
 
 
