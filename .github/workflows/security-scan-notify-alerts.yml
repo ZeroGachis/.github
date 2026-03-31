@@ -1,0 +1,243 @@
+name: Create linear issues for vulnerability alerts from Github Code Scanning 
+
+on:
+  workflow_call:
+    inputs:
+      severity:
+        description: "Comma-separated list of severities to report (e.g. critical,high)"
+        required: false
+        type: string
+        default: "critical"
+
+jobs:
+  get-linear-credentials:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    outputs:
+      access_token: ${{ steps.get_linear_token.outputs.access_token }}
+    steps:
+      - name: Get Linear client secret
+        id: vault
+        uses: hashicorp/vault-action@v3
+        with:
+          url: ${{ env.VAULT_ADDR }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          exportToken: true
+          secrets: |
+            secret/data/github-actions-common/linear CLIENT_ID | LINEAR_CLIENT_ID;
+            secret/data/github-actions-common/linear CLIENT_SECRET | LINEAR_CLIENT_SECRET;
+
+      - name: Get Linear access token
+        id: get_linear_token
+        uses: ZeroGachis/.github/.github/actions/get-linear-token@main
+        with:
+          linear_client_id: ${{ env.LINEAR_CLIENT_ID }}
+          linear_client_secret: ${{ env.LINEAR_CLIENT_SECRET }}
+
+  fetch-new-critical-alerts:
+    needs: get-linear-credentials
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: read
+      contents: read
+    outputs:
+      matrix: ${{ steps.filter_alerts.outputs.matrix }}
+      has_new_alerts: ${{ steps.filter_alerts.outputs.has_new_alerts }}
+    steps:
+      - name: Fetch critical alerts and filter already-tracked ones
+        id: filter_alerts
+        shell: node {0}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LINEAR_ACCESS_TOKEN: ${{ needs.get-linear-credentials.outputs.access_token }}
+          TARGET_REPO: ${{ github.repository }}
+          SEVERITY: ${{ inputs.severity }}
+        run: |
+          // Fetch critical alerts and filter already-tracked ones
+          const fs = require('fs');
+
+          // Fetch all pages of open alerts from GitHub Code Scanning
+          const allAlerts = [];
+          let url = `https://api.github.com/repos/${process.env.TARGET_REPO}/code-scanning/alerts?state=open&per_page=100`;
+
+          while (url) {
+            const response = await fetch(url, {
+              headers: {
+                'Authorization': `Bearer ${process.env.GH_TOKEN}`,
+                'Accept': 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2026-03-10',
+              },
+            });
+
+            if (!response.ok) {
+              console.log(`::error::Failed to fetch alerts (HTTP ${response.status})`);
+              process.exit(1);
+            }
+
+            allAlerts.push(...await response.json());
+
+            // search for the next page
+            // Cf: https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2026-03-10#using-link-headers
+            const nextMatch = response.headers.get('link')?.match(/<([^>]+)>;\s*rel="next"/);
+            url = nextMatch ? nextMatch[1] : null;
+          }
+
+          // Filter alerts by the requested severities
+          const severities = new Set(process.env.SEVERITY.split(',').map(s => s.trim().toLowerCase()));
+          const alerts = allAlerts.filter(a => severities.has(a.rule.severity?.toLowerCase()));
+
+          console.log(`Found ${alerts.length} open alert(s) matching severities: ${[...severities].join(', ')}`);
+
+          const newAlerts = [];
+
+          for (const alert of alerts) {
+            // To be able to identify a linear issue created for a code scanning alert
+            // we create a unique key like `ZeroGachis/backoffice#12345` that we use in the issue title
+            const uniqueKey = `[${process.env.TARGET_REPO}#${alert.number}]`;
+
+            // Search Linear for an existing issue containing this unique key in its title
+            const searchResponse = await fetch('https://api.linear.app/graphql', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.LINEAR_ACCESS_TOKEN}`,
+              },
+              body: JSON.stringify({
+                query: `query($filter: IssueFilter) { issues(filter: $filter) { nodes { id title } } }`,
+                variables: { filter: { title: { contains: uniqueKey } } },
+              }),
+            });
+
+            if (!searchResponse.ok) {
+              console.log(`::warning::Linear search failed for alert #${alert.number} (HTTP ${searchResponse.status}) — will fallback to create issue to avoid missing the alert`);
+              newAlerts.push(alert);
+              continue;
+            }
+
+            const searchBody = await searchResponse.json();
+            const existingNodes = searchBody.data?.issues?.nodes ?? [];
+
+            if (existingNodes.length === 0) {
+              console.log(`Alert #${alert.number}: no existing Linear issue — queued for creation`);
+              newAlerts.push(alert);
+            } else {
+              console.log(`Alert #${alert.number}: already tracked in Linear ("${existingNodes[0].title}") — skipping`);
+            }
+          }
+
+          console.log(`${newAlerts.length} new alert(s) will have a Linear issue created`);
+
+          if (newAlerts.length === 0) {
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'has_new_alerts=false\n');
+            process.exit(0);
+          }
+
+          // Map alerts into the Github Action dynamic matrix format
+          // in order to be consumed by the 'create-linear-issue' job.
+          const matrix = {
+            include: newAlerts.map(alert => ({
+              alert_number: alert.number,
+              alert_url: alert.html_url,
+              rule_id: alert.rule.id,
+              rule_description: alert.rule.description ?? alert.rule.id,
+              location_path: alert.most_recent_instance?.location?.path ?? 'unknown',
+              location_line: alert.most_recent_instance?.location?.start_line ?? '',
+            })),
+          };
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `has_new_alerts=true\nmatrix=${JSON.stringify(matrix)}\n`);
+
+  get-linear-team-from-code-owner:
+    needs: fetch-new-critical-alerts
+    if: needs.fetch-new-critical-alerts.outputs.has_new_alerts == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      team_name: ${{ steps.get_linear_team.outputs.team_name }}
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v6
+
+      - name: Read CODEOWNERS and extract code owner
+        id: read_codeowners
+        shell: node {0}
+        run: |
+          // Read CODEOWNERS and extract the wildcard code owner
+          const fs = require('fs');
+
+          if (!fs.existsSync('.github/CODEOWNERS')) {
+            console.log('::error::file=.github/CODEOWNERS::.github/CODEOWNERS file not found');
+            process.exit(1);
+          }
+
+          const content = fs.readFileSync('.github/CODEOWNERS', 'utf8');
+          const wildcardLine = content.split('\n').find(line => line.startsWith('*'));
+
+          if (!wildcardLine) {
+            console.log('::error::No wildcard (*) entry found in CODEOWNERS');
+            process.exit(1);
+          }
+
+          const codeOwner = wildcardLine.trim().split(/\s+/)[1];
+          console.log(`Code owner is: '${codeOwner}'`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `code_owner=${codeOwner}\n`);
+
+      - name: Get linear team from code owner
+        id: get_linear_team
+        uses: ZeroGachis/.github/.github/actions/get-linear-team-from-codeowner@main
+        with:
+          code_owner: ${{ steps.read_codeowners.outputs.code_owner }}
+
+  create-linear-issue:
+    needs: [get-linear-credentials, fetch-new-critical-alerts, get-linear-team-from-code-owner]
+    if: needs.fetch-new-critical-alerts.outputs.has_new_alerts == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.fetch-new-critical-alerts.outputs.matrix) }}
+    steps:
+      - name: Build issue title and description
+        id: build_issue
+        shell: node {0}
+        env:
+          TARGET_REPO: ${{ github.repository }}
+          ALERT_NUMBER: ${{ matrix.alert_number }}
+          ALERT_URL: ${{ matrix.alert_url }}
+          RULE_ID: ${{ matrix.rule_id }}
+          RULE_DESCRIPTION: ${{ matrix.rule_description }}
+          LOCATION_PATH: ${{ matrix.location_path }}
+          LOCATION_LINE: ${{ matrix.location_line }}
+        run: |
+          // Build title — unique key [owner/repo#number] is used for Linear deduplication
+          const fs = require('fs');
+          const { TARGET_REPO, ALERT_NUMBER, ALERT_URL, RULE_ID, RULE_DESCRIPTION, LOCATION_PATH, LOCATION_LINE } = process.env;
+
+          const title = `[${TARGET_REPO}#${ALERT_NUMBER}] Security: ${RULE_DESCRIPTION}`;
+          const location = LOCATION_LINE ? `${LOCATION_PATH}:${LOCATION_LINE}` : LOCATION_PATH;
+
+          const description = [
+            '## Critical Code Scanning Alert',
+            '',
+            `**Repository:** [${TARGET_REPO}](https://github.com/${TARGET_REPO})`,
+            `**Alert:** [#${ALERT_NUMBER}](${ALERT_URL})`,
+            `**Rule:** \`${RULE_ID}\``,
+            `**Description:** ${RULE_DESCRIPTION}`,
+            `**Location:** \`${location}\``,
+          ].join('\n');
+
+          const randomMultilineDelimiter = `ghadelimiter_${Math.random().toString(36).slice(2)}`;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `title=${title}\ndescription<<${randomMultilineDelimiter}\n${description}\n${randomMultilineDelimiter}\n`);
+
+      - name: Create Linear issue
+        uses: ZeroGachis/.github/.github/actions/create-linear-issue@main
+        with:
+          access_token: ${{ needs.get-linear-credentials.outputs.access_token }}
+          title: ${{ steps.build_issue.outputs.title }}
+          description: ${{ steps.build_issue.outputs.description }}
+          team_name: ${{ needs.get-linear-team-from-code-owner.outputs.team_name }}
