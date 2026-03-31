@@ -1,0 +1,46 @@
+name: Get the linear team of a code owner
+
+inputs:
+  code_owner:
+    description: "Code owner (e.g. @zerogachis/devops)"
+    required: true
+
+outputs:
+  team_name:
+    description: "Linear team name associated to the code owner"
+    value: ${{ steps.resolve_team.outputs.team_name }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get the linear team of a code owner
+      id: resolve_team
+      shell: node {0}
+      env:
+        CODE_OWNER: ${{ inputs.code_owner }}
+      run: |
+        // Get the linear team of a code owner
+        const fs = require('fs');
+
+        const codeOwner = process.env.CODE_OWNER;
+        console.log(`Code owner is: '${codeOwner}'`);
+
+        const linearTeams = {
+          '@zerogachis/dataanalysts': 'Data Engineering',
+          '@zerogachis/dataengineers': 'Data Engineering',
+          '@zerogachis/datascientists': 'Data Engineering',
+          '@zerogachis/devops': 'Platform',
+          '@zerogachis/fos_squad': 'FOS App',
+          '@zerogachis/fwms_squad': 'FWMS',
+          '@zerogachis/platform_squad': 'Platform',
+        };
+
+        const lowercasedCodeOwner = codeOwner.toLowerCase();
+        const teamName = linearTeams[lowercasedCodeOwner] ?? 'Platform';
+
+        if (!linearTeams[lowercasedCodeOwner]) {
+          console.log(`::warning::Code owner '${codeOwner}' did not match any known team; defaulting to 'Platform'`);
+        }
+
+        console.log(`Linear team name is: '${teamName}'`);
+        fs.appendFileSync(process.env.GITHUB_OUTPUT, `team_name=${teamName}\n`);
