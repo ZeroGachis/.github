@@ -1,11 +1,8 @@
 name: Create Linear issue
 
 inputs:
-  linear_client_id:
-    description: "OAuth client ID"
-    required: true
-  linear_client_secret:
-    description: "OAuth client secret"
+  access_token:
+    description: "Linear OAuth access token"
     required: true
   title:
     description: "Issue title"
@@ -13,173 +10,108 @@ inputs:
   description:
     description: "Issue description"
     required: false
+  team_name:
+    description: "Linear team name to assign the issue to."
+    required: true
 
 runs:
   using: "composite"
   steps:
-    - name: Get Linear access token
-      id: get_access_token
+    - name: Get Linear team ID
+      id: get_linear_team_id
+      shell: node {0}
       env:
-        LINEAR_CLIENT_ID: ${{ inputs.linear_client_id }}
-        LINEAR_CLIENT_SECRET: ${{ inputs.linear_client_secret }}
-      shell: bash
+        LINEAR_ACCESS_TOKEN: ${{ inputs.access_token }}
+        LINEAR_TEAM_NAME: ${{ inputs.team_name }}
       run: |
-        # Get Linear access token
-        # Separate HTTP status code from body using -w and a delimiter
-        RESPONSE=$(curl -s -w "\n%{http_code}" -X POST https://api.linear.app/oauth/token \
-          -H "Content-Type: application/x-www-form-urlencoded" \
-          --data-urlencode "grant_type=client_credentials" \
-          --data-urlencode "client_id=$LINEAR_CLIENT_ID" \
-          --data-urlencode "client_secret=$LINEAR_CLIENT_SECRET" \
-          --data-urlencode "scope=read write")
+        // Get Linear team ID from team name
+        const fs = require('fs');
 
-        HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
-        BODY=$(echo "$RESPONSE" | head -n -1)
+        const response = await fetch('https://api.linear.app/graphql', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.LINEAR_ACCESS_TOKEN}`,
+          },
+          body: JSON.stringify({
+            query: `query($name: String!) { teams(filter: { name: { eqIgnoreCase: $name } }) { nodes { id name key } } }`,
+            variables: { name: process.env.LINEAR_TEAM_NAME },
+          }),
+        });
 
-        if [ "$HTTP_STATUS" -ne 200 ]; then
-          echo "::error::Linear OAuth token request failed (HTTP $HTTP_STATUS)"
-          echo "::error::Response body: $BODY"
-          exit 1
-        fi
+        const body = await response.json();
 
-        ACCESS_TOKEN=$(echo "$BODY" | jq -r '.access_token')
+        if (!response.ok) {
+          console.log(`::error::Linear GraphQL request failed when fetching team (HTTP ${response.status})`);
+          console.log(`::error::Response body: ${JSON.stringify(body)}`);
+          process.exit(1);
+        }
 
-        if [ "$ACCESS_TOKEN" == "null" ] || [ -z "$ACCESS_TOKEN" ]; then
-          echo "::error::Linear OAuth succeeded (HTTP 200) but no access_token in response"
-          echo "::error::Response body: $BODY"
-          exit 1
-        fi
+        if (body.errors) {
+          console.log(`::error::Linear GraphQL returned errors when fetching team '${process.env.LINEAR_TEAM_NAME}'`);
+          console.log(`::error::GraphQL errors: ${JSON.stringify(body.errors)}`);
+          process.exit(1);
+        }
 
-        echo "::add-mask::$ACCESS_TOKEN"
-        echo "access_token=$ACCESS_TOKEN" >> $GITHUB_OUTPUT
+        const teamId = body.data?.teams?.nodes?.[0]?.id;
 
-    - name: Get code owner
-      id: get_code_owner
-      shell: bash
-      run: |
-        # Get code owner
-        if [ ! -f ".github/CODEOWNERS" ]; then
-          echo "::error::file=.github/CODEOWNERS::.github/CODEOWNERS file not found"
-          exit 1
-        fi
+        if (!teamId) {
+          console.log(`::error::No Linear team found with name '${process.env.LINEAR_TEAM_NAME}'`);
+          process.exit(1);
+        }
 
-        CODE_OWNER=$(cat .github/CODEOWNERS | grep '^\*' | awk '{print $2}')
-
-        if [ -z "$CODE_OWNER" ]; then
-          echo "::error::No wildcard (*) entry found in .github/CODEOWNERS"
-          exit 1
-        fi
-
-        echo "Code owner is: '${CODE_OWNER}'"
-        echo "code_owner=$CODE_OWNER" >> $GITHUB_OUTPUT
-
-    - name: Get linear team associated to the code owner
-      id: get_linear_team
-      shell: bash
-      env:
-        LINEAR_ACCESS_TOKEN: ${{ steps.get_access_token.outputs.access_token }}
-        CODE_OWNER: ${{ steps.get_code_owner.outputs.code_owner }}
-      run: |
-        # Get linear team associated to the code owner
-        declare -A linear_teams
-
-        linear_teams["@zerogachis/dataanalysts"]="Data Engineering"
-        linear_teams["@zerogachis/dataengineers"]="Data Engineering"
-        linear_teams["@zerogachis/datascientists"]="Data Engineering"
-        linear_teams["@zerogachis/devops"]="Platform"
-        linear_teams["@zerogachis/fos_squad"]="FOS App"
-        linear_teams["@zerogachis/fwms_squad"]="FWMS"
-        linear_teams["@zerogachis/platform_squad"]="Platform"
-
-        lowercased_code_owner=$(echo $CODE_OWNER | tr '[:upper:]' '[:lower:]')
-
-        if [[ -v linear_teams[$lowercased_code_owner] ]]; then
-          echo "Code owner matched a linear team"
-          linear_team_name="${linear_teams[$lowercased_code_owner]}"
-        else
-          echo "::warning::Code owner '$CODE_OWNER' did not match any known team; defaulting to 'Platform'"
-          linear_team_name="Platform"
-        fi
-
-        echo "Linear team name is: '$linear_team_name'"
-
-        RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
-          -H "Content-Type: application/json" \
-          -H "Authorization: Bearer $LINEAR_ACCESS_TOKEN" \
-          --data '{"query": "query { teams(filter: { name: { eqIgnoreCase: \"'"$linear_team_name"'\" } }) { nodes { id name key } } }"}' \
-          https://api.linear.app/graphql)
-
-        HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
-        BODY=$(echo "$RESPONSE" | head -n -1)
-
-        if [ "$HTTP_STATUS" -ne 200 ]; then
-          echo "::error::Linear GraphQL request failed when fetching team (HTTP $HTTP_STATUS)"
-          echo "::error::Response body: $BODY"
-          exit 1
-        fi
-
-        # GraphQL errors come back as HTTP 200 with an "errors" field
-        GQL_ERRORS=$(echo "$BODY" | jq -r '.errors // empty')
-        if [ -n "$GQL_ERRORS" ]; then
-          echo "::error::Linear GraphQL returned errors when fetching team '$linear_team_name'"
-          echo "::error::GraphQL errors: $GQL_ERRORS"
-          exit 1
-        fi
-
-        TEAM_ID=$(echo "$BODY" | jq -r '.data.teams.nodes[0].id')
-
-        if [ "$TEAM_ID" == "null" ] || [ -z "$TEAM_ID" ]; then
-          echo "::error::No Linear team found with name '$linear_team_name'"
-          exit 1
-        fi
-
-        echo "Linear team ID is: '$TEAM_ID'"
-        echo "team_id=$TEAM_ID" >> $GITHUB_OUTPUT
+        console.log(`Linear team ID is: '${teamId}'`);
+        fs.appendFileSync(process.env.GITHUB_OUTPUT, `team_id=${teamId}\n`);
 
     - name: Create Linear issue
+      shell: node {0}
       env:
-        ACCESS_TOKEN: ${{ steps.get_access_token.outputs.access_token }}
-        TEAM_ID: ${{ steps.get_linear_team.outputs.team_id }}
-      shell: bash
+        ACCESS_TOKEN: ${{ inputs.access_token }}
+        TEAM_ID: ${{ steps.get_linear_team_id.outputs.team_id }}
+        TITLE: ${{ inputs.title }}
+        DESCRIPTION: ${{ inputs.description }}
       run: |
-        # Create Linear issue
-        TITLE="${{ inputs.title }}"
-        DESCRIPTION="${{ inputs.description }}"
+        // Create Linear issue
+        const response = await fetch('https://api.linear.app/graphql', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`,
+          },
+          body: JSON.stringify({
+            query: `mutation CreateIssue($title: String!, $description: String, $teamId: String!) {
+              issueCreate(input: { title: $title, description: $description, teamId: $teamId }) {
+                success
+                issue { id identifier url }
+              }
+            }`,
+            variables: {
+              title: process.env.TITLE,
+              description: process.env.DESCRIPTION,
+              teamId: process.env.TEAM_ID,
+            },
+          }),
+        });
 
-        RESPONSE=$(curl -s -w "\n%{http_code}" -X POST https://api.linear.app/graphql \
-          -H "Content-Type: application/json" \
-          -H "Authorization: Bearer $ACCESS_TOKEN" \
-          --data "{
-            \"query\": \"mutation CreateIssue(\$title: String!, \$description: String, \$teamId: String!) { issueCreate(input: { title: \$title, description: \$description, teamId: \$teamId }) { success issue { id identifier url } } }\",
-            \"variables\": {
-              \"title\": \"$TITLE\",
-              \"description\": \"$DESCRIPTION\",
-              \"teamId\": \"$TEAM_ID\"
-            }
-          }")
+        const body = await response.json();
 
-        HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
-        BODY=$(echo "$RESPONSE" | head -n -1)
+        if (!response.ok) {
+          console.log(`::error::Linear GraphQL request failed when creating issue (HTTP ${response.status})`);
+          console.log(`::error::Response body: ${JSON.stringify(body)}`);
+          process.exit(1);
+        }
 
-        if [ "$HTTP_STATUS" -ne 200 ]; then
-          echo "::error::Linear GraphQL request failed when creating issue (HTTP $HTTP_STATUS)"
-          echo "::error::Response body: $BODY"
-          exit 1
-        fi
+        if (body.errors) {
+          console.log('::error::Linear GraphQL returned errors when creating issue');
+          console.log(`::error::GraphQL errors: ${JSON.stringify(body.errors)}`);
+          process.exit(1);
+        }
 
-        GQL_ERRORS=$(echo "$BODY" | jq -r '.errors // empty')
-        if [ -n "$GQL_ERRORS" ]; then
-          echo "::error::Linear GraphQL returned errors when creating issue"
-          echo "::error::GraphQL errors: $GQL_ERRORS"
-          exit 1
-        fi
+        if (!body.data?.issueCreate?.success) {
+          console.log('::error::Linear reported issueCreate.success=false');
+          console.log(`::error::Response body: ${JSON.stringify(body)}`);
+          process.exit(1);
+        }
 
-        SUCCESS=$(echo "$BODY" | jq -r '.data.issueCreate.success')
-        if [ "$SUCCESS" != "true" ]; then
-          echo "::error::Linear reported issueCreate.success=false"
-          echo "::error::Response body: $BODY"
-          exit 1
-        fi
-
-        ISSUE_URL=$(echo "$BODY" | jq -r '.data.issueCreate.issue.url')
-        echo "✅ Created issue: $ISSUE_URL"
+        const issueUrl = body.data.issueCreate.issue.url;
+        console.log(`Created issue: ${issueUrl}`);
