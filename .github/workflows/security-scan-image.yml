@@ -1,0 +1,79 @@
+name: Scan a docker image for security vulnerabilities and push the result to Github Code Scanning
+
+on:
+  workflow_call:
+    inputs:
+      repository:
+        description: Name of the registry's repository where the docker image will be pulled from
+        required: true
+        type: string
+      release-tag:
+        description: Release tag of the docker image to pull
+        required: false
+        type: string
+        default: latest
+      severity:
+        description: "Comma-separated list of severities to report"
+        required: false
+        type: string
+        default: "CRITICAL,HIGH"
+      exit-code:
+        description: "Exit code when vulnerabilities are found (0: do not fail, 1: fail)"
+        required: false
+        type: string
+        default: "0"
+
+jobs:
+  security-scan-image:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read # required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+      contents: read # required to checkout the repository
+      packages: read # required to pull the image from ghcr.io
+      pull-requests: write
+      security-events: write # required for github/codeql-action/upload-sarif to upload SARIF results
+    env:
+      ECR_DEFAULT_URL: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+    steps:
+      - name: Configure AWS Credentials
+        id: aws
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: eu-west-3
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github_oidc_readonly
+          output-credentials: true
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registries: "007065811408"
+
+      - name: Analyze docker image
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          version: v0.69.3 # Further 0.69 releases were compromised: https://github.com/aquasecurity/trivy/discussions/10425
+          scan-type: "image"
+          image-ref: ${{ env.ECR_DEFAULT_URL }}/${{ inputs.repository }}:${{ inputs.release-tag }}
+          format: "sarif"
+          output: "trivy-results-image.sarif"
+          severity: ${{ inputs.severity }}
+          exit-code: ${{ inputs.exit-code }}
+
+      # Rename the tool driver to Trivy-image so it appears distinctly in GitHub Security tab, separate from Trivy-repo & Trivy-config
+      - name: Edit docker image analysis
+        run: |
+          jq ".runs[0].tool.driver.name = \"Trivy-image\"" ./trivy-results-image.sarif > ./trivy-results-image-edited.sarif
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v3
+        if: github.event.pull_request
+        with:
+          message: |
+            :shield: The security scan result : [Image](https://github.com/${{ github.repository }}/security/code-scanning?query=is%3Aopen+ref%3A${{ github.ref }}+tool%3ATrivy-image)
+          comment-tag: "The security scan result of the image"
+
+      - name: Upload docker analysis to Github Code Scanning
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: "trivy-results-image-edited.sarif"
