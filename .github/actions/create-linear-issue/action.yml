@@ -92,7 +92,7 @@ runs:
 
         if [[ -v linear_teams[$lowercased_code_owner] ]]; then
           echo "Code owner matched a linear team"
-          linear_team_name="${linear_teams[lowercased_code_owner]}"
+          linear_team_name="${linear_teams[$lowercased_code_owner]}"
         else
           echo "::warning::Code owner '$CODE_OWNER' did not match any known team; defaulting to 'Platform'"
           linear_team_name="Platform"
