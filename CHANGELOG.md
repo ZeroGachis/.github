@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.1.12](https://github.com/ZeroGachis/.github/compare/v7.1.11...v7.1.12) (2026-03-31)
+
+
+### Miscellaneous Chores
+
+* **ci:** Fix yet another interpolation error ([ca2743a](https://github.com/ZeroGachis/.github/commit/ca2743aa2a5665d2cffa55d5ee1504235a0f4010))
+
 ## [7.1.11](https://github.com/ZeroGachis/.github/compare/v7.1.10...v7.1.11) (2026-03-30)
 
 
