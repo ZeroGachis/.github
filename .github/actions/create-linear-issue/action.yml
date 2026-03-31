@@ -24,6 +24,7 @@ runs:
         LINEAR_CLIENT_SECRET: ${{ inputs.linear_client_secret }}
       shell: bash
       run: |
+        # Get Linear access token
         # Separate HTTP status code from body using -w and a delimiter
         RESPONSE=$(curl -s -w "\n%{http_code}" -X POST https://api.linear.app/oauth/token \
           -H "Content-Type: application/x-www-form-urlencoded" \
@@ -56,6 +57,7 @@ runs:
       id: get_code_owner
       shell: bash
       run: |
+        # Get code owner
         if [ ! -f ".github/CODEOWNERS" ]; then
           echo "::error::file=.github/CODEOWNERS::.github/CODEOWNERS file not found"
           exit 1
@@ -78,6 +80,7 @@ runs:
         LINEAR_ACCESS_TOKEN: ${{ steps.get_access_token.outputs.access_token }}
         CODE_OWNER: ${{ steps.get_code_owner.outputs.code_owner }}
       run: |
+        # Get linear team associated to the code owner
         declare -A linear_teams
 
         linear_teams["@zerogachis/dataanalysts"]="Data Engineering"
@@ -139,6 +142,7 @@ runs:
         TEAM_ID: ${{ steps.get_linear_team.outputs.team_id }}
       shell: bash
       run: |
+        # Create Linear issue
         TITLE="${{ inputs.title }}"
         DESCRIPTION="${{ inputs.description }}"
 
