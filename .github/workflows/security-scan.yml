@@ -1,0 +1,36 @@
+name: Scan for security vulnerabilities, push the results to Github Code Scanning and create linear issue for critical alerts
+
+on:
+  workflow_call:
+    inputs:
+      repository:
+        description: Name of the registry's repository where the docker image will be pulled from
+        required: true
+        type: string
+      notify-severity:
+        description: "Comma-separated list of severities to report (e.g. critical,high)"
+        required: false
+        type: string
+        default: "critical"
+
+jobs:
+  scan-image:
+    uses: ZeroGachis/.github/.github/workflows/security-scan-image.yml@main
+    with:
+      repository: ${{ inputs.repository }}
+    secrets: inherit
+
+  scan-iac:
+    uses: ZeroGachis/.github/.github/workflows/security-scan-iac.yml@main
+    secrets: inherit
+
+  scan-filesystem:
+    uses: ZeroGachis/.github/.github/workflows/security-scan-filesystem.yml@main
+    secrets: inherit
+
+  notify-alerts:
+    needs: [scan-image, scan-iac, scan-filesystem]
+    uses: ZeroGachis/.github/.github/workflows/security-scan-notify-alerts.yml@main
+    secrets: inherit
+    with:
+      severity: ${{ inputs.notify-severity }}
