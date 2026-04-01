@@ -22,7 +22,7 @@ runs:
         LINEAR_CLIENT_ID: ${{ inputs.linear_client_id }}
         LINEAR_CLIENT_SECRET: ${{ inputs.linear_client_secret }}
       shell: node {0}
-      run: |
+      run: | # JS
         // Get Linear access token
         const fs = require('fs');
 

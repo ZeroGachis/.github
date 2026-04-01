@@ -18,7 +18,7 @@ runs:
       shell: node {0}
       env:
         CODE_OWNER: ${{ inputs.code_owner }}
-      run: |
+      run: | # JS
         // Get the linear team of a code owner
         const fs = require('fs');
 
