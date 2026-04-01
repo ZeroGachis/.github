@@ -55,7 +55,7 @@ jobs:
           LINEAR_ACCESS_TOKEN: ${{ needs.get-linear-credentials.outputs.access_token }}
           TARGET_REPO: ${{ github.repository }}
           SEVERITY: ${{ inputs.severity }}
-        run: |
+        run: | # JS
           // Fetch critical alerts and filter already-tracked ones
           const fs = require('fs');
 
@@ -165,7 +165,7 @@ jobs:
       - name: Read CODEOWNERS and extract code owner
         id: read_codeowners
         shell: node {0}
-        run: |
+        run: | # JS
           // Read CODEOWNERS and extract the wildcard code owner
           const fs = require('fs');
 
@@ -213,7 +213,7 @@ jobs:
           RULE_DESCRIPTION: ${{ matrix.rule_description }}
           LOCATION_PATH: ${{ matrix.location_path }}
           LOCATION_LINE: ${{ matrix.location_line }}
-        run: |
+        run: | # JS
           // Build title — unique key [owner/repo#number] is used for Linear deduplication
           const fs = require('fs');
           const { TARGET_REPO, ALERT_NUMBER, ALERT_URL, RULE_ID, RULE_DESCRIPTION, LOCATION_PATH, LOCATION_LINE } = process.env;
