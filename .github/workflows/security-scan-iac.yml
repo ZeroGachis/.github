@@ -1,0 +1,55 @@
+name: Scan IaC configuration for security vulnerabilities and push the result to Github Code Scanning
+
+on:
+  workflow_call:
+    inputs:
+      severity:
+        description: "Comma-separated list of severities to report"
+        required: false
+        type: string
+        default: "CRITICAL,HIGH"
+      exit-code:
+        description: "Exit code when vulnerabilities are found (0: do not fail, 1: fail)"
+        required: false
+        type: string
+        default: "0"
+
+jobs:
+  security-scan-iac:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read # required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+      contents: read # required to checkout the repository
+      pull-requests: write
+      security-events: write # required for github/codeql-action/upload-sarif to upload SARIF results
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Analyze IaC configuration
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          version: v0.69.3 # Further 0.69 releases were compromised: https://github.com/aquasecurity/trivy/discussions/10425
+          scan-type: "config"
+          format: "sarif"
+          output: "trivy-results-iac.sarif"
+          severity: ${{ inputs.severity }}
+          exit-code: ${{ inputs.exit-code }}
+
+      # Rename the tool driver to Trivy-config so it appears distinctly in GitHub Security tab, separate from Trivy-repo & Trivy-image
+      - name: Edit IaC configuration analysis
+        run: |
+          jq ".runs[0].tool.driver.name = \"Trivy-config\"" ./trivy-results-iac.sarif > ./trivy-results-iac-edited.sarif
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v3
+        if: github.event.pull_request
+        with:
+          message: |
+            :shield: The security scan result : [IaC](https://github.com/${{ github.repository }}/security/code-scanning?query=is%3Aopen+ref%3A${{ github.ref }}+tool%3ATrivy-config)
+          comment-tag: "The security scan result of the IaC configuration"
+
+      - name: Upload IaC configuration analysis to Github Code Scanning
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: "trivy-results-iac-edited.sarif"
