@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.2.7](https://github.com/ZeroGachis/.github/compare/v7.2.6...v7.2.7) (2026-04-02)
+
+
+### Bug Fixes
+
+* Match on security_severity_level instead of severity ([e030cc6](https://github.com/ZeroGachis/.github/commit/e030cc6c12f231a65258bbc0381fec2302e48b53))
+
+
+### Miscellaneous Chores
+
+* Add log to know the number of alert fetched ([a8b2018](https://github.com/ZeroGachis/.github/commit/a8b2018444f6a87f86a38e54a33980b3a0e68f99))
+
 ## [7.2.6](https://github.com/ZeroGachis/.github/compare/v7.2.5...v7.2.6) (2026-04-02)
 
 
