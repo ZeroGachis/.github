@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.2.1](https://github.com/ZeroGachis/.github/compare/v7.2.0...v7.2.1) (2026-04-02)
+
+
+### Bug Fixes
+
+* Add missing permissions on security-scan-image-workflow ([89698fa](https://github.com/ZeroGachis/.github/commit/89698fad6d4b9706248b35477c3f516c8d985fc9))
+
 ## [7.2.0](https://github.com/ZeroGachis/.github/compare/v7.1.12...v7.2.0) (2026-04-02)
 
 
