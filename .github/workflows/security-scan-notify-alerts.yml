@@ -90,7 +90,9 @@ jobs:
 
           // Filter alerts by the requested severities
           const severities = new Set(process.env.SEVERITY.split(',').map(s => s.trim().toLowerCase()));
-          const alerts = allAlerts.filter(a => severities.has(a.rule.severity?.toLowerCase()));
+          const alerts = allAlerts.filter(a =>
+            severities.has(a.rule.security_severity_level?.toLowerCase())
+          );
 
           console.log(`Found ${alerts.length} open alert(s) matching severities: ${[...severities].join(', ')}`);
 
