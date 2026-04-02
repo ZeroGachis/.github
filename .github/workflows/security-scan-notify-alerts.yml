@@ -87,6 +87,8 @@ jobs:
             const nextMatch = response.headers.get('link')?.match(/<([^>]+)>;\s*rel="next"/);
             url = nextMatch ? nextMatch[1] : null;
           }
+          
+          console.log(`Found ${allAlerts.length} open alert(s)`);
 
           // Filter alerts by the requested severities
           const severities = new Set(process.env.SEVERITY.split(',').map(s => s.trim().toLowerCase()));
