@@ -41,7 +41,7 @@ jobs:
         id: aws
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          aws-region: eu-west-3
+          aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github_oidc_readonly
           output-credentials: true
 
