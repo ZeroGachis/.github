@@ -55,5 +55,4 @@ runs:
           process.exit(1);
         }
 
-        console.log(`::add-mask::${accessToken}`);
         appendFileSync(process.env.GITHUB_OUTPUT, `access_token=${accessToken}\n`);
