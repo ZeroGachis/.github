@@ -20,7 +20,7 @@ runs:
         CODE_OWNER: ${{ inputs.code_owner }}
       run: | # JS
         // Get the linear team of a code owner
-        const fs = require('fs');
+        import { appendFileSync } from 'fs';
 
         const codeOwner = process.env.CODE_OWNER;
         console.log(`Code owner is: '${codeOwner}'`);
@@ -43,4 +43,4 @@ runs:
         }
 
         console.log(`Linear team name is: '${teamName}'`);
-        fs.appendFileSync(process.env.GITHUB_OUTPUT, `team_name=${teamName}\n`);
+        appendFileSync(process.env.GITHUB_OUTPUT, `team_name=${teamName}\n`);

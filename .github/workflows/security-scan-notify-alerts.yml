@@ -60,7 +60,7 @@ jobs:
           SEVERITY: ${{ inputs.severity }}
         run: | # JS
           // Fetch critical alerts and filter already-tracked ones
-          const fs = require('fs');
+          import { appendFileSync } from 'fs';
 
           // Fetch all pages of open alerts from GitHub Code Scanning
           const allAlerts = [];
@@ -134,7 +134,7 @@ jobs:
           console.log(`${newAlerts.length} new alert(s) will have a Linear issue created`);
 
           if (newAlerts.length === 0) {
-            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'has_new_alerts=false\n');
+            appendFileSync(process.env.GITHUB_OUTPUT, 'has_new_alerts=false\n');
             process.exit(0);
           }
 
@@ -151,7 +151,7 @@ jobs:
             })),
           };
 
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `has_new_alerts=true\nmatrix=${JSON.stringify(matrix)}\n`);
+          appendFileSync(process.env.GITHUB_OUTPUT, `has_new_alerts=true\nmatrix=${JSON.stringify(matrix)}\n`);
 
   get-linear-team-from-code-owner:
     needs: fetch-new-critical-alerts
@@ -170,14 +170,14 @@ jobs:
         shell: node {0}
         run: | # JS
           // Read CODEOWNERS and extract the wildcard code owner
-          const fs = require('fs');
+          import { existsSync, readFileSync, appendFileSync } from 'fs';
 
-          if (!fs.existsSync('.github/CODEOWNERS')) {
+          if (!existsSync('.github/CODEOWNERS')) {
             console.log('::error::file=.github/CODEOWNERS::.github/CODEOWNERS file not found');
             process.exit(1);
           }
 
-          const content = fs.readFileSync('.github/CODEOWNERS', 'utf8');
+          const content = readFileSync('.github/CODEOWNERS', 'utf8');
           const wildcardLine = content.split('\n').find(line => line.startsWith('*'));
 
           if (!wildcardLine) {
@@ -187,7 +187,7 @@ jobs:
 
           const codeOwner = wildcardLine.trim().split(/\s+/)[1];
           console.log(`Code owner is: '${codeOwner}'`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `code_owner=${codeOwner}\n`);
+          appendFileSync(process.env.GITHUB_OUTPUT, `code_owner=${codeOwner}\n`);
 
       - name: Get linear team from code owner
         id: get_linear_team
@@ -218,7 +218,7 @@ jobs:
           LOCATION_LINE: ${{ matrix.location_line }}
         run: | # JS
           // Build title — unique key [owner/repo#number] is used for Linear deduplication
-          const fs = require('fs');
+          import { appendFileSync } from 'fs';
           const { TARGET_REPO, ALERT_NUMBER, ALERT_URL, RULE_ID, RULE_DESCRIPTION, LOCATION_PATH, LOCATION_LINE } = process.env;
 
           const title = `[${TARGET_REPO}#${ALERT_NUMBER}] Security: ${RULE_DESCRIPTION}`;
@@ -235,7 +235,7 @@ jobs:
           ].join('\n');
 
           const randomMultilineDelimiter = `ghadelimiter_${Math.random().toString(36).slice(2)}`;
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `title=${title}\ndescription<<${randomMultilineDelimiter}\n${description}\n${randomMultilineDelimiter}\n`);
+          appendFileSync(process.env.GITHUB_OUTPUT, `title=${title}\ndescription<<${randomMultilineDelimiter}\n${description}\n${randomMultilineDelimiter}\n`);
 
       - name: Create Linear issue
         uses: ZeroGachis/.github/.github/actions/create-linear-issue@main

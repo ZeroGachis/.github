@@ -24,7 +24,7 @@ runs:
       shell: node {0}
       run: | # JS
         // Get Linear access token
-        const fs = require('fs');
+        import { appendFileSync } from 'fs';
 
         const body = new URLSearchParams({
           grant_type: 'client_credentials',
@@ -56,4 +56,4 @@ runs:
         }
 
         console.log(`::add-mask::${accessToken}`);
-        fs.appendFileSync(process.env.GITHUB_OUTPUT, `access_token=${accessToken}\n`);
+        appendFileSync(process.env.GITHUB_OUTPUT, `access_token=${accessToken}\n`);
