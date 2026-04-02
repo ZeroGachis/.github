@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.2.0](https://github.com/ZeroGachis/.github/compare/v7.1.12...v7.2.0) (2026-04-02)
+
+
+### Features
+
+* Add a security-scan workflow that do all security scans and create issues on linear; to be used in place of security_scan_repo ([0977ef4](https://github.com/ZeroGachis/.github/commit/0977ef4e666e7ddfa43b177fd229a6d2d026a530))
+* Add a workflow 'security-scan-filesystem' to scan vulnerability of the filesystem and send the reports on Github Code Scanning ([01b0874](https://github.com/ZeroGachis/.github/commit/01b0874b8c8c6abee642e3d900dfb768ef02dada))
+* Add a workflow 'security-scan-iac' to scan vulnerability of the IAC condif and send the reports on Github Code Scanning ([daf35c6](https://github.com/ZeroGachis/.github/commit/daf35c669d0dd3ab83e4e2635066a1f8196ad8d6))
+* Add a workflow 'security-scan-image' to scan vulnerability of a docker image and send the reports on Github Code Scanning ([0e2def3](https://github.com/ZeroGachis/.github/commit/0e2def341932043946ac295693874576a622429c))
+* Add a workflow 'security-scan-notify-alerts' that create a linear issue for each critical alerts on Github Code Scanning ([bec6cc9](https://github.com/ZeroGachis/.github/commit/bec6cc96900b92fee8e68eab252a4dc2a7550a25))
+* Make create-linear-issue as minimal as possible & use JS to make the script more maintainable ([9cd1671](https://github.com/ZeroGachis/.github/commit/9cd16714975977356243b0dfded49c62fbca3730))
+
+
+### Bug Fixes
+
+* Move env definition to the step instead of the job ([6dca464](https://github.com/ZeroGachis/.github/commit/6dca464544c1971bd5184fd40d30e8d7bf4301a0))
+
+
+### Miscellaneous Chores
+
+* **ci:** Add comment as first step line to display them in the GA UI instead of the code itself ([62aced7](https://github.com/ZeroGachis/.github/commit/62aced75cdbb67ae57a743b5bf50371029853876))
+* **ide:** Enable syntax highlighting in VSCode for inlined JS ([05a605c](https://github.com/ZeroGachis/.github/commit/05a605cdf821339bdb49cda1b029ee3041ce2365))
+* Remove commented trivy steps ([673c356](https://github.com/ZeroGachis/.github/commit/673c35651b0370095135057b5b262554ab976414))
+
 ## [7.1.12](https://github.com/ZeroGachis/.github/compare/v7.1.11...v7.1.12) (2026-03-31)
 
 
