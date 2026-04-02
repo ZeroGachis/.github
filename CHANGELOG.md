@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.2.4](https://github.com/ZeroGachis/.github/compare/v7.2.3...v7.2.4) (2026-04-02)
+
+
+### Bug Fixes
+
+* robustness for workspace key prefix ([a01717a](https://github.com/ZeroGachis/.github/commit/a01717a4a0115436a424de2b33659c5f411ff8c6))
+
 ## [7.2.3](https://github.com/ZeroGachis/.github/compare/v7.2.2...v7.2.3) (2026-04-02)
 
 
