@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.2.2](https://github.com/ZeroGachis/.github/compare/v7.2.1...v7.2.2) (2026-04-02)
+
+
+### Bug Fixes
+
+* Add missing AWS env variables to security-scan-image to login to ECR ([b11b366](https://github.com/ZeroGachis/.github/commit/b11b36640b764114e39f9fc4d41911c86eb030e7))
+
 ## [7.2.1](https://github.com/ZeroGachis/.github/compare/v7.2.0...v7.2.1) (2026-04-02)
 
 
