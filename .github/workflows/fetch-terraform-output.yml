@@ -8,8 +8,8 @@ on:
         required: true
         type: string
       workspace_key_prefix:
-        description: "S3 key prefix matching workspace_key_prefix in the Terraform backend config (e.g. 'order', not the repository name)"
-        required: true
+        description: "S3 key prefix matching workspace_key_prefix in the Terraform backend config (sometimes not the same as repo name). Found in main.tf file."
+        required: false
         type: string
       state_key:
         description: "Terraform state filename"
@@ -41,6 +41,7 @@ jobs:
     env:
       AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
       AWS_REGION: ${{ vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
+      WORKSPACE_KEY_PREFIX: ${{ inputs.workspace_key_prefix }}
     outputs:
       TF_OUTPUT_VAR: ${{ steps.set-variables.outputs.tf_output_var }}
     steps:
@@ -49,11 +50,15 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
+          
+      - name: Set Workspace Key Prefix
+        if: ${{ inputs.workspace_key_prefix == '' }}
+        run: echo "WORKSPACE_KEY_PREFIX=${GITHUB_REPOSITORY#*/}" >> "$GITHUB_ENV"
 
       - name: Pull State
         run: |
           aws s3 cp \
-            "s3://tfstate-${{ env.AWS_ACCOUNT_ID }}/${{ inputs.workspace_key_prefix }}/${{ inputs.terraform_workspace }}/${{ inputs.state_key }}" \
+            "s3://tfstate-${{ env.AWS_ACCOUNT_ID }}/${{ env.WORKSPACE_KEY_PREFIX}}/${{ inputs.terraform_workspace }}/${{ inputs.state_key }}" \
             state.json
 
       - name: Set variables
