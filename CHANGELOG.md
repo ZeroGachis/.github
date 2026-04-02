@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.2.3](https://github.com/ZeroGachis/.github/compare/v7.2.2...v7.2.3) (2026-04-02)
+
+
+### Bug Fixes
+
+* Do not hardcode the AWS region in security-scan-image ([4fc94d8](https://github.com/ZeroGachis/.github/commit/4fc94d80c85473c7d8c793d55d9b1e15f74781f5))
+
 ## [7.2.2](https://github.com/ZeroGachis/.github/compare/v7.2.1...v7.2.2) (2026-04-02)
 
 
