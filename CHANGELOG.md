@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.2.10](https://github.com/ZeroGachis/.github/compare/v7.2.9...v7.2.10) (2026-04-03)
+
+
+### Bug Fixes
+
+* Allow to skip some vulnerability scanning steps ([8e710f1](https://github.com/ZeroGachis/.github/commit/8e710f156e42917dc2150a4bb0d8acbc97a36aa7))
+
 ## [7.2.9](https://github.com/ZeroGachis/.github/compare/v7.2.8...v7.2.9) (2026-04-02)
 
 
