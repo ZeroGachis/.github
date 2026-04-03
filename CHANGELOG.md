@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.2](https://github.com/ZeroGachis/.github/compare/v7.3.1...v7.3.2) (2026-04-03)
+
+
+### Bug Fixes
+
+* Use Smartway bot app to get an access token that can fetch content from another repository ([4890ef9](https://github.com/ZeroGachis/.github/commit/4890ef95db37159887b9b9a94add7c77f11b347d))
+
 ## [7.3.1](https://github.com/ZeroGachis/.github/compare/v7.3.0...v7.3.1) (2026-04-03)
 
 
