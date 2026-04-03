@@ -60,7 +60,7 @@ jobs:
       - name: Fetch .trivyignore of ZeroGachis/base-docker-images
         shell: node {0}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: | # JS
           // Fetch .trivyignore of ZeroGachis/base-docker-images
           import { appendFileSync } from 'fs';
@@ -70,8 +70,9 @@ jobs:
               {
               method: 'GET',
               headers: {
+                'Authorization': `Bearer ${process.env.GH_TOKEN}`,
+                'X-GitHub-Api-Version': '2026-03-10',
                 'Accept': 'application/vnd.github.raw',
-                'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`
               },
             }
           );
