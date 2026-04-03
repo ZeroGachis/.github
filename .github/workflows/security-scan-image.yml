@@ -54,12 +54,36 @@ jobs:
       - name: Checkout repository to retrieve its .trivyignore
         uses: actions/checkout@v6
 
+      - name: Create an empty .trivyignore file if none exists
+        run: touch .trivyignore
+
       - name: Fetch .trivyignore of ZeroGachis/base-docker-images
-        run: | # shell
-          curl -L -o .trivyignore.base-docker-images \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.raw" \
-            https://api.github.com/repos/ZeroGachis/base-docker-images/contents/.trivyignore?ref=main
+        shell: node {0}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: | # JS
+          // Fetch .trivyignore of ZeroGachis/base-docker-images
+          import { appendFileSync } from 'fs';
+
+          const response = await fetch(
+            'https://api.github.com/repos/ZeroGachis/base-docker-images/contents/.trivyignore?ref=main',
+              {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/vnd.github.raw',
+                'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`
+              },
+            }
+          );
+
+          let content = await response.text();
+          if (!response.ok) {
+            console.log(`::error::No .trivyignore file found on the main branch of ZeroGachis/base-docker-images (HTTP ${response.status})`);
+            console.log(`::error::Response body: ${JSON.stringify(content)}`);
+            process.exit(1);
+          }
+
+          appendFileSync(".trivyignore.base-docker-images", content)
 
       - name: Analyze docker image
         uses: aquasecurity/trivy-action@v0.35.0
@@ -73,7 +97,7 @@ jobs:
           output: "trivy-results-image.sarif"
           severity: ${{ inputs.severity }}
           exit-code: ${{ inputs.exit-code }}
-          trivyignores: ".trivyignore,trivyignore.base-docker-images"
+          trivyignores: ".trivyignore,.trivyignore.base-docker-images"
 
       # Rename the tool driver to Trivy-image so it appears distinctly in GitHub Security tab, separate from Trivy-repo & Trivy-config
       - name: Edit docker image analysis
