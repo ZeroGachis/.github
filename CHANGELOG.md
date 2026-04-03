@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.1](https://github.com/ZeroGachis/.github/compare/v7.3.0...v7.3.1) (2026-04-03)
+
+
+### Miscellaneous Chores
+
+* **ci:** Add Github API version ([24657f1](https://github.com/ZeroGachis/.github/commit/24657f1676c1333f0839df75333354f6353a8059))
+
 ## [7.3.0](https://github.com/ZeroGachis/.github/compare/v7.2.10...v7.3.0) (2026-04-03)
 
 
