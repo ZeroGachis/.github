@@ -7,6 +7,21 @@ on:
         description: Name of the registry's repository where the docker image will be pulled from
         required: true
         type: string
+      scan-image:
+        description: Enable docker image scanning
+        required: false
+        type: boolean
+        default: true
+      scan-iac:
+        description: Enable IaC scanning
+        required: false
+        type: boolean
+        default: true
+      scan-filesystem:
+        description: Enable filesystem scanning
+        required: false
+        type: boolean
+        default: true
       notify-severity:
         description: "Comma-separated list of severities to report (e.g. critical,high)"
         required: false
@@ -16,16 +31,19 @@ on:
 jobs:
   scan-image:
     uses: ZeroGachis/.github/.github/workflows/security-scan-image.yml@main
+    if: ${{ inputs.scan-image }}
     with:
       repository: ${{ inputs.repository }}
     secrets: inherit
 
   scan-iac:
     uses: ZeroGachis/.github/.github/workflows/security-scan-iac.yml@main
+    if: ${{ inputs.scan-iac }}
     secrets: inherit
 
   scan-filesystem:
     uses: ZeroGachis/.github/.github/workflows/security-scan-filesystem.yml@main
+    if: ${{ inputs.scan-filesystem }}
     secrets: inherit
 
   notify-alerts:
