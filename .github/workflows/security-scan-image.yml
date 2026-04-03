@@ -50,6 +50,16 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         with:
           registries: "007065811408"
+      
+      - name: Checkout repository to retrieve its .trivyignore
+        uses: actions/checkout@v6
+
+      - name: Fetch .trivyignore of ZeroGachis/base-docker-images
+        run: | # shell
+          curl -L -o .trivyignore.base-docker-images \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.raw" \
+            https://api.github.com/repos/ZeroGachis/base-docker-images/contents/.trivyignore?ref=main
 
       - name: Analyze docker image
         uses: aquasecurity/trivy-action@v0.35.0
@@ -63,6 +73,7 @@ jobs:
           output: "trivy-results-image.sarif"
           severity: ${{ inputs.severity }}
           exit-code: ${{ inputs.exit-code }}
+          trivyignores: ".trivyignore,trivyignore.base-docker-images"
 
       # Rename the tool driver to Trivy-image so it appears distinctly in GitHub Security tab, separate from Trivy-repo & Trivy-config
       - name: Edit docker image analysis
