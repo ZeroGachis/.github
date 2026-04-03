@@ -63,6 +63,7 @@ jobs:
         with:
           app-id: ${{ secrets.SW_BOT_APP_ID }}
           private-key: ${{ secrets.SW_BOT_APP_PRIVATE_KEY }}
+          repositories: ZeroGachis/base-docker-images
 
       - name: Fetch .trivyignore of ZeroGachis/base-docker-images
         shell: node {0}
