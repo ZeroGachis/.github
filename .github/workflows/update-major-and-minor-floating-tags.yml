@@ -1,0 +1,90 @@
+name: Update major and minor floating tags
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-tags:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update major and minor floating tags
+        shell: node {0}
+        run: | # JS
+          import { execSync } from "child_process";
+
+          const git = (cmd) => execSync(`git ${cmd}`, { encoding: "utf-8" }).trim();
+
+          const tag = process.env.GITHUB_REF.replace("refs/tags/", "");
+          const match = tag.match(/^v(\d+)\.(\d+)\.(\d+)$/);
+
+          if (!match) {
+            console.log(`Tag '${tag}' is not a valid semver tag, skipping.`);
+            process.exit(0);
+          }
+
+          const [, major, minor, patch] = match.map(Number);
+          const majorTag = `v${major}`;
+          const minorTag = `v${major}.${minor}`;
+
+          console.log(`Release tag: ${tag} (major=${major}, minor=${minor}, patch=${patch})`);
+
+          function getCurrentVersion(floatingTag) {
+            try {
+              git(`rev-parse ${floatingTag}`); // Check if the floatingTag (ex: v7 or v7.3) exists on the remote
+            } catch {
+              return { minor: -1, patch: -1 };
+            }
+
+            const commit = git(`rev-list -n 1 ${floatingTag}`); // Get the commit the tag points to
+            const tagsOnCommit = git(`tag --points-at ${commit}`) // Get all the tags that point to that commit (except the floating tags like v7 & v7.3)
+              .split("\n")
+              .filter((t) => /^v\d+\.\d+\.\d+$/.test(t))
+              .sort((a, b) => { // Sort by semver
+                const [, ...av] = a.match(/^v(\d+)\.(\d+)\.(\d+)$/).map(Number);
+                const [, ...bv] = b.match(/^v(\d+)\.(\d+)\.(\d+)$/).map(Number);
+                return av[0] - bv[0] || av[1] - bv[1] || av[2] - bv[2];
+              });
+
+            const highest = tagsOnCommit.at(-1); // Get the latest tag (ex: v7.3.4)
+            if (!highest) return { minor: -1, patch: -1 };
+
+            const m = highest.match(/^v\d+\.(\d+)\.(\d+)$/);
+            return { minor: Number(m[1]), patch: Number(m[2]) };
+          }
+
+          function isNewer(newMinor, newPatch, current) {
+            if (newMinor > current.minor) return true;
+            if (newMinor === current.minor && newPatch > current.patch) return true;
+            return false;
+          }
+
+          // --- Update minor floating tag (ex: v7.3) ---
+          const currentMinor = getCurrentVersion(minorTag);
+          console.log(`'${minorTag}' currently at patch: ${currentMinor.patch}`);
+
+          if (patch > currentMinor.patch) {
+            console.log(`Moving ${minorTag} -> ${tag}`);
+            git(`tag -f ${minorTag} ${tag}`);
+            git(`push origin ${minorTag} --force`);
+          } else {
+            console.log(`Skipping ${minorTag}: current patch (${currentMinor.patch}) >= new (${patch})`);
+          }
+
+          // --- Update major floating tag (ex: v7) ---
+          const currentMajor = getCurrentVersion(majorTag);
+          console.log(`'${majorTag}' currently at minor=${currentMajor.minor}, patch=${currentMajor.patch}`);
+
+          if (isNewer(minor, patch, currentMajor)) {
+            console.log(`Moving ${majorTag} -> ${tag}`);
+            git(`tag -f ${majorTag} ${tag}`);
+            git(`push origin ${majorTag} --force`);
+          } else {
+            console.log(`Skipping ${majorTag}: current (${currentMajor.minor}.${currentMajor.patch}) >= new (${minor}.${patch})`);
+          }
