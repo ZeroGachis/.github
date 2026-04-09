@@ -3,15 +3,15 @@ name: Scan for security vulnerabilities, push the results to Github Code Scannin
 on:
   workflow_call:
     inputs:
-      repository:
-        description: Name of the registry's repository where the docker image will be pulled from
-        required: true
-        type: string
       scan-image:
         description: Enable docker image scanning
         required: false
         type: boolean
         default: true
+      repository:
+        description: Name of the registry's repository where the docker image will be pulled from
+        required: false
+        type: string
       scan-iac:
         description: Enable IaC scanning
         required: false
@@ -29,7 +29,17 @@ on:
         default: "critical"
 
 jobs:
+  validate-scan-image-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate scan-image inputs
+        if: ${{ inputs.scan-image && inputs.repository == '' }}
+        run: |
+          echo "::error::'repository' input is required when 'scan-image' is true"
+          exit 1
+
   scan-image:
+    needs: validate-scan-image-inputs
     uses: ZeroGachis/.github/.github/workflows/security-scan-image.yml@main
     if: ${{ inputs.scan-image }}
     with:
