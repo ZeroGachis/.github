@@ -27,6 +27,10 @@ on:
         required: false
         type: string
         default: "critical"
+      skip-files:
+        description: "Comma-separated list of file to skip during the scan"
+        required: false
+        type: string
 
 jobs:
   validate-scan-image-inputs:
@@ -55,6 +59,8 @@ jobs:
     uses: ZeroGachis/.github/.github/workflows/security-scan-filesystem.yml@main
     if: ${{ inputs.scan-filesystem }}
     secrets: inherit
+    with:
+      skip-files: ${{ inputs.skip-files }}
 
   notify-alerts:
     needs: [scan-image, scan-iac, scan-filesystem]
