@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.8](https://github.com/ZeroGachis/.github/compare/v7.3.7...v7.3.8) (2026-04-09)
+
+
+### Bug Fixes
+
+* Make security-scan's repository input only required when scan-image is enabled ([614fcca](https://github.com/ZeroGachis/.github/commit/614fcca513c294a4bafa34d984167e9317404cb9))
+
 ## [7.3.7](https://github.com/ZeroGachis/.github/compare/v7.3.6...v7.3.7) (2026-04-09)
 
 
