@@ -48,6 +48,7 @@ jobs:
 
   notify-alerts:
     needs: [scan-image, scan-iac, scan-filesystem]
+    if: ${{ always() }}
     uses: ZeroGachis/.github/.github/workflows/security-scan-notify-alerts.yml@main
     secrets: inherit
     with:
