@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.7](https://github.com/ZeroGachis/.github/compare/v7.3.6...v7.3.7) (2026-04-09)
+
+
+### Bug Fixes
+
+* Merge trivy image and trivy fs reports in the same Github Security tab ([2118a43](https://github.com/ZeroGachis/.github/commit/2118a43ef8cb9c8d162186f37c64cc58bf8d6f1c))
+
 ## [7.3.6](https://github.com/ZeroGachis/.github/compare/v7.3.5...v7.3.6) (2026-04-09)
 
 
