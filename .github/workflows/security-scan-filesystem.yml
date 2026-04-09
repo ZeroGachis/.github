@@ -13,6 +13,10 @@ on:
         required: false
         type: string
         default: "0"
+      skip-files:
+        description: "Comma-separated list of file to skip during the scan"
+        required: false
+        type: string
 
 jobs:
   security-scan-filesystem:
@@ -35,6 +39,7 @@ jobs:
           output: "trivy-results-filesystem.sarif"
           severity: ${{ inputs.severity }}
           exit-code: ${{ inputs.exit-code }}
+          skip-files: ${{ inputs.skip-files }}
 
       # Rename the tool driver to Trivy-image-and-fs so it appears in GitHub Security tab
       # in the same panel for trivy image and trivy fs reports
