@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.9](https://github.com/ZeroGachis/.github/compare/v7.3.8...v7.3.9) (2026-04-09)
+
+
+### Bug Fixes
+
+* Allow to skip files during the filesystem scan ([e49c6bc](https://github.com/ZeroGachis/.github/commit/e49c6bcdeb72cb4dc4c9bbf5f8f66cfccbe82b55))
+
 ## [7.3.8](https://github.com/ZeroGachis/.github/compare/v7.3.7...v7.3.8) (2026-04-09)
 
 
