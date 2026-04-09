@@ -36,17 +36,18 @@ jobs:
           severity: ${{ inputs.severity }}
           exit-code: ${{ inputs.exit-code }}
 
-      # Rename the tool driver to Trivy-fs so it appears distinctly in GitHub Security tab, separate from Trivy-repo, Trivy-image & Trivy-config
+      # Rename the tool driver to Trivy-image-and-fs so it appears in GitHub Security tab
+      # in the same panel for trivy image and trivy fs reports
       - name: Edit filesystem analysis
         run: |
-          jq ".runs[0].tool.driver.name = \"Trivy-fs\"" ./trivy-results-filesystem.sarif > ./trivy-results-filesystem-edited.sarif
+          jq ".runs[0].tool.driver.name = \"Trivy-image-and-fs\"" ./trivy-results-filesystem.sarif > ./trivy-results-filesystem-edited.sarif
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v3
         if: github.event.pull_request
         with:
           message: |
-            :shield: The security scan result : [Filesystem](https://github.com/${{ github.repository }}/security/code-scanning?query=is%3Aopen+ref%3A${{ github.ref }}+tool%3ATrivy-fs)
+            :shield: The security scan result : [Filesystem](https://github.com/${{ github.repository }}/security/code-scanning?query=is%3Aopen+ref%3A${{ github.ref }}+tool%3ATrivy-image-and-fs)
           comment-tag: "The security scan result of the filesystem"
 
       - name: Upload filesystem analysis to Github Code Scanning
