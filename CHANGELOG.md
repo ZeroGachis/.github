@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.6](https://github.com/ZeroGachis/.github/compare/v7.3.5...v7.3.6) (2026-04-09)
+
+
+### Bug Fixes
+
+* security-scan workflow should always run notify-alerts ([62e448a](https://github.com/ZeroGachis/.github/commit/62e448a1845c7bfdc3f971b1e2960e7ac32e70eb))
+
 ## [7.3.5](https://github.com/ZeroGachis/.github/compare/v7.3.4...v7.3.5) (2026-04-08)
 
 
