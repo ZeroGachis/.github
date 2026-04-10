@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.10](https://github.com/ZeroGachis/.github/compare/v7.3.9...v7.3.10) (2026-04-10)
+
+
+### Bug Fixes
+
+* Retrieve trivy suppression rules from ZeroGachis/platform-core and use them during security-scan-iac ([adac8b0](https://github.com/ZeroGachis/.github/commit/adac8b01be3cd80ada8f6193f0223f320df6f760))
+
 ## [7.3.9](https://github.com/ZeroGachis/.github/compare/v7.3.8...v7.3.9) (2026-04-09)
 
 
