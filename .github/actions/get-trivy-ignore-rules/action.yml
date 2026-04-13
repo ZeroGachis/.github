@@ -59,7 +59,7 @@ runs:
 
     - name: Fetch .trivyignore of ZeroGachis/platform-core main branch
       uses: actions/checkout@v6
-      iif: ${{ inputs.org-iac-ignore-rules }}
+      if: ${{ inputs.org-iac-ignore-rules }}
       with:
         repository: ZeroGachis/platform-core
         ref: main
