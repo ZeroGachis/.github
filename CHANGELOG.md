@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.13](https://github.com/ZeroGachis/.github/compare/v7.3.12...v7.3.13) (2026-04-13)
+
+
+### Bug Fixes
+
+* Replace actions/create-github-app-token deprecated inputs app-id with client-id ([240c44f](https://github.com/ZeroGachis/.github/commit/240c44f2f3a17e1d4ef6d53f6e2d13a9d735c039))
+* Replace appendFileSync with writeFileSync to avoid amending an existing file: overriding it is clearer ([92f9131](https://github.com/ZeroGachis/.github/commit/92f913191a4588b48584c9b3043be39813f918d9))
+* Rework merge-trivyignore-files in JS to be more clear ([9be1106](https://github.com/ZeroGachis/.github/commit/9be1106b36a863a7074ae72f4ab75973d3070ba7))
+* Upgrade actions/create-github-app-token from v1 to v3 ([b86e440](https://github.com/ZeroGachis/.github/commit/b86e44035f31a5f58cf329fc5dcd2edc5d7179a4))
+* Use actions/checkout to retrieve .trivyignore files instead of JS to reduce unecessary code ([6f8cbf8](https://github.com/ZeroGachis/.github/commit/6f8cbf8be6efcfdad2d47dcf7f9ccd3c11899854))
+
 ## [7.3.12](https://github.com/ZeroGachis/.github/compare/v7.3.11...v7.3.12) (2026-04-13)
 
 
