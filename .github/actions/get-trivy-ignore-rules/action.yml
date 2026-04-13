@@ -26,6 +26,12 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Fetch .trivyignore from the current repository
+      uses: actions/checkout@v6
+      with:
+        sparse-checkout: .trivyignore
+        sparse-checkout-cone-mode: false
+
     - name: Generate GitHub App Token to access ZeroGachis/base-docker-images
       uses: actions/create-github-app-token@v3
       id: base-docker-images-app-token
@@ -67,13 +73,6 @@ runs:
         sparse-checkout-cone-mode: false
         path: ZeroGachis/platform-core
         token: ${{ steps.platform-core-app-token.outputs.token }}
-
-    - name: Fetch .trivyignore from the current repository
-      uses: actions/checkout@v6
-      with:
-        sparse-checkout: .trivyignore
-        sparse-checkout-cone-mode: false
-        clean: false
 
     - name: Merge trivyignore files
       id: merge-trivyignore-files
