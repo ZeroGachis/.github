@@ -26,46 +26,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Create an empty .trivyignore file if none exists
-        run: touch .trivyignore
-
-      - name: Generate GitHub App Token
-        uses: actions/create-github-app-token@v3
-        id: app-token
+      - name: Get trivy ignore rules
+        id: get-trivy-ignore-rules
+        uses: ZeroGachis/.github/.github/actions/get-trivy-ignore-rules@main
         with:
-          app-id: ${{ secrets.SW_BOT_APP_ID }}
-          private-key: ${{ secrets.SW_BOT_APP_PRIVATE_KEY }}
-          owner: ZeroGachis
-          repositories: platform-core
+          smartway_github_bot_id: ${{ secrets.SW_BOT_APP_ID }}
+          smartway_github_bot_private_key: ${{ secrets.SW_BOT_APP_PRIVATE_KEY }}
+          org-iac-ignore-rules: true
 
-      - name: Fetch .trivyignore of ZeroGachis/platform-core
-        shell: node {0}
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: | # JS
-          // Fetch .trivyignore of ZeroGachis/platform-core
-          import { appendFileSync } from 'fs';
-
-          const response = await fetch(
-            'https://api.github.com/repos/ZeroGachis/platform-core/contents/.trivyignore?ref=main',
-              {
-              method: 'GET',
-              headers: {
-                'Authorization': `Bearer ${process.env.GH_TOKEN}`,
-                'X-GitHub-Api-Version': '2026-03-10',
-                'Accept': 'application/vnd.github.raw',
-              },
-            }
-          );
-
-          let content = await response.text();
-          if (!response.ok) {
-            console.log(`::error::No .trivyignore file found on the main branch of ZeroGachis/platform-core (HTTP ${response.status})`);
-            console.log(`::error::Response body: ${JSON.stringify(content)}`);
-            process.exit(1);
-          }
-
-          appendFileSync(".trivyignore.platform-core", content)
+      - name: Output .trivyignore file
+        run: |
+          # Output .trivyignore file
+          cat << 'EOF' > .trivyignore-final
+          ${{ steps.get-trivy-ignore-rules.outputs.file-content }}
+          EOF
 
       - name: Analyze IaC configuration
         uses: aquasecurity/trivy-action@v0.35.0
@@ -76,7 +50,7 @@ jobs:
           output: "trivy-results-iac.sarif"
           severity: ${{ inputs.severity }}
           exit-code: ${{ inputs.exit-code }}
-          trivyignores: ".trivyignore,.trivyignore.platform-core"
+          trivyignores: ".trivyignore-final"
 
       # Rename the tool driver to Trivy-config so it appears distinctly in GitHub Security tab, separate from Trivy-repo & Trivy-image
       - name: Edit IaC configuration analysis
