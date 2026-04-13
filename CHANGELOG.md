@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.15](https://github.com/ZeroGachis/.github/compare/v7.3.14...v7.3.15) (2026-04-13)
+
+
+### Bug Fixes
+
+* Only fetch .trivyignore file from the current repository and do not clean the current directory to keep the previously fetched files ([ac0d6ca](https://github.com/ZeroGachis/.github/commit/ac0d6ca12f592affdaa6cfbb94cddf50004ded58))
+
 ## [7.3.14](https://github.com/ZeroGachis/.github/compare/v7.3.13...v7.3.14) (2026-04-13)
 
 
