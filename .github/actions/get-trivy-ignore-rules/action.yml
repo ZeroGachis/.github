@@ -1,0 +1,122 @@
+name: Get trivy ignore rules from local and org-wise .trivyignore files and merge them into a single one
+
+inputs:
+  smartway_github_bot_id:
+    description: "Smartway's Github bot ID"
+    required: true
+  smartway_github_bot_private_key:
+    description: "Smartway's Github bot private key"
+    required: true
+  org-docker-image-ignore-rules:
+    description: Add ZeroGachis/base-docker-images .trivyignore in the final .trivyignore file
+    required: false
+    type: boolean
+    default: false
+  org-iac-ignore-rules:
+    description: Add ZeroGachis/platform-core .trivyignore in the final .trivyignore file
+    required: false
+    type: boolean
+    default: false
+
+outputs:
+  trivyignore:
+    description: "The final trivyignore file that combines the repository's trivyignore file and org-wise trivyignore files"
+    value: ${{ steps.merge-trivyignore-files.outputs.content }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Generate GitHub App Token to access ZeroGachis/base-docker-images
+      uses: actions/create-github-app-token@v3
+      id: base-docker-images-app-token
+      if: ${{ inputs.org-docker-image-ignore-rules }}
+      with:
+        app-id: ${{ inputs.smartway_github_bot_id }}
+        private-key: ${{ inputs.smartway_github_bot_private_key }}
+        owner: ZeroGachis
+        repositories: base-docker-images
+    
+    - name: Fetch .trivyignore of ZeroGachis/base-docker-images
+      needs: [base-docker-images-app-token]
+      shell: node {0}
+      env:
+        GH_TOKEN: ${{ steps.base-docker-images-app-token.outputs.token }}
+      run: | # JS
+        // Fetch .trivyignore of ZeroGachis/base-docker-images
+        import { appendFileSync } from 'fs';
+
+        const response = await fetch(
+          'https://api.github.com/repos/ZeroGachis/base-docker-images/contents/.trivyignore?ref=main',
+            {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${process.env.GH_TOKEN}`,
+              'X-GitHub-Api-Version': '2026-03-10',
+              'Accept': 'application/vnd.github.raw',
+            },
+          }
+        );
+
+        let content = await response.text();
+        if (!response.ok) {
+          console.log(`::error::No .trivyignore file found on the main branch of ZeroGachis/base-docker-images (HTTP ${response.status})`);
+          console.log(`::error::Response body: ${JSON.stringify(content)}`);
+          process.exit(1);
+        }
+
+        appendFileSync(".trivyignore.base-docker-images", content)
+
+    - name: Generate GitHub App Token to access ZeroGachis/platform-core
+      uses: actions/create-github-app-token@v3
+      id: platform-core-app-token
+      if: ${{ inputs.org-iac-ignore-rules }}
+      with:
+        app-id: ${{ secrets.SW_BOT_APP_ID }}
+        private-key: ${{ secrets.SW_BOT_APP_PRIVATE_KEY }}
+        owner: ZeroGachis
+        repositories: platform-core
+
+    - name: Fetch .trivyignore of ZeroGachis/platform-core
+      needs: [platform-core-app-token]
+      shell: node {0}
+      env:
+        GH_TOKEN: ${{ steps.platform-core-app-token.outputs.token }}
+      run: | # JS
+        // Fetch .trivyignore of ZeroGachis/platform-core
+        import { appendFileSync } from 'fs';
+
+        const response = await fetch(
+          'https://api.github.com/repos/ZeroGachis/platform-core/contents/.trivyignore?ref=main',
+            {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${process.env.GH_TOKEN}`,
+              'X-GitHub-Api-Version': '2026-03-10',
+              'Accept': 'application/vnd.github.raw',
+            },
+          }
+        );
+
+        let content = await response.text();
+        if (!response.ok) {
+          console.log(`::error::No .trivyignore file found on the main branch of ZeroGachis/platform-core (HTTP ${response.status})`);
+          console.log(`::error::Response body: ${JSON.stringify(content)}`);
+          process.exit(1);
+        }
+
+        appendFileSync(".trivyignore.platform-core", content)
+
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - name: Merge trivyignore files
+      id: merge-trivyignore-files
+      shell: bash
+      run: | # bash
+        # Merge all .trivyignore files and do not fail if one does not exist
+        cat .trivyignore.base-docker-images .trivyignore.platform-core .trivyignore 2>/dev/null > .trivyignore-final
+
+        content=$(cat .trivyignore-final)
+        echo "content<<EOF" >> $GITHUB_OUTPUT
+        echo "$content" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
