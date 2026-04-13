@@ -29,7 +29,7 @@ runs:
     - name: Generate GitHub App Token to access ZeroGachis/base-docker-images
       uses: actions/create-github-app-token@v3
       id: base-docker-images-app-token
-      if: ${{ inputs.org-docker-image-ignore-rules }}
+      if: ${{ inputs.org-docker-image-ignore-rules == 'true' }}
       with:
         client-id: ${{ inputs.smartway_github_bot_id }}
         private-key: ${{ inputs.smartway_github_bot_private_key }}
@@ -38,7 +38,7 @@ runs:
     
     - name: Fetch .trivyignore of ZeroGachis/base-docker-images main branch
       uses: actions/checkout@v6
-      if: ${{ inputs.org-docker-image-ignore-rules }}
+      if: ${{ inputs.org-docker-image-ignore-rules == 'true' }}
       with:
         repository: ZeroGachis/base-docker-images
         ref: main
@@ -48,7 +48,7 @@ runs:
         token: ${{ steps.base-docker-images-app-token.outputs.token }}
 
     - name: Generate GitHub App Token to access ZeroGachis/platform-core
-      if: ${{ inputs.org-iac-ignore-rules }}
+      if: ${{ inputs.org-iac-ignore-rules == 'true' }}
       uses: actions/create-github-app-token@v3
       id: platform-core-app-token
       with:
@@ -59,7 +59,7 @@ runs:
 
     - name: Fetch .trivyignore of ZeroGachis/platform-core main branch
       uses: actions/checkout@v6
-      if: ${{ inputs.org-iac-ignore-rules }}
+      if: ${{ inputs.org-iac-ignore-rules == 'true' }}
       with:
         repository: ZeroGachis/platform-core
         ref: main
@@ -87,7 +87,7 @@ runs:
           .map(f => readFileSync(f, 'utf8'))
           .join('\n\n');
 
-        console.log("Final .trivyignore content");
+        console.log("Final .trivyignore content:");
         console.log(`${content}`);
 
         const output = process.env.GITHUB_OUTPUT;
