@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.16](https://github.com/ZeroGachis/.github/compare/v7.3.15...v7.3.16) (2026-04-13)
+
+
+### Bug Fixes
+
+* Add logging to ease debugging ([e02ca67](https://github.com/ZeroGachis/.github/commit/e02ca6799e3a2eba46e04c5947755513968de455))
+* Fix typo in output ([f36e362](https://github.com/ZeroGachis/.github/commit/f36e3626269c9a4c4ed936bd53ae437de97e0a0b))
+
 ## [7.3.15](https://github.com/ZeroGachis/.github/compare/v7.3.14...v7.3.15) (2026-04-13)
 
 
