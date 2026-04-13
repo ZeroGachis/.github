@@ -70,6 +70,10 @@ runs:
 
     - name: Fetch .trivyignore from the current repository
       uses: actions/checkout@v6
+      with:
+        sparse-checkout: .trivyignore
+        sparse-checkout-cone-mode: false
+        clean: false
 
     - name: Merge trivyignore files
       id: merge-trivyignore-files
