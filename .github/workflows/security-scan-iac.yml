@@ -38,7 +38,7 @@ jobs:
         run: |
           # Output .trivyignore file
           cat << 'EOF' > .trivyignore-final
-          ${{ steps.get-trivy-ignore-rules.outputs.file-content }}
+          ${{ steps.get-trivy-ignore-rules.outputs.trivyignore }}
           EOF
 
       - name: Analyze IaC configuration
