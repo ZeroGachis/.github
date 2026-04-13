@@ -111,12 +111,15 @@ runs:
 
     - name: Merge trivyignore files
       id: merge-trivyignore-files
-      shell: bash
-      run: | # bash
-        # Merge all .trivyignore files and do not fail if one does not exist
-        cat .trivyignore.base-docker-images .trivyignore.platform-core .trivyignore 2>/dev/null > .trivyignore-final
+      shell: node {0}
+      run: | # JS
+        // Merge all .trivyignore files and do not fail if one does not exist
+        import { existsSync,  readFileSync, appendFileSync } from 'fs';
+        const files = ['.trivyignore.base-docker-images', '.trivyignore.platform-core', '.trivyignore'];
+        const content = files
+          .filter(f => existsSync(f))
+          .map(f => readFileSync(f, 'utf8'))
+          .join('\n\n');
 
-        content=$(cat .trivyignore-final)
-        echo "content<<EOF" >> $GITHUB_OUTPUT
-        echo "$content" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        const output = process.env.GITHUB_OUTPUT;
+        appendFileSync(output, 'trivyignore<<EOF\n' + content + '\nEOF\n');
