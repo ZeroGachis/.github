@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.17](https://github.com/ZeroGachis/.github/compare/v7.3.16...v7.3.17) (2026-04-13)
+
+
+### Bug Fixes
+
+* Fix github stringly boolean evaluation ([e3f11ff](https://github.com/ZeroGachis/.github/commit/e3f11ff8d45914642ed7287c6334aa9fd79e8fde))
+
 ## [7.3.16](https://github.com/ZeroGachis/.github/compare/v7.3.15...v7.3.16) (2026-04-13)
 
 
