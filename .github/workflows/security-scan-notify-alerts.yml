@@ -119,9 +119,8 @@ jobs:
             });
 
             if (!searchResponse.ok) {
-              console.log(`::warning::Linear search failed for alert #${alert.number} (HTTP ${searchResponse.status}) — will fallback to create issue to avoid missing the alert`);
-              newAlerts.push(alert);
-              continue;
+              console.log(`::error::Linear search failed for alert #${alert.number} (HTTP ${searchResponse.status})`);
+              process.exit(1);
             }
 
             const searchBody = await searchResponse.json();
