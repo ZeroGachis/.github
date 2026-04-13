@@ -31,7 +31,7 @@ runs:
       id: base-docker-images-app-token
       if: ${{ inputs.org-docker-image-ignore-rules }}
       with:
-        app-id: ${{ inputs.smartway_github_bot_id }}
+        client-id: ${{ inputs.smartway_github_bot_id }}
         private-key: ${{ inputs.smartway_github_bot_private_key }}
         owner: ZeroGachis
         repositories: base-docker-images
@@ -71,7 +71,7 @@ runs:
       uses: actions/create-github-app-token@v3
       id: platform-core-app-token
       with:
-        app-id: ${{ inputs.smartway_github_bot_id }}
+        client-id: ${{ inputs.smartway_github_bot_id }}
         private-key: ${{ inputs.smartway_github_bot_private_key }}
         owner: ZeroGachis
         repositories: platform-core

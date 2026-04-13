@@ -61,7 +61,7 @@ jobs:
         id: generate-token
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ secrets.SW_BOT_APP_ID || secrets.SW_BOT_PUBLIC_APP_ID }}
+          client-id: ${{ secrets.SW_BOT_APP_ID || secrets.SW_BOT_PUBLIC_APP_ID }}
           private-key: ${{ secrets.SW_BOT_APP_PRIVATE_KEY || secrets.SW_BOT_PUBLIC_APP_PRIVATE_KEY }}
           
       - uses: actions/checkout@v6
