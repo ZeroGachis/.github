@@ -53,7 +53,7 @@ jobs:
 ### Authentication
 
 The workflow uses GitHub App authentication for enhanced security and rate limits:
-- Generates a GitHub App token using `actions/create-github-app-token@v1`
+- Generates a GitHub App token using `actions/create-github-app-token@v3`
 - Falls back to public app credentials if organization app is not available
 - Uses secrets: `SW_BOT_APP_ID`, `SW_BOT_APP_PRIVATE_KEY` (or their `_PUBLIC_` variants)
 
