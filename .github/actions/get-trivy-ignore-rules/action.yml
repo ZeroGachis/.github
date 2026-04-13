@@ -87,5 +87,8 @@ runs:
           .map(f => readFileSync(f, 'utf8'))
           .join('\n\n');
 
+        console.log("Final .trivyignore content");
+        console.log(`${content}`);
+
         const output = process.env.GITHUB_OUTPUT;
         appendFileSync(output, 'trivyignore<<EOF\n' + content + '\nEOF\n');
