@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.12](https://github.com/ZeroGachis/.github/compare/v7.3.11...v7.3.12) (2026-04-13)
+
+
+### Bug Fixes
+
+* Replace 'needs' steps by 'if' as 'needs' is not available for custom actions ([44538a6](https://github.com/ZeroGachis/.github/commit/44538a69683591d1e915e9a6be231714f2d0a5c4))
+* typo ([3ab7d42](https://github.com/ZeroGachis/.github/commit/3ab7d421b9bce53d08b318cea62ab384aa1145d0))
+
 ## [7.3.11](https://github.com/ZeroGachis/.github/compare/v7.3.10...v7.3.11) (2026-04-13)
 
 
