@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.11](https://github.com/ZeroGachis/.github/compare/v7.3.10...v7.3.11) (2026-04-13)
+
+
+### Bug Fixes
+
+* Add a unified way to get trivy ignore rules for each security scan workflows ([78f6efd](https://github.com/ZeroGachis/.github/commit/78f6efde2205b0b24d3a1a939c1e1840d07fd848))
+* security-scan-notify-alerts now exit with an error when it fails to authenticate to linear when searching for existing issues ([f71d91c](https://github.com/ZeroGachis/.github/commit/f71d91c7c4819a75292595a8aa0d898cff06c200))
+
+
+### Miscellaneous Chores
+
+* Reformat security-scan-notify-alerts workflow ([b4b2b27](https://github.com/ZeroGachis/.github/commit/b4b2b275f7408288a0f12c8051171b6ecbfed184))
+
 ## [7.3.10](https://github.com/ZeroGachis/.github/compare/v7.3.9...v7.3.10) (2026-04-10)
 
 
