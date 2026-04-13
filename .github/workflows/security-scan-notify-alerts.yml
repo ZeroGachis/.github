@@ -1,4 +1,4 @@
-name: Create linear issues for vulnerability alerts from Github Code Scanning 
+name: Create linear issues for vulnerability alerts from Github Code Scanning
 
 on:
   workflow_call:
@@ -87,7 +87,7 @@ jobs:
             const nextMatch = response.headers.get('link')?.match(/<([^>]+)>;\s*rel="next"/);
             url = nextMatch ? nextMatch[1] : null;
           }
-          
+
           console.log(`Found ${allAlerts.length} open alert(s)`);
 
           // Filter alerts by the requested severities
@@ -201,7 +201,12 @@ jobs:
           code_owner: ${{ steps.read_codeowners.outputs.code_owner }}
 
   create-linear-issue:
-    needs: [get-linear-credentials, fetch-new-critical-alerts, get-linear-team-from-code-owner]
+    needs:
+      [
+        get-linear-credentials,
+        fetch-new-critical-alerts,
+        get-linear-team-from-code-owner,
+      ]
     if: needs.fetch-new-critical-alerts.outputs.has_new_alerts == 'true'
     runs-on: ubuntu-latest
     permissions:
