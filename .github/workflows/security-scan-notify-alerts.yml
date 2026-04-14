@@ -10,7 +10,7 @@ on:
         default: "critical"
 
 jobs:
-  get-linear-credentials:
+  get-linear-access-token:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -30,18 +30,16 @@ jobs:
           path: "github-actions"
           exportToken: true
           secrets: |
-            secret/data/github-actions-common/linear CLIENT_ID | LINEAR_CLIENT_ID;
-            secret/data/github-actions-common/linear CLIENT_SECRET | LINEAR_CLIENT_SECRET;
+            secret/data/github-actions-common/linear CLIENT_ACCESS_TOKEN | LINEAR_CLIENT_ACCESS_TOKEN;
 
-      - name: Get Linear access token
+      - name: Export Linear access token as job output
         id: get_linear_token
-        uses: ZeroGachis/.github/.github/actions/get-linear-token@main
-        with:
-          linear_client_id: ${{ env.LINEAR_CLIENT_ID }}
-          linear_client_secret: ${{ env.LINEAR_CLIENT_SECRET }}
+        run: |
+          echo "::add-mask::$LINEAR_CLIENT_ACCESS_TOKEN"
+          echo "access_token=$LINEAR_CLIENT_ACCESS_TOKEN" >> $GITHUB_OUTPUT
 
   fetch-new-critical-alerts:
-    needs: get-linear-credentials
+    needs: get-linear-access-token
     runs-on: ubuntu-latest
     permissions:
       security-events: read
@@ -55,7 +53,7 @@ jobs:
         shell: node {0}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          LINEAR_ACCESS_TOKEN: ${{ needs.get-linear-credentials.outputs.access_token }}
+          LINEAR_ACCESS_TOKEN: ${{ needs.get-linear-access-token.outputs.access_token }}
           TARGET_REPO: ${{ github.repository }}
           SEVERITY: ${{ inputs.severity }}
         run: | # JS
@@ -202,7 +200,7 @@ jobs:
   create-linear-issue:
     needs:
       [
-        get-linear-credentials,
+        get-linear-access-token,
         fetch-new-critical-alerts,
         get-linear-team-from-code-owner,
       ]
@@ -251,7 +249,7 @@ jobs:
       - name: Create Linear issue
         uses: ZeroGachis/.github/.github/actions/create-linear-issue@main
         with:
-          access_token: ${{ needs.get-linear-credentials.outputs.access_token }}
+          access_token: ${{ needs.get-linear-access-token.outputs.access_token }}
           title: ${{ steps.build_issue.outputs.title }}
           description: ${{ steps.build_issue.outputs.description }}
           team_name: ${{ needs.get-linear-team-from-code-owner.outputs.team_name }}
