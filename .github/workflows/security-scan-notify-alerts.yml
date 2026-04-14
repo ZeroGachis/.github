@@ -10,49 +10,34 @@ on:
         default: "critical"
 
 jobs:
-  get-linear-access-token:
+  fetch-new-critical-alerts:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-    outputs:
-      access_token: ${{ steps.get_linear_token.outputs.access_token }}
+      security-events: read
+      contents: read
     env:
       VAULT_ADDR: ${{ vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ vars.VAULT_GITHUB_ACTIONS_ROLE }}
+    outputs:
+      matrix: ${{ steps.filter_alerts.outputs.matrix }}
+      has_new_alerts: ${{ steps.filter_alerts.outputs.has_new_alerts }}
     steps:
-      - name: Get Linear client secret
-        id: vault
+      - name: Get Linear access token
         uses: hashicorp/vault-action@v3
         with:
           url: ${{ env.VAULT_ADDR }}
           role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
           method: jwt
           path: "github-actions"
-          exportToken: true
           secrets: |
-            secret/data/github-actions-common/linear CLIENT_ACCESS_TOKEN | LINEAR_CLIENT_ACCESS_TOKEN;
+            secret/data/github-actions-common/linear CLIENT_ACCESS_TOKEN | LINEAR_ACCESS_TOKEN;
 
-      - name: Export Linear access token as job output
-        id: get_linear_token
-        run: |
-          echo "access_token=$LINEAR_CLIENT_ACCESS_TOKEN" >> $GITHUB_OUTPUT
-
-  fetch-new-critical-alerts:
-    needs: get-linear-access-token
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: read
-      contents: read
-    outputs:
-      matrix: ${{ steps.filter_alerts.outputs.matrix }}
-      has_new_alerts: ${{ steps.filter_alerts.outputs.has_new_alerts }}
-    steps:
       - name: Fetch critical alerts and filter already-tracked ones
         id: filter_alerts
         shell: node {0}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          LINEAR_ACCESS_TOKEN: ${{ needs.get-linear-access-token.outputs.access_token }}
           TARGET_REPO: ${{ github.repository }}
           SEVERITY: ${{ inputs.severity }}
         run: | # JS
@@ -204,18 +189,31 @@ jobs:
   create-linear-issue:
     needs:
       [
-        get-linear-access-token,
         fetch-new-critical-alerts,
         get-linear-team-from-code-owner,
       ]
     if: needs.fetch-new-critical-alerts.outputs.has_new_alerts == 'true'
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: read
+    env:
+      VAULT_ADDR: ${{ vars.PULLREQUEST_VAULT_URL }}
+      VAULT_GITHUB_ACTIONS_ROLE: ${{ vars.VAULT_GITHUB_ACTIONS_ROLE }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.fetch-new-critical-alerts.outputs.matrix) }}
     steps:
+      - name: Get Linear access token
+        uses: hashicorp/vault-action@v3
+        with:
+          url: ${{ env.VAULT_ADDR }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          secrets: |
+            secret/data/github-actions-common/linear CLIENT_ACCESS_TOKEN | LINEAR_ACCESS_TOKEN;
+
       - name: Build issue title and description
         id: build_issue
         shell: node {0}
@@ -253,7 +251,7 @@ jobs:
       - name: Create Linear issue
         uses: ZeroGachis/.github/.github/actions/create-linear-issue@main
         with:
-          access_token: ${{ needs.get-linear-access-token.outputs.access_token }}
+          access_token: ${{ env.LINEAR_ACCESS_TOKEN }}
           title: ${{ steps.build_issue.outputs.title }}
           description: ${{ steps.build_issue.outputs.description }}
           team_name: ${{ needs.get-linear-team-from-code-owner.outputs.team_name }}
