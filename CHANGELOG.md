@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.26](https://github.com/ZeroGachis/.github/compare/v7.3.25...v7.3.26) (2026-04-14)
+
+
+### Bug Fixes
+
+* Remove mask to see if it works ([e787d4e](https://github.com/ZeroGachis/.github/commit/e787d4eb431e6a8c31868c83e4ea90d8a2cd3d78))
+
 ## [7.3.25](https://github.com/ZeroGachis/.github/compare/v7.3.24...v7.3.25) (2026-04-14)
 
 
