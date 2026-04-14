@@ -40,11 +40,34 @@ jobs:
       - name: Write Linear access token to Vault
         env:
           ACCESS_TOKEN: ${{ steps.get_linear_token.outputs.access_token }}
-        run: |
-          echo "::add-mask::$ACCESS_TOKEN"
-          payload=$(jq -n --arg token "$ACCESS_TOKEN" '{"data": {"CLIENT_ACCESS_TOKEN": $token}}')
-          curl -sf -X PATCH \
-            -H "X-Vault-Token: $VAULT_TOKEN" \
-            -H "Content-Type: application/merge-patch+json" \
-            -d "$payload" \
-            "$VAULT_ADDR/v1/secret/data/github-actions-common/linear"
+        shell: node {0}
+        run: | # JS
+          const accessToken = process.env.ACCESS_TOKEN;
+          const vaultAddr = process.env.VAULT_ADDR;
+          const vaultToken = process.env.VAULT_TOKEN;
+
+          console.log(`::add-mask::${accessToken}`);
+
+          const url = `${vaultAddr}/v1/secret/data/github-actions-common/linear`;
+          const payload = { data: { CLIENT_ACCESS_TOKEN: accessToken } };
+
+          console.log(`Writing Linear access token to Vault at ${url}`);
+
+          const response = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+              'X-Vault-Token': vaultToken,
+              'Content-Type': 'application/merge-patch+json',
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const responseBody = await response.text();
+
+          if (!response.ok) {
+            console.log(`::error::Vault PATCH request failed (HTTP ${response.status})`);
+            console.log(`::error::Response body: ${responseBody}`);
+            process.exit(1);
+          }
+
+          console.log(`Linear access token successfully written to Vault (HTTP ${response.status})`)
