@@ -73,12 +73,15 @@ jobs:
               },
             });
 
+            const responseBody = await response.json().catch(() => null);
+
             if (!response.ok) {
               console.log(`::error::Failed to fetch alerts (HTTP ${response.status})`);
+              console.log(`::error::Response body: ${JSON.stringify(responseBody)}`);
               process.exit(1);
             }
 
-            allAlerts.push(...await response.json());
+            allAlerts.push(...responseBody);
 
             // search for the next page
             // Cf: https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2026-03-10#using-link-headers
@@ -116,12 +119,14 @@ jobs:
               }),
             });
 
+            const searchBody = await searchResponse.json().catch(() => null);
+
             if (!searchResponse.ok) {
               console.log(`::error::Linear search failed for alert #${alert.number} (HTTP ${searchResponse.status})`);
+              console.log(`::error::Response body: ${JSON.stringify(searchBody)}`);
               process.exit(1);
             }
 
-            const searchBody = await searchResponse.json();
             const existingNodes = searchBody.data?.issues?.nodes ?? [];
 
             if (existingNodes.length === 0) {
