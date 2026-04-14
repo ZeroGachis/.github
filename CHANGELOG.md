@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.24](https://github.com/ZeroGachis/.github/compare/v7.3.23...v7.3.24) (2026-04-14)
+
+
+### Bug Fixes
+
+* Only read PULLREQUEST_VAULT_URL to access the vault in stage ([1a72609](https://github.com/ZeroGachis/.github/commit/1a726099499af4eb0bda5235528e758812bb65a8))
+
 ## [7.3.23](https://github.com/ZeroGachis/.github/compare/v7.3.22...v7.3.23) (2026-04-14)
 
 
