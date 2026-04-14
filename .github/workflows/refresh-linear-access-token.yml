@@ -14,7 +14,7 @@ jobs:
     permissions:
       id-token: write
     env:
-      VAULT_ADDR: ${{ vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_ADDR: ${{ vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ vars.VAULT_GITHUB_ACTIONS_ROLE }}
     steps:
       - name: Get Linear client secret

@@ -17,7 +17,7 @@ jobs:
     outputs:
       access_token: ${{ steps.get_linear_token.outputs.access_token }}
     env:
-      VAULT_ADDR: ${{ vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_ADDR: ${{ vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ vars.VAULT_GITHUB_ACTIONS_ROLE }}
     steps:
       - name: Get Linear client secret
