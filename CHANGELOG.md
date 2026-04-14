@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.25](https://github.com/ZeroGachis/.github/compare/v7.3.24...v7.3.25) (2026-04-14)
+
+
+### Bug Fixes
+
+* Mask the linear access token only after writing it to  to avoid having the value being ***** ([0c066b9](https://github.com/ZeroGachis/.github/commit/0c066b9d2b9b440194129f13feaac9b2163601bc))
+
 ## [7.3.24](https://github.com/ZeroGachis/.github/compare/v7.3.23...v7.3.24) (2026-04-14)
 
 
