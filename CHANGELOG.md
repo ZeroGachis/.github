@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.20](https://github.com/ZeroGachis/.github/compare/v7.3.19...v7.3.20) (2026-04-14)
+
+
+### Bug Fixes
+
+* Add daily workflow to get and store a Linear client access token in vault ([37cec4c](https://github.com/ZeroGachis/.github/commit/37cec4c19410957963569a7f1d58eafc3dcf3423))
+
 ## [7.3.19](https://github.com/ZeroGachis/.github/compare/v7.3.18...v7.3.19) (2026-04-14)
 
 
