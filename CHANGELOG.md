@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.21](https://github.com/ZeroGachis/.github/compare/v7.3.20...v7.3.21) (2026-04-14)
+
+
+### Bug Fixes
+
+* Improving error handling in refresh-linear-access-token workflow ([3f96cfd](https://github.com/ZeroGachis/.github/commit/3f96cfdad8dcdececea4e546098c2faa6edc4278))
+
 ## [7.3.20](https://github.com/ZeroGachis/.github/compare/v7.3.19...v7.3.20) (2026-04-14)
 
 
