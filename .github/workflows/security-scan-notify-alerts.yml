@@ -36,7 +36,6 @@ jobs:
         id: get_linear_token
         run: |
           echo "access_token=$LINEAR_CLIENT_ACCESS_TOKEN" >> $GITHUB_OUTPUT
-          echo "::add-mask::$LINEAR_CLIENT_ACCESS_TOKEN"
 
   fetch-new-critical-alerts:
     needs: get-linear-access-token
