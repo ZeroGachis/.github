@@ -1,0 +1,50 @@
+# Refresh the linear access token of our Linear App in Vault
+# This access token is read by security-scan workflows to read/write Linear issues
+name: Refresh Linear access token
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * *" # Everyday at 04:00AM
+
+
+jobs:
+  refresh-linear-access-token:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    env:
+      VAULT_ADDR: ${{ vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
+      VAULT_GITHUB_ACTIONS_ROLE: ${{ vars.VAULT_GITHUB_ACTIONS_ROLE }}
+    steps:
+      - name: Get Linear client secret
+        id: vault
+        uses: hashicorp/vault-action@v3
+        with:
+          url: ${{ env.VAULT_ADDR }}
+          role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
+          method: jwt
+          path: "github-actions"
+          exportToken: true
+          secrets: |
+            secret/data/github-actions-common/linear CLIENT_ID | LINEAR_CLIENT_ID;
+            secret/data/github-actions-common/linear CLIENT_SECRET | LINEAR_CLIENT_SECRET;
+
+      - name: Get Linear access token
+        id: get_linear_token
+        uses: ZeroGachis/.github/.github/actions/get-linear-token@main
+        with:
+          linear_client_id: ${{ env.LINEAR_CLIENT_ID }}
+          linear_client_secret: ${{ env.LINEAR_CLIENT_SECRET }}
+
+      - name: Write Linear access token to Vault
+        env:
+          ACCESS_TOKEN: ${{ steps.get_linear_token.outputs.access_token }}
+        run: |
+          echo "::add-mask::$ACCESS_TOKEN"
+          payload=$(jq -n --arg token "$ACCESS_TOKEN" '{"data": {"CLIENT_ACCESS_TOKEN": $token}}')
+          curl -sf -X PATCH \
+            -H "X-Vault-Token: $VAULT_TOKEN" \
+            -H "Content-Type: application/merge-patch+json" \
+            -d "$payload" \
+            "$VAULT_ADDR/v1/secret/data/github-actions-common/linear"
