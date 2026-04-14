@@ -35,8 +35,8 @@ jobs:
       - name: Export Linear access token as job output
         id: get_linear_token
         run: |
-          echo "::add-mask::$LINEAR_CLIENT_ACCESS_TOKEN"
           echo "access_token=$LINEAR_CLIENT_ACCESS_TOKEN" >> $GITHUB_OUTPUT
+          echo "::add-mask::$LINEAR_CLIENT_ACCESS_TOKEN"
 
   fetch-new-critical-alerts:
     needs: get-linear-access-token
