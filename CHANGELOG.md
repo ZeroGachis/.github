@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.22](https://github.com/ZeroGachis/.github/compare/v7.3.21...v7.3.22) (2026-04-14)
+
+
+### Bug Fixes
+
+* Inline & remove the action get-linear-token in the only workflow that uses it (refresh-linear-access-token) ([1430f12](https://github.com/ZeroGachis/.github/commit/1430f125ea6a1dd54d6e9985ea38b74fd2094289))
+* security-scan-notify-alerts now consumes the linear access token stored in Vault ([6c49c3b](https://github.com/ZeroGachis/.github/commit/6c49c3b453c03d61ae7d0a5c283ad98f12682ff7))
+
 ## [7.3.21](https://github.com/ZeroGachis/.github/compare/v7.3.20...v7.3.21) (2026-04-14)
 
 
