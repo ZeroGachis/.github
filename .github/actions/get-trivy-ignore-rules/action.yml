@@ -21,7 +21,7 @@ inputs:
 outputs:
   trivyignore:
     description: "The final trivyignore file that combines the repository's trivyignore file and org-wise trivyignore files"
-    value: ${{ steps.merge-trivyignore-files.outputs.content }}
+    value: ${{ steps.merge-trivyignore-files.outputs.trivyignore }}
 
 runs:
   using: "composite"
