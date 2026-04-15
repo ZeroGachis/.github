@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.28](https://github.com/ZeroGachis/.github/compare/v7.3.27...v7.3.28) (2026-04-15)
+
+
+### Bug Fixes
+
+* Enable to override aws_account_id and aws_region in security-scan-image ([ac8b107](https://github.com/ZeroGachis/.github/commit/ac8b107465de8a331ddc3f0fe954a16c4953ed5c))
+
 ## [7.3.27](https://github.com/ZeroGachis/.github/compare/v7.3.26...v7.3.27) (2026-04-14)
 
 
