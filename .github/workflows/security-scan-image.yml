@@ -22,6 +22,14 @@ on:
         required: false
         type: string
         default: "0"
+      aws_account_id:
+        description: AWS account ID to use for ECR authentication
+        required: false
+        type: string
+      aws_region:
+        description: AWS region to use for ECR authentication
+        required: false
+        type: string
 
 jobs:
   security-scan-image:
@@ -34,8 +42,8 @@ jobs:
       pull-requests: write
       security-events: write # required for github/codeql-action/upload-sarif to upload SARIF results
     env:
-      AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
-      AWS_REGION: ${{ vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
+      AWS_ACCOUNT_ID: ${{ inputs.aws_account_id || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ inputs.aws_region || vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
     steps:
       - name: Configure AWS Credentials
         id: aws
