@@ -39,6 +39,14 @@ on:
         description: AWS region to use for ECR authentication
         required: false
         type: string
+      use-org-docker-image-ignore-rules:
+        description: Use org-level vulnerability ignore rules when scanning an image
+        required: false
+        type: boolean
+      use-org-iac-ignore-rules:
+        description: Use org-level vulnerability ignore rules when scanning IaC config
+        required: false
+        type: boolean
 
 jobs:
   validate-scan-image-inputs:
@@ -58,12 +66,16 @@ jobs:
       repository: ${{ inputs.repository }}
       aws_account_id: ${{ inputs.aws_account_id }}
       aws_region: ${{ inputs.aws_region }}
+      use-org-docker-image-ignore-rules: ${{ inputs.use-org-docker-image-ignore-rules }}
     secrets: inherit
 
   scan-iac:
     uses: ZeroGachis/.github/.github/workflows/security-scan-iac.yml@main
     if: ${{ inputs.scan-iac }}
     secrets: inherit
+    with:
+      use-org-iac-ignore-rules: ${{ inputs.use-org-iac-ignore-rules }}
+
 
   scan-filesystem:
     uses: ZeroGachis/.github/.github/workflows/security-scan-filesystem.yml@main

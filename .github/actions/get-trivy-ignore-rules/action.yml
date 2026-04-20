@@ -7,13 +7,13 @@ inputs:
   smartway_github_bot_private_key:
     description: "Smartway's Github bot private key"
     required: true
-  org-docker-image-ignore-rules:
-    description: Add ZeroGachis/base-docker-images .trivyignore in the final .trivyignore file
+  use-org-docker-image-ignore-rules:
+    description: Use org-level vulnerability ignore rules when scanning an image (fetched from ZeroGachis/base-docker-images's .trivyignore)
     required: false
     type: boolean
     default: false
-  org-iac-ignore-rules:
-    description: Add ZeroGachis/platform-core .trivyignore in the final .trivyignore file
+  use-org-iac-ignore-rules:
+    description: Use org-level vulnerability ignore rules when scanning IaC config (fetched from ZeroGachis/platform-core's .trivyignore)
     required: false
     type: boolean
     default: false
@@ -35,7 +35,7 @@ runs:
     - name: Generate GitHub App Token to access ZeroGachis/base-docker-images
       uses: actions/create-github-app-token@v3
       id: base-docker-images-app-token
-      if: ${{ inputs.org-docker-image-ignore-rules == 'true' }}
+      if: ${{ inputs.use-org-docker-image-ignore-rules == 'true' }}
       with:
         client-id: ${{ inputs.smartway_github_bot_id }}
         private-key: ${{ inputs.smartway_github_bot_private_key }}
@@ -44,7 +44,7 @@ runs:
     
     - name: Fetch .trivyignore of ZeroGachis/base-docker-images main branch
       uses: actions/checkout@v6
-      if: ${{ inputs.org-docker-image-ignore-rules == 'true' }}
+      if: ${{ inputs.use-org-docker-image-ignore-rules == 'true' }}
       with:
         repository: ZeroGachis/base-docker-images
         ref: main
@@ -54,7 +54,7 @@ runs:
         token: ${{ steps.base-docker-images-app-token.outputs.token }}
 
     - name: Generate GitHub App Token to access ZeroGachis/platform-core
-      if: ${{ inputs.org-iac-ignore-rules == 'true' }}
+      if: ${{ inputs.use-org-iac-ignore-rules == 'true' }}
       uses: actions/create-github-app-token@v3
       id: platform-core-app-token
       with:
@@ -65,7 +65,7 @@ runs:
 
     - name: Fetch .trivyignore of ZeroGachis/platform-core main branch
       uses: actions/checkout@v6
-      if: ${{ inputs.org-iac-ignore-rules == 'true' }}
+      if: ${{ inputs.use-org-iac-ignore-rules == 'true' }}
       with:
         repository: ZeroGachis/platform-core
         ref: main
