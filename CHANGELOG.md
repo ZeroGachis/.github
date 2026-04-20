@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.31](https://github.com/ZeroGachis/.github/compare/v7.3.30...v7.3.31) (2026-04-20)
+
+
+### Continuous Integration
+
+* Fix missing semicolon ([f66ba01](https://github.com/ZeroGachis/.github/commit/f66ba01c1e9b2434e657a70e4b3a7121cb6b6e7f))
+
 ## [7.3.30](https://github.com/ZeroGachis/.github/compare/v7.3.29...v7.3.30) (2026-04-20)
 
 
