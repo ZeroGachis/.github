@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.30](https://github.com/ZeroGachis/.github/compare/v7.3.29...v7.3.30) (2026-04-20)
+
+
+### Bug Fixes
+
+* Allow to disable using org-level vulnerability ignore rules ([3d07d99](https://github.com/ZeroGachis/.github/commit/3d07d99ad2c44e977a86137708f9be5d1d1d9ac7))
+
 ## [7.3.29](https://github.com/ZeroGachis/.github/compare/v7.3.28...v7.3.29) (2026-04-20)
 
 
