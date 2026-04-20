@@ -180,7 +180,7 @@ jobs:
           secrets: |
             secret/data/github-actions-common/argocd apikey | ARGOCD_AUTH_TOKEN;
 
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: ${{ inputs.terraform_version }}
 
@@ -188,13 +188,13 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ inputs.aws_github_role_name }}
 
       - name: Get tiers Tools credentials
-        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+        uses: aws-actions/aws-secretsmanager-get-secrets@v3
         with:
           secret-ids: |
             ${{ inputs.aws_secrets || env.AWS_DEFAULT_SECRETS }}
@@ -242,7 +242,7 @@ jobs:
         run: terraform output -json > tf-output.json
 
       - name: Save Output
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: inputs.terraform_save_output
         with:
           name: tf-output-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
