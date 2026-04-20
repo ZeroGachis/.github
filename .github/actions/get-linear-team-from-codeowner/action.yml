@@ -33,6 +33,7 @@ runs:
           '@zerogachis/fos_squad': 'FOS App',
           '@zerogachis/fwms_squad': 'FWMS',
           '@zerogachis/platform_squad': 'Platform',
+          '@zerogachis/qa_squad': 'QA'
         };
 
         const lowercasedCodeOwner = codeOwner.toLowerCase();
