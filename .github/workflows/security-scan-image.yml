@@ -30,6 +30,11 @@ on:
         description: AWS region to use for ECR authentication
         required: false
         type: string
+      use-org-docker-image-ignore-rules:
+        description: Use org-level vulnerability ignore rules when scanning an image
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   security-scan-image:
@@ -65,7 +70,7 @@ jobs:
         with:
           smartway_github_bot_id: ${{ secrets.SW_BOT_APP_ID }}
           smartway_github_bot_private_key: ${{ secrets.SW_BOT_APP_PRIVATE_KEY }}
-          org-docker-image-ignore-rules: true
+          use-org-docker-image-ignore-rules: ${{ inputs.use-org-docker-image-ignore-rules }}
 
       - name: Output .trivyignore file
         run: |

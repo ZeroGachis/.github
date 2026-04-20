@@ -13,6 +13,12 @@ on:
         required: false
         type: string
         default: "0"
+      use-org-iac-ignore-rules:
+        description: Use org-level vulnerability ignore rules when scanning IaC config
+        required: false
+        type: boolean
+        default: true
+
 
 jobs:
   security-scan-iac:
@@ -32,7 +38,7 @@ jobs:
         with:
           smartway_github_bot_id: ${{ secrets.SW_BOT_APP_ID }}
           smartway_github_bot_private_key: ${{ secrets.SW_BOT_APP_PRIVATE_KEY }}
-          org-iac-ignore-rules: true
+          use-org-iac-ignore-rules: ${{ inputs.use-org-iac-ignore-rules }}
 
       - name: Output .trivyignore file
         run: |
