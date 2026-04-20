@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.29](https://github.com/ZeroGachis/.github/compare/v7.3.28...v7.3.29) (2026-04-20)
+
+
+### Bug Fixes
+
+* get-linear-team-from-codeowner can map QA code owner to the QA linear team ([9e81e13](https://github.com/ZeroGachis/.github/commit/9e81e13552e93815d940a1b8cd2e2467c7bb3e9c))
+* get-linear-team-from-codeowner can map Smarthacks code owner to the SmartHacks linear team ([6280bdb](https://github.com/ZeroGachis/.github/commit/6280bdb7efdc574de30301b1e2b7cd23a3149779))
+
 ## [7.3.28](https://github.com/ZeroGachis/.github/compare/v7.3.27...v7.3.28) (2026-04-15)
 
 
