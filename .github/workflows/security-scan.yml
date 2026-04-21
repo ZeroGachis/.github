@@ -43,10 +43,12 @@ on:
         description: Use org-level vulnerability ignore rules when scanning an image
         required: false
         type: boolean
+        default: true
       use-org-iac-ignore-rules:
         description: Use org-level vulnerability ignore rules when scanning IaC config
         required: false
         type: boolean
+        default: true
 
 jobs:
   validate-scan-image-inputs:
