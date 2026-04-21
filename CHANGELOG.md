@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.33](https://github.com/ZeroGachis/.github/compare/v7.3.32...v7.3.33) (2026-04-21)
+
+
+### Bug Fixes
+
+* Use org-level vulnerability ignore rules by default ([065bf74](https://github.com/ZeroGachis/.github/commit/065bf74d804bccfd19190b68a38505a3aa325a41))
+
+
+### Miscellaneous Chores
+
+* **ci:** upgrade GitHub Actions to Node.js 24 compatible versions ([057c021](https://github.com/ZeroGachis/.github/commit/057c021064f7350fb46741c40d00ca7c3d5d958f))
+
 ## [7.3.32](https://github.com/ZeroGachis/.github/compare/v7.3.31...v7.3.32) (2026-04-21)
 
 
