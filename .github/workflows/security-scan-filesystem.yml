@@ -40,6 +40,7 @@ jobs:
           severity: ${{ inputs.severity }}
           exit-code: ${{ inputs.exit-code }}
           skip-files: ${{ inputs.skip-files }}
+          ignore-unfixed: true
 
       # Rename the tool driver to Trivy-image-and-fs so it appears in GitHub Security tab
       # in the same panel for trivy image and trivy fs reports

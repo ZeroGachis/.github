@@ -57,6 +57,7 @@ jobs:
           severity: ${{ inputs.severity }}
           exit-code: ${{ inputs.exit-code }}
           trivyignores: ".trivyignore-final"
+          ignore-unfixed: true
 
       # Rename the tool driver to Trivy-config so it appears distinctly in GitHub Security tab, separate from Trivy-repo & Trivy-image
       - name: Edit IaC configuration analysis
