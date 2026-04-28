@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.3.35](https://github.com/ZeroGachis/.github/compare/v7.3.34...v7.3.35) (2026-04-28)
+
+
+### Bug Fixes
+
+* Bump trivy from 0.69.3 to 0.70.0 ([1b5b782](https://github.com/ZeroGachis/.github/commit/1b5b7826b9738def9a356cba643c2508acd7b7da))
+
 ## [7.3.34](https://github.com/ZeroGachis/.github/compare/v7.3.33...v7.3.34) (2026-04-28)
 
 
