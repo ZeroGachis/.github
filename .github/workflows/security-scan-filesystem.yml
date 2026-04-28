@@ -33,7 +33,7 @@ jobs:
       - name: Analyze filesystem
         uses: aquasecurity/trivy-action@v0.35.0
         with:
-          version: v0.69.3 # Further 0.69 releases were compromised: https://github.com/aquasecurity/trivy/discussions/10425
+          version: v0.70.0
           scan-type: "fs"
           format: "sarif"
           output: "trivy-results-filesystem.sarif"

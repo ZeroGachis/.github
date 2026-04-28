@@ -84,7 +84,7 @@ jobs:
         env:
           ECR_DEFAULT_URL: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
         with:
-          version: v0.69.3 # Further 0.69 releases were compromised: https://github.com/aquasecurity/trivy/discussions/10425
+          version: v0.70.0
           scan-type: "image"
           image-ref: ${{ env.ECR_DEFAULT_URL }}/${{ inputs.repository }}:${{ inputs.release-tag }}
           format: "sarif"
