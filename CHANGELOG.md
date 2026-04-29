@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.4.1](https://github.com/ZeroGachis/.github/compare/v7.4.0...v7.4.1) (2026-04-29)
+
+
+### Bug Fixes
+
+* Login to both &lt;env&gt; ECR to fetch the image and Tools' ECR to fetch the base image ([0c13c5c](https://github.com/ZeroGachis/.github/commit/0c13c5c9055ad3a3c21271fa0c7096bbed6d287a))
+* Remove useless step id's to prevent duplicates ([a271d3f](https://github.com/ZeroGachis/.github/commit/a271d3f33c1e489c0b553c1929e5ee385fb2d6f1))
+
 ## [7.4.0](https://github.com/ZeroGachis/.github/compare/v7.3.35...v7.4.0) (2026-04-29)
 
 
