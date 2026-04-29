@@ -54,20 +54,20 @@ jobs:
     env:
       AWS_ACCOUNT_ID: ${{ inputs.aws_account_id || vars.AWS_ACCOUNT_ID || vars.PULL_REQUEST_AWS_ACCOUNT_ID }}
       AWS_REGION: ${{ inputs.aws_region || vars.AWS_REGION || vars.AWS_DEFAULT_REGION }}
+      TOOLS_AWS_ACCOUNT_ID: ${{ vars.TOOLS_AWS_ACCOUNT_ID }}
+      TOOLS_AWS_REGION: ${{ vars.TOOLS_AWS_REGION }}
     steps:
-      - name: Configure AWS Credentials
-        id: aws
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github_oidc_readonly
-          output-credentials: true
+      - name: Set image's ECR url
+        id: image-ecr-url
+        run: echo "url=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com" >> $GITHUB_OUTPUT
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          registries: "007065811408"
+      - name: Set base image's ECR url
+        id: base-image-ecr-url
+        run: echo "url=${{ env.TOOLS_AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.TOOLS_AWS_REGION }}.amazonaws.com" >> $GITHUB_OUTPUT
+
+      - name: Set docker image ref
+        id: image-ref
+        run: echo "value=${{ steps.image-ecr-url.outputs.url }}/${{ inputs.repository }}:${{ inputs.release-tag }}" >> $GITHUB_OUTPUT
 
       - name: Get trivy ignore rules
         id: get-trivy-ignore-rules
@@ -84,13 +84,19 @@ jobs:
           ${{ steps.get-trivy-ignore-rules.outputs.trivyignore }}
           EOF
 
-      - name: Set ECR url
-        id: ecr-url
-        run: echo "url=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com" >> $GITHUB_OUTPUT
+      - name: Configure AWS Credentials for <env> account
+        id: aws
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github_oidc_readonly
+          output-credentials: true
 
-      - name: Set docker image ref
-        id: image-ref
-        run: echo "value=${{ steps.ecr-url.outputs.url }}/${{ inputs.repository }}:${{ inputs.release-tag }}" >> $GITHUB_OUTPUT
+      - name: Login to <env>'s ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registries: ${{ env.AWS_ACCOUNT_ID }}
 
       - name: Pull docker image
         run: docker pull ${{ steps.image-ref.outputs.value }}
@@ -101,9 +107,25 @@ jobs:
         run: |
           echo "value=$(docker inspect --format '{{ index .Config.Labels "org.opencontainers.image.base.name" }}' ${{ steps.image-ref.outputs.value }})" >> $GITHUB_OUTPUT
 
-      - name: Pull base image
+      - name: Configure AWS Credentials for Tools account
         if: inputs.ignore-vulnerabilities-from-base-image-layers && steps.base-image-name.outputs.value != ''
-        run: docker pull ${{ steps.ecr-url.outputs.url }}/${{ steps.base-image-name.outputs.value }}
+        id: aws
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-region: ${{ env.TOOLS_AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ env.TOOLS_AWS_ACCOUNT_ID }}:role/github_oidc_readonly
+          output-credentials: true
+
+      - name: Login to Tools' ECR
+        if: inputs.ignore-vulnerabilities-from-base-image-layers && steps.base-image-name.outputs.value != ''
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registries: ${{ env.TOOLS_AWS_ACCOUNT_ID }}
+
+      - name: Pull base image from Tools' ECR
+        if: inputs.ignore-vulnerabilities-from-base-image-layers && steps.base-image-name.outputs.value != ''
+        run: docker pull ${{ steps.base-image-ecr-url.outputs.url }}/${{ steps.base-image-name.outputs.value }}
 
       - name: Create empty ignore policy
         shell: node {0}
@@ -115,7 +137,7 @@ jobs:
         if: inputs.ignore-vulnerabilities-from-base-image-layers && steps.base-image-name.outputs.value != ''
         shell: node {0}
         env:
-          BASE_IMAGE: ${{ steps.ecr-url.outputs.url }}/${{ steps.base-image-name.outputs.value }}
+          BASE_IMAGE: ${{ steps.base-image-ecr-url.outputs.url }}/${{ steps.base-image-name.outputs.value }}
         run: | # JS
           // Create base image layers ignore rules
           // Cf: https://trivy.dev/docs/latest/configuration/filtering/#by-rego
