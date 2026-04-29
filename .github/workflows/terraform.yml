@@ -31,7 +31,7 @@ on:
       terraform_version:
         required: false
         type: string
-        default: "latest"
+        default: "~1.14.0"
       terraform_save_output:
         required: false
         type: boolean
