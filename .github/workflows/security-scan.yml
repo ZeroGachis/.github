@@ -49,6 +49,11 @@ on:
         required: false
         type: boolean
         default: true
+      ignore-vulnerabilities-from-base-image-layers:
+        description: Ignore vulnerabilities from the base image layers
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   validate-scan-image-inputs:
@@ -69,6 +74,7 @@ jobs:
       aws_account_id: ${{ inputs.aws_account_id }}
       aws_region: ${{ inputs.aws_region }}
       use-org-docker-image-ignore-rules: ${{ inputs.use-org-docker-image-ignore-rules }}
+      ignore-vulnerabilities-from-base-image-layers: ${{ inputs.ignore-vulnerabilities-from-base-image-layers }}
     secrets: inherit
 
   scan-iac:

@@ -35,6 +35,11 @@ on:
         required: false
         type: boolean
         default: true
+      ignore-vulnerabilities-from-base-image-layers:
+        description: Ignore vulnerabilities from the base image layers
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   security-scan-image:
@@ -90,6 +95,59 @@ jobs:
       - name: Pull docker image
         run: docker pull ${{ steps.image-ref.outputs.value }}
 
+      - name: Extract base image name
+        if: inputs.ignore-vulnerabilities-from-base-image-layers
+        id: base-image-name
+        run: |
+          echo "value=$(docker inspect --format '{{ index .Config.Labels "org.opencontainers.image.base.name" }}' ${{ steps.image-ref.outputs.value }})" >> $GITHUB_OUTPUT
+
+      - name: Pull base image
+        if: inputs.ignore-vulnerabilities-from-base-image-layers && steps.base-image-name.outputs.value != ''
+        run: docker pull ${{ steps.ecr-url.outputs.url }}/${{ steps.base-image-name.outputs.value }}
+
+      - name: Create empty ignore policy
+        shell: node {0}
+        run: | # JS
+          import { writeFileSync } from 'fs';
+          writeFileSync('ignore_policy.rego', 'package trivy\n');
+
+      - name: Add base image layers in ignore policy
+        if: inputs.ignore-vulnerabilities-from-base-image-layers && steps.base-image-name.outputs.value != ''
+        shell: node {0}
+        env:
+          BASE_IMAGE: ${{ steps.ecr-url.outputs.url }}/${{ steps.base-image-name.outputs.value }}
+        run: | # JS
+          // Create base image layers ignore rules
+          // Cf: https://trivy.dev/docs/latest/configuration/filtering/#by-rego
+          import { execSync } from 'child_process';
+          import { writeFileSync } from 'fs';
+
+          const baseImage = process.env.BASE_IMAGE;
+          const output = execSync(`docker inspect ${baseImage} --format='{{json .RootFS.Layers}}'`).toString().trim();
+          const layers = JSON.parse(output);
+
+          const baseLayers = layers.map(l => `    "${l}",`).join('\n');
+
+          // we don't use a simple string interpolation here because it breaks the visual indentation
+          // with the overall workflow.
+          const regoContent = [
+            'package trivy',
+            '',
+            'base_layers := {',
+            baseLayers,
+            '}',
+            '',
+            'default ignore = false',
+            '',
+            'ignore {',
+            '    base_layers[input.Layer.DiffID]',
+            '}',
+            '',
+          ].join('\n');
+
+          writeFileSync('ignore_policy.rego', regoContent);
+          console.log(`Created ignore_policy.rego with ${layers.length} base image layers`);
+
       - name: Analyze docker image
         uses: aquasecurity/trivy-action@v0.35.0
         with:
@@ -102,6 +160,7 @@ jobs:
           exit-code: ${{ inputs.exit-code }}
           trivyignores: ".trivyignore-final"
           ignore-unfixed: true
+          ignore-policy: ignore_policy.rego
 
       # Rename the tool driver to Trivy-image-and-fs so it appears in GitHub Security tab
       # in the same panel for trivy image and trivy fs reports
