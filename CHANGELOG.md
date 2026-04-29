@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.4.0](https://github.com/ZeroGachis/.github/compare/v7.3.35...v7.4.0) (2026-04-29)
+
+
+### Features
+
+* **security-scan:** Ignore vulnerabilities from base image layers by default ([6e32810](https://github.com/ZeroGachis/.github/commit/6e328100fad9285890ca7ee949817df01927772b))
+
+
+### Code Refactoring
+
+* Make ECR url and image ref accessible as step output to be reusable in multiple steps ([f0a6fd7](https://github.com/ZeroGachis/.github/commit/f0a6fd724ffbda71da83860b8aac74afaed08259))
+* Pull the image explicitly, so that the step 'Analyze docker image' just have to read it locally ([68adcc0](https://github.com/ZeroGachis/.github/commit/68adcc049fc8636ab6a3f39478bcc9230e36011e))
+
 ## [7.3.35](https://github.com/ZeroGachis/.github/compare/v7.3.34...v7.3.35) (2026-04-28)
 
 
