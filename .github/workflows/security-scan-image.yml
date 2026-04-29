@@ -79,14 +79,20 @@ jobs:
           ${{ steps.get-trivy-ignore-rules.outputs.trivyignore }}
           EOF
 
+      - name: Set ECR url
+        id: ecr-url
+        run: echo "url=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com" >> $GITHUB_OUTPUT
+
+      - name: Set docker image ref
+        id: image-ref
+        run: echo "value=${{ steps.ecr-url.outputs.url }}/${{ inputs.repository }}:${{ inputs.release-tag }}" >> $GITHUB_OUTPUT
+
       - name: Analyze docker image
         uses: aquasecurity/trivy-action@v0.35.0
-        env:
-          ECR_DEFAULT_URL: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
         with:
           version: v0.70.0
           scan-type: "image"
-          image-ref: ${{ env.ECR_DEFAULT_URL }}/${{ inputs.repository }}:${{ inputs.release-tag }}
+          image-ref: ${{ steps.image-ref.outputs.value }}
           format: "sarif"
           output: "trivy-results-image.sarif"
           severity: ${{ inputs.severity }}
