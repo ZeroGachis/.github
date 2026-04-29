@@ -87,6 +87,9 @@ jobs:
         id: image-ref
         run: echo "value=${{ steps.ecr-url.outputs.url }}/${{ inputs.repository }}:${{ inputs.release-tag }}" >> $GITHUB_OUTPUT
 
+      - name: Pull docker image
+        run: docker pull ${{ steps.image-ref.outputs.value }}
+
       - name: Analyze docker image
         uses: aquasecurity/trivy-action@v0.35.0
         with:
