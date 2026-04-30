@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.4.3](https://github.com/ZeroGachis/.github/compare/v7.4.2...v7.4.3) (2026-04-30)
+
+
+### Bug Fixes
+
+* fix terraform_k8s version to follow latest SW workflow ([664ad26](https://github.com/ZeroGachis/.github/commit/664ad26ff2a45e1c8a393acd31eacc5bf6836432))
+
 ## [7.4.2](https://github.com/ZeroGachis/.github/compare/v7.4.1...v7.4.2) (2026-04-29)
 
 
