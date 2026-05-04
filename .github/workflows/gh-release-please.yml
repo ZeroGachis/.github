@@ -68,7 +68,7 @@ jobs:
         with:
           token: ${{ steps.generate-token.outputs.token }}
           
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
           release-type: ${{ inputs.release_type }}
