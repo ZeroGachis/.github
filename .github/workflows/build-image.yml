@@ -84,6 +84,10 @@ on:
         required: false
         type: string
         default: "CRITICAL,HIGH"
+      runner_type:
+        required: false
+        type: string
+        default: ubuntu-latest
     outputs:
       image-url:
         value: ${{ jobs.build-image.outputs.image-url }}
@@ -92,7 +96,7 @@ on:
 
 jobs:
   build-image:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner_type }}
     permissions:
       actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
       checks: write
