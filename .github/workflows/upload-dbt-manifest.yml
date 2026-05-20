@@ -41,7 +41,7 @@ jobs:
       TECH_PORTAL_DATA_BUCKET_NAME: ${{ vars.TECH_PORTAL_DATA_BUCKET_NAME }}
       DBT_TYPE: snowflake
       DBT_PROFILES_DIR: ${{ github.workspace }}/${{ inputs.project_dir }}
-      SNOWFLAKE_DBT_SCHEMA: ${{ inputs.snowflake_dbt_schema }}
+      SNOWFLAKE_TRANSFORMER_SCHEMA: ${{ inputs.snowflake_dbt_schema }}
       VAULT_URL: ${{ inputs.VAULT_URL || vars.VAULT_URL || vars.PULLREQUEST_VAULT_URL }}
       VAULT_GITHUB_ACTIONS_ROLE: ${{ inputs.vault_github_actions_role || vars.VAULT_GITHUB_ACTIONS_ROLE }}
     permissions:
@@ -97,13 +97,13 @@ jobs:
           secrets: |
               secret/data/snowflake/ecs SNOWFLAKE_ACCOUNT | SNOWFLAKE_ACCOUNT ;
               secret/data/dbt/github-actions SNOWFLAKE_DBNAME | SNOWFLAKE_DBNAME ;
-              secret/data/dbt/github-actions SNOWFLAKE_DBT_PRIVATE_KEY | SNOWFLAKE_DBT_PRIVATE_KEY ;
-              secret/data/dbt/github-actions SNOWFLAKE_DBT_PRIVATE_KEY_PASSWORD | SNOWFLAKE_DBT_PRIVATE_KEY_PASSWORD ;
-              secret/data/dbt/github-actions SNOWFLAKE_DBT_ROLE | SNOWFLAKE_DBT_ROLE ;
-              secret/data/dbt/github-actions SNOWFLAKE_DBT_USERNAME | SNOWFLAKE_DBT_USERNAME ;
-              secret/data/dbt/github-actions SNOWFLAKE_DBT_WAREHOUSE | SNOWFLAKE_DBT_WAREHOUSE ;
-              secret/data/dbt/github-actions SNOWFLAKE_DBT_WAREHOUSE_FOS | SNOWFLAKE_DBT_WAREHOUSE_FOS ;
-              secret/data/dbt/github-actions SNOWFLAKE_DBT_WAREHOUSE_DBTPLATFORM | SNOWFLAKE_DBT_WAREHOUSE_DBTPLATFORM ;
+              secret/data/dbt/github-actions SNOWFLAKE_TRANSFORMER_PRIVATE_KEY | SNOWFLAKE_TRANSFORMER_PRIVATE_KEY ;
+              secret/data/dbt/github-actions SNOWFLAKE_TRANSFORMER_PRIVATE_KEY_PASSWORD | SNOWFLAKE_TRANSFORMER_PRIVATE_KEY_PASSWORD ;
+              secret/data/dbt/github-actions SNOWFLAKE_TRANSFORMER_ROLE | SNOWFLAKE_TRANSFORMER_ROLE ;
+              secret/data/dbt/github-actions SNOWFLAKE_TRANSFORMER_USERNAME | SNOWFLAKE_TRANSFORMER_USERNAME ;
+              secret/data/dbt/github-actions SNOWFLAKE_TRANSFORMER_WAREHOUSE | SNOWFLAKE_TRANSFORMER_WAREHOUSE ;
+              secret/data/dbt/github-actions SNOWFLAKE_TRANSFORMER_WAREHOUSE_FOS | SNOWFLAKE_TRANSFORMER_WAREHOUSE_FOS ;
+              secret/data/dbt/github-actions SNOWFLAKE_TRANSFORMER_WAREHOUSE_DBTPLATFORM | SNOWFLAKE_TRANSFORMER_WAREHOUSE_DBTPLATFORM ;
               github/token/read_repositories token | GH_ORG_READ_REPO_TOKEN ;
 
       - name: Configure AWS Credentials
