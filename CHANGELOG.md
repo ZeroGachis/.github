@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.4.6](https://github.com/ZeroGachis/.github/compare/v7.4.5...v7.4.6) (2026-05-20)
+
+
+### Miscellaneous Chores
+
+* rename transformer envvar applying convention ([0d68f6c](https://github.com/ZeroGachis/.github/commit/0d68f6c949005b43c6b9962d6180a10d0262d45c))
+
 ## [7.4.5](https://github.com/ZeroGachis/.github/compare/v7.4.4...v7.4.5) (2026-05-05)
 
 
