@@ -28,8 +28,11 @@ on:
       python_version:
         required: false
         type: string
-        default: "3.12"
-
+        default: "3.13"
+      run_specific_dbt_tests:
+        required: false
+        type: boolean
+        default: true
 jobs:
   run-dbt-tests:
     runs-on: ubuntu-latest
@@ -144,6 +147,7 @@ jobs:
           poetry run ${{ github.workspace }}/github_workflow/scripts/run-dbt-tests.sh ${{ inputs.environment_name }} ${{ env.BACKUP_BUCKET_NAME }} ${{ env.DBT_PROFILES_DIR }} ${{ github.event.repository.name }}
 
       - name: Run repo specific dbt tests
+        if: ${{ inputs.run_specific_dbt_tests }}
         run: |
           mise run specific-dbt-tests
 
