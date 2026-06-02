@@ -81,3 +81,4 @@ BREAKING CHANGE: This update changes the way the Datadog monitor module interact
 ```
 
 The `!` after `feat` indicates a breaking change, and the `BREAKING CHANGE:` section provides details about the change.
+
