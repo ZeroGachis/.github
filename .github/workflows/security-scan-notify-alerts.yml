@@ -24,7 +24,7 @@ jobs:
       has_new_alerts: ${{ steps.filter_alerts.outputs.has_new_alerts }}
     steps:
       - name: Get Linear access token
-        uses: hashicorp/vault-action@v3
+        uses: hashicorp/vault-action@v4
         with:
           url: ${{ env.VAULT_ADDR }}
           role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
@@ -205,7 +205,7 @@ jobs:
       matrix: ${{ fromJson(needs.fetch-new-critical-alerts.outputs.matrix) }}
     steps:
       - name: Get Linear access token
-        uses: hashicorp/vault-action@v3
+        uses: hashicorp/vault-action@v4
         with:
           url: ${{ env.VAULT_ADDR }}
           role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
