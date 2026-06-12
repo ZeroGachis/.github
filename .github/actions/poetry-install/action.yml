@@ -24,12 +24,15 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Resolve Python version
+      id: python-version
+      run: echo "version=$(python -c 'import platform; print(platform.python_version())')" >> "$GITHUB_OUTPUT"
     - name: Define a cache for the virtual environment based on the dependencies lock file
       uses: actions/cache@v5
       id: cache-python-deps
       with:
         path: ./.venv
-        key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}-${{ inputs.install_options }}
+        key: venv-${{ runner.os }}-py${{ steps.python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}-${{ inputs.install_options }}
     - name: Authenticate on AWS
       if: inputs.depends_on_private_packages == 'true' && steps.cache-python-deps.outputs.cache-hit != 'true'
       id: aws
