@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.4.9](https://github.com/ZeroGachis/.github/compare/v7.4.8...v7.4.9) (2026-06-12)
+
+
+### Bug Fixes
+
+* Re-install python dependencies when the python installed version changed ([e0793dc](https://github.com/ZeroGachis/.github/commit/e0793dcee95380e77002af9967a8ff49c0d21c0c))
+
 ## [7.4.8](https://github.com/ZeroGachis/.github/compare/v7.4.7...v7.4.8) (2026-06-02)
 
 
