@@ -7,7 +7,7 @@ description: |
 
   Installed dependencies are cached.
 
-  Prerequisites: Python & poetry must be installed, and 
+  Prerequisites: Python & poetry must be installed, and
   the repository must be checked-out.
 
 inputs:
@@ -26,6 +26,7 @@ runs:
   steps:
     - name: Resolve Python version
       id: python-version
+      shell: bash
       run: echo "version=$(python -c 'import platform; print(platform.python_version())')" >> "$GITHUB_OUTPUT"
     - name: Define a cache for the virtual environment based on the dependencies lock file
       uses: actions/cache@v5
