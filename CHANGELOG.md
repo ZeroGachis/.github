@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.4.10](https://github.com/ZeroGachis/.github/compare/v7.4.9...v7.4.10) (2026-06-12)
+
+
+### Bug Fixes
+
+* Missing shell attribute ([adfdfe1](https://github.com/ZeroGachis/.github/commit/adfdfe130a04917be0f916b417e8be3722fb1024))
+
 ## [7.4.9](https://github.com/ZeroGachis/.github/compare/v7.4.8...v7.4.9) (2026-06-12)
 
 
