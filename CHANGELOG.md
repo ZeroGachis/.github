@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.4.11](https://github.com/ZeroGachis/.github/compare/v7.4.10...v7.4.11) (2026-07-01)
+
+
+### Code Refactoring
+
+* Map Devx Github team to the DevX linear team ([2f326d1](https://github.com/ZeroGachis/.github/commit/2f326d19139068f102822a77a23616bfec5c7220))
+
 ## [7.4.10](https://github.com/ZeroGachis/.github/compare/v7.4.9...v7.4.10) (2026-06-12)
 
 
