@@ -34,7 +34,8 @@ runs:
           '@zerogachis/fwms_squad': 'FWMS',
           '@zerogachis/platform_squad': 'Platform',
           '@zerogachis/qa_squad': 'QA',
-          '@zerogachis/smarthacks': 'SmartHacks'
+          '@zerogachis/smarthacks': 'SmartHacks',
+          '@zerogachis/devx': 'DevX'
         };
 
         const lowercasedCodeOwner = codeOwner.toLowerCase();
