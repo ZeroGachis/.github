@@ -30,7 +30,7 @@ jobs:
       security-events: write # required for github/codeql-action/upload-sarif to upload SARIF results
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Get trivy ignore rules
         id: get-trivy-ignore-rules
