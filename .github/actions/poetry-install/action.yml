@@ -29,7 +29,7 @@ runs:
       shell: bash
       run: echo "version=$(python -c 'import platform; print(platform.python_version())')" >> "$GITHUB_OUTPUT"
     - name: Define a cache for the virtual environment based on the dependencies lock file
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       id: cache-python-deps
       with:
         path: ./.venv
