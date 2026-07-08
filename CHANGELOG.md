@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.4.12](https://github.com/ZeroGachis/.github/compare/v7.4.11...v7.4.12) (2026-07-08)
+
+
+### Miscellaneous Chores
+
+* bump min espresso version for emulator ([5c3893c](https://github.com/ZeroGachis/.github/commit/5c3893c49d1bcc810bfc14dfaa9defdd388406da))
+
 ## [7.4.11](https://github.com/ZeroGachis/.github/compare/v7.4.10...v7.4.11) (2026-07-01)
 
 
