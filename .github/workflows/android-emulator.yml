@@ -101,21 +101,6 @@ jobs:
             ${{ env.ANDROID_HOME }}/platform-tools
           key: android-sdk-${{ inputs.api-version }}
 
-      - name: ♻️ Restore Cache Android AVD
-        id: cache-avd
-        uses: actions/cache/restore@v5
-        with:
-          path: ${{ env.ANDROID_AVD_HOME }}
-          key: android-avd-${{ inputs.api-version }}
-
-      - name: ♻️ Restore Cache Appium Dependencies
-        id: cache-appium
-        uses: actions/cache/restore@v5
-        with:
-          path: TestsAutomation/node_modules
-          key: appium-node-modules-${{ hashFiles('TestsAutomation/package-lock.json') }}
-          restore-keys: appium-node-modules-
-
       - name: ♻️ Restore Cache Command Line Tools
         id: cache-cmdline-tools
         uses: actions/cache/restore@v5
@@ -143,7 +128,33 @@ jobs:
       - name: 📦 Install Android SDK
         if: steps.cache-android-sdk.outputs.cache-hit != 'true'
         run: |
-          sdkmanager --install "platform-tools" "platforms;android-${{ inputs.api-version }}" "system-images;android-${{ inputs.api-version }};google_apis;x86_64" "build-tools;${{ inputs.api-version }}.0.0" "emulator"
+          # --channel=0 force le canal stable, pour éviter de tirer une version
+          # beta/canary de l'émulateur au moment de la (ré)installation.
+          sdkmanager --channel=0 --install "platform-tools" "platforms;android-${{ inputs.api-version }}" "system-images;android-${{ inputs.api-version }};google_apis;x86_64" "build-tools;${{ inputs.api-version }}.0.0" "emulator"
+
+      # -----------------------------------------------------------------
+      - name: 🔎 Resolve emulator version for cache key
+        id: emulator-version
+        run: |
+          FULL_VERSION="$(emulator -version | head -1)"
+          echo "Detected: $FULL_VERSION"
+          HASH="$(echo "$FULL_VERSION" | md5sum | cut -c1-8)"
+          echo "hash=$HASH" >> "$GITHUB_OUTPUT"
+
+      - name: ♻️ Restore Cache Android AVD
+        id: cache-avd
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ env.ANDROID_AVD_HOME }}
+          key: android-avd-${{ inputs.api-version }}-${{ steps.emulator-version.outputs.hash }}
+
+      - name: ♻️ Restore Cache Appium Dependencies
+        id: cache-appium
+        uses: actions/cache/restore@v5
+        with:
+          path: TestsAutomation/node_modules
+          key: appium-node-modules-${{ hashFiles('TestsAutomation/package-lock.json') }}
+          restore-keys: appium-node-modules-
 
       - name: Create AVD Home Directory
         if: steps.cache-avd.outputs.cache-hit != 'true'
@@ -230,7 +241,7 @@ jobs:
             sleep 2 && echo "waiting for boot_completed... (${ELAPSED}s/${TIMEOUT}s)"
             ELAPSED=$((ELAPSED + 2))
           done
-          
+
       - name: Setup Emulator
         run: |
           # Close SystemUI ANR prompt
@@ -270,7 +281,7 @@ jobs:
         uses: actions/cache/save@v5
         with:
           path: ${{ env.ANDROID_AVD_HOME }}
-          key: android-avd-${{ inputs.api-version }}
+          key: android-avd-${{ inputs.api-version }}-${{ steps.emulator-version.outputs.hash }}
 
       - name: ♻️ Save Cache Command Line Tools
         if: steps.cache-cmdline-tools.outputs.cache-hit != 'true'
