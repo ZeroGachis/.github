@@ -32,7 +32,7 @@ inputs:
     required: false
     default: "smartway"
   linear_issue_pattern:
-    description: "Regex used to detect Linear issue keys in commit messages. Defaults to matching any team prefix (e.g. SORD-123, FOS-42); restrict it (e.g. 'SORD-\\d+') to only match specific teams"
+    description: "Regex used to detect Linear issue keys in merge commit subjects and conventional-commit scopes (e.g. 'feat(SORD-1234): ...'), matched case-insensitively. Defaults to matching any team prefix (e.g. SORD-123, FOS-42); restrict it (e.g. 'SORD-\\d+') to only match specific teams"
     required: false
     default: '[A-Z]{2,10}-\d+'
 

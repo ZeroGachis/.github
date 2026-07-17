@@ -93,7 +93,10 @@ def extract_linear_keys_from_merges(
         )
         first_line = first_commit.splitlines()[0] if first_commit else ""
 
-        issue_keys = re.findall(linear_issue_pattern, message)
+        # The issue key can show up in the merge commit subject (e.g. a
+        # branch name like "feature/SORD-1234-do-thing") or in the squashed
+        # commit's own conventional-commit scope (e.g. "feat(sord-1234): ...").
+        issue_keys = re.findall(linear_issue_pattern, f"{message} {first_line}", re.IGNORECASE)
         if not issue_keys:
             if re.search(rf"from \S+/{re.escape(to_ref)}$", message):
                 continue
@@ -108,6 +111,7 @@ def extract_linear_keys_from_merges(
             continue
 
         for issue_key in issue_keys:
+            issue_key = issue_key.upper()
             if issue_key in seen:
                 continue
             seen.add(issue_key)
