@@ -32,9 +32,9 @@ inputs:
     required: false
     default: "smartway"
   linear_issue_pattern:
-    description: "Regex used to detect Linear issue keys in merge commit subjects and conventional-commit scopes (e.g. 'feat(SORD-1234): ...'), matched case-insensitively. Defaults to matching any team prefix (e.g. SORD-123, FOS-42); restrict it (e.g. 'SORD-\\d+') to only match specific teams"
+    description: "Linear team prefix(es) of the issues to look for, e.g. 'FWMS' (matches FWMS-1234) or an alternation 'FWMS|MAS'. The '-<number>' suffix is appended automatically. Matched case-insensitively in commit scopes and PR branch names. Leave at the default to match any team."
     required: false
-    default: '[A-Z]{2,10}-\d+'
+    default: '[A-Z]{2,10}'
 
 outputs:
   page_url:

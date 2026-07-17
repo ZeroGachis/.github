@@ -17,7 +17,9 @@ Usage (env vars):
     REPO                  - GitHub repository (owner/name), used to build PR links
     NOTION_DATABASE_ID    - Notion database ID to create the release notes page into
     LINEAR_WORKSPACE      - Linear workspace slug, used for fallback issue URLs (default: smartway)
-    LINEAR_ISSUE_PATTERN  - Regex used to detect Linear issue keys in commit messages (default: [A-Z]{2,10}-\\d+)
+    LINEAR_ISSUE_PATTERN  - Linear team prefix(es) to look for; the "-<number>" suffix is
+                            appended automatically. E.g. "FWMS" matches FWMS-1234, "FWMS|MAS"
+                            matches both. Default "[A-Z]{2,10}" matches any team.
     FROM_REF              - Git ref to compare from (default: main)
     TO_REF                - Git ref to compare to (default: develop)
 """
@@ -81,7 +83,13 @@ def _boundary_keys(text: str, linear_issue_pattern: str, ignorecase: bool) -> li
         start = match.start()
         if start > 0 and (text[start - 1].isalnum() or text[start - 1] == "-"):
             continue
-        keys.append(match.group(0).upper())
+        key = match.group(0).upper()
+        # Guard: only keep canonical Linear identifiers (PREFIX-NUMBER), so a
+        # misconfigured pattern can never emit a numberless key that would 404
+        # on Linear and render as a dead link.
+        if not re.fullmatch(r"[A-Z][A-Z0-9]{1,9}-\d+", key):
+            continue
+        keys.append(key)
     return keys
 
 
@@ -463,13 +471,17 @@ def main() -> None:
     repo = os.environ["REPO"]
     notion_database_id = os.environ["NOTION_DATABASE_ID"]
     linear_workspace = os.environ.get("LINEAR_WORKSPACE", "smartway")
-    linear_issue_pattern = os.environ.get("LINEAR_ISSUE_PATTERN", r"[A-Z]{2,10}-\d+")
+    # The input is a team prefix (or alternation, e.g. "FWMS" / "FWMS|MAS");
+    # the "-<number>" that makes it a Linear identifier is appended here.
+    issue_prefix = os.environ.get("LINEAR_ISSUE_PATTERN") or r"[A-Z]{2,10}"
+    issue_key_regex = rf"(?:{issue_prefix})-\d+"
     from_ref = os.environ.get("FROM_REF", "main")
     to_ref = os.environ.get("TO_REF", "develop")
     today = date.today().isoformat()
 
     print(f"Extracting issues from merge commits between {from_ref} and {to_ref}...")
-    categorized = extract_categorized_issues(from_ref, to_ref, repo, linear_issue_pattern)
+    print(f"Linear issue key regex: {issue_key_regex}")
+    categorized = extract_categorized_issues(from_ref, to_ref, repo, issue_key_regex)
 
     print(f"Features: {[i.issue_key for i in categorized.features] or 'none'}")
     print(f"Fixes:    {[i.issue_key for i in categorized.fixes] or 'none'}")
