@@ -1,9 +1,11 @@
 """
-Create a Notion release notes page from merge commits between two git refs.
+Create a Notion release notes page from the commits between two git refs.
 
-Extracts Linear issue keys (e.g. SORD-123, FOS-42) from merge commits,
-fetches their titles via the Linear GraphQL API, categorizes them by
-conventional commit prefix, and creates a formatted page in a Notion
+Extracts Linear issue keys (e.g. SORD-123, FOS-42) from the commits in the
+range — both individual commit subjects (including squash-merged commits
+with no merge commit of their own, e.g. "feat(FWMS-2300): ...") and PR
+branch names — fetches their titles via the Linear GraphQL API, categorizes
+them by conventional commit prefix, and creates a formatted page in a Notion
 release notes database.
 
 Usage (env vars):
@@ -65,39 +67,84 @@ def git(*args: str) -> str:
     return result.stdout.strip()
 
 
-def extract_linear_keys_from_merges(
+def find_issue_keys(text: str, linear_issue_pattern: str) -> list[str]:
+    """Find Linear issue keys in a commit subject.
+
+    Keys written in upper case are matched anywhere in the subject (branch
+    names, free text, ...). Keys are also matched case-insensitively inside a
+    conventional-commit scope, e.g. "feat(sord-1234): ..." — this is where
+    lower-case keys tend to appear, and scoping the case-insensitive match
+    there avoids false positives on lower-case "word-number" branch names
+    such as "renovate/appium-3.x".
+    """
+    keys = list(re.findall(linear_issue_pattern, text))
+    scope = re.match(r"^[a-zA-Z]+(?:\(([^)]*)\))?!?:", text)
+    if scope and scope.group(1):
+        keys += re.findall(linear_issue_pattern, scope.group(1), re.IGNORECASE)
+    return list(dict.fromkeys(k.upper() for k in keys))
+
+
+def _categorize(categorized: CategorizedIssues, issue_key: str, subject: str) -> None:
+    if subject.startswith("feat"):
+        categorized.features.append(Issue(issue_key, "", "", subject))
+    elif subject.startswith("fix"):
+        categorized.fixes.append(Issue(issue_key, "", "", subject))
+    else:
+        categorized.tech.append(Issue(issue_key, "", "", subject))
+
+
+def extract_categorized_issues(
     from_ref: str, to_ref: str, repo: str, linear_issue_pattern: str
 ) -> CategorizedIssues:
-    merge_log = git(
-        "log", "--merges", "--format=%H %s",
-        f"origin/{from_ref}..origin/{to_ref}",
-    )
-    if not merge_log:
-        merge_log = git(
-            "log", "--merges", "--format=%H %s",
-            f"{from_ref}..{to_ref}",
-        )
+    def log(*args: str) -> str:
+        out = git("log", *args, f"origin/{from_ref}..origin/{to_ref}")
+        if not out:
+            out = git("log", *args, f"{from_ref}..{to_ref}")
+        return out
 
     categorized = CategorizedIssues()
     seen: set[str] = set()
 
+    # Pass 1 — walk every non-merge commit. This is the only way to catch
+    # tickets from PRs that were squash- or rebase-merged (no merge commit),
+    # which is the common case: the ticket lives in the commit's own
+    # conventional-commit scope, e.g. "feat(FWMS-2300): ...".
+    commit_log = log("--no-merges", "--format=%s")
+    for subject in commit_log.splitlines():
+        if not subject.strip():
+            continue
+        for issue_key in find_issue_keys(subject, linear_issue_pattern):
+            if issue_key in seen:
+                continue
+            seen.add(issue_key)
+            _categorize(categorized, issue_key, subject)
+
+    # Pass 2 — walk merge commits. Handles tickets that only appear in a PR
+    # branch name (e.g. "from ZeroGachis/SORD-123-foo") with no ticket in the
+    # commit subjects, and collects genuinely ticket-less PRs into "Other".
+    merge_log = log("--merges", "--format=%H %s")
     for line in merge_log.splitlines():
         if not line.strip():
             continue
 
         commit_hash, message = line.split(" ", 1)
 
-        first_commit = git(
+        pr_commits = git(
             "log", "--reverse", "--no-merges", "--format=%s",
             f"{commit_hash}^1..{commit_hash}^2",
-        )
-        first_line = first_commit.splitlines()[0] if first_commit else ""
+        ).splitlines()
+        first_line = pr_commits[0] if pr_commits else ""
 
-        # The issue key can show up in the merge commit subject (e.g. a
-        # branch name like "feature/SORD-1234-do-thing") or in the squashed
-        # commit's own conventional-commit scope (e.g. "feat(sord-1234): ...").
-        issue_keys = re.findall(linear_issue_pattern, f"{message} {first_line}", re.IGNORECASE)
-        if not issue_keys:
+        # Keys from the branch name / merge subject (upper case only: a
+        # lower-case "word-number" here is almost always a package version,
+        # not a ticket).
+        message_keys = [k.upper() for k in re.findall(linear_issue_pattern, message)]
+
+        pr_has_key = bool(message_keys) or any(
+            find_issue_keys(subject, linear_issue_pattern) for subject in pr_commits
+        )
+
+        if not pr_has_key:
             if re.search(rf"from \S+/{re.escape(to_ref)}$", message):
                 continue
 
@@ -110,18 +157,12 @@ def extract_linear_keys_from_merges(
             categorized.other.append(Issue("", title, pr_url, ""))
             continue
 
-        for issue_key in issue_keys:
-            issue_key = issue_key.upper()
+        # Branch-name-only tickets not already surfaced by a commit subject.
+        for issue_key in message_keys:
             if issue_key in seen:
                 continue
             seen.add(issue_key)
-
-            if first_line.startswith("feat"):
-                categorized.features.append(Issue(issue_key, "", "", first_line))
-            elif first_line.startswith("fix"):
-                categorized.fixes.append(Issue(issue_key, "", "", first_line))
-            else:
-                categorized.tech.append(Issue(issue_key, "", "", first_line))
+            _categorize(categorized, issue_key, first_line)
 
     return categorized
 
@@ -381,7 +422,7 @@ def main() -> None:
     today = date.today().isoformat()
 
     print(f"Extracting issues from merge commits between {from_ref} and {to_ref}...")
-    categorized = extract_linear_keys_from_merges(from_ref, to_ref, repo, linear_issue_pattern)
+    categorized = extract_categorized_issues(from_ref, to_ref, repo, linear_issue_pattern)
 
     print(f"Features: {[i.issue_key for i in categorized.features] or 'none'}")
     print(f"Fixes:    {[i.issue_key for i in categorized.fixes] or 'none'}")
