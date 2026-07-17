@@ -67,21 +67,51 @@ def git(*args: str) -> str:
     return result.stdout.strip()
 
 
+def _boundary_keys(text: str, linear_issue_pattern: str, ignorecase: bool) -> list[str]:
+    """Return pattern matches whose key starts a fresh token.
+
+    A match is rejected when the preceding character is a letter, digit or
+    hyphen, so a key must sit at a real token boundary (after "/", "(", ":",
+    whitespace, ...). This drops mid-word matches such as the "to-56" inside
+    "update-expo-to-56", while keeping "fix/fwms-2310" or "feat(FWMS-2303)".
+    """
+    flags = re.IGNORECASE if ignorecase else 0
+    keys: list[str] = []
+    for match in re.finditer(linear_issue_pattern, text, flags):
+        start = match.start()
+        if start > 0 and (text[start - 1].isalnum() or text[start - 1] == "-"):
+            continue
+        keys.append(match.group(0).upper())
+    return keys
+
+
 def find_issue_keys(text: str, linear_issue_pattern: str) -> list[str]:
     """Find Linear issue keys in a commit subject.
 
-    Keys written in upper case are matched anywhere in the subject (branch
-    names, free text, ...). Keys are also matched case-insensitively inside a
-    conventional-commit scope, e.g. "feat(sord-1234): ..." — this is where
-    lower-case keys tend to appear, and scoping the case-insensitive match
-    there avoids false positives on lower-case "word-number" branch names
-    such as "renovate/appium-3.x".
+    Upper-case keys are matched anywhere in the subject; lower-case keys are
+    only matched inside a conventional-commit scope, e.g. "feat(sord-1234):
+    ...", where they reliably appear — restricting the case-insensitive match
+    there avoids false positives on lower-case "word-number" prose such as
+    "use utf-8 encoding".
     """
-    keys = list(re.findall(linear_issue_pattern, text))
+    keys = _boundary_keys(text, linear_issue_pattern, ignorecase=False)
     scope = re.match(r"^[a-zA-Z]+(?:\(([^)]*)\))?!?:", text)
     if scope and scope.group(1):
-        keys += re.findall(linear_issue_pattern, scope.group(1), re.IGNORECASE)
-    return list(dict.fromkeys(k.upper() for k in keys))
+        keys += _boundary_keys(scope.group(1), linear_issue_pattern, ignorecase=True)
+    return list(dict.fromkeys(keys))
+
+
+def find_branch_keys(message: str, linear_issue_pattern: str) -> list[str]:
+    """Find Linear issue keys in a merge commit subject (PR branch name).
+
+    Branch names carry keys as path segments (e.g. "from .../fix/fwms-2310"),
+    often in lower case, so match case-insensitively — but skip bot branches
+    ("renovate/...", "dependabot/...") whose package names ("appium-3.x")
+    would otherwise look like tickets.
+    """
+    if re.search(r"(?:^|[/\s])(?:renovate|dependabot)/", message, re.IGNORECASE):
+        return []
+    return list(dict.fromkeys(_boundary_keys(message, linear_issue_pattern, ignorecase=True)))
 
 
 def _categorize(categorized: CategorizedIssues, issue_key: str, subject: str) -> None:
@@ -91,6 +121,17 @@ def _categorize(categorized: CategorizedIssues, issue_key: str, subject: str) ->
         categorized.fixes.append(Issue(issue_key, "", "", subject))
     else:
         categorized.tech.append(Issue(issue_key, "", "", subject))
+
+
+def branch_type(message: str) -> str:
+    """Conventional type of a PR branch, e.g. "feat" for ".../feat/fwms-2326".
+
+    Returns "feat"/"fix"/... when the branch is namespaced with a type
+    segment, else "". Used to categorize a ticket found only in a branch name,
+    whose PR has no conventional-commit subject to key off of.
+    """
+    match = re.search(r"from \S+?/([a-zA-Z]+)/", message)
+    return match.group(1).lower() if match else ""
 
 
 def extract_categorized_issues(
@@ -135,10 +176,8 @@ def extract_categorized_issues(
         ).splitlines()
         first_line = pr_commits[0] if pr_commits else ""
 
-        # Keys from the branch name / merge subject (upper case only: a
-        # lower-case "word-number" here is almost always a package version,
-        # not a ticket).
-        message_keys = [k.upper() for k in re.findall(linear_issue_pattern, message)]
+        # Keys from the branch name / merge subject.
+        message_keys = find_branch_keys(message, linear_issue_pattern)
 
         pr_has_key = bool(message_keys) or any(
             find_issue_keys(subject, linear_issue_pattern) for subject in pr_commits
@@ -158,11 +197,19 @@ def extract_categorized_issues(
             continue
 
         # Branch-name-only tickets not already surfaced by a commit subject.
+        # Prefer the branch's own type (feat/fwms-2326 -> Features); fall back
+        # to the PR's first commit when the branch carries no type segment.
+        btype = branch_type(message)
         for issue_key in message_keys:
             if issue_key in seen:
                 continue
             seen.add(issue_key)
-            _categorize(categorized, issue_key, first_line)
+            if btype in ("feat", "feature"):
+                categorized.features.append(Issue(issue_key, "", "", first_line))
+            elif btype == "fix":
+                categorized.fixes.append(Issue(issue_key, "", "", first_line))
+            else:
+                _categorize(categorized, issue_key, first_line)
 
     return categorized
 
