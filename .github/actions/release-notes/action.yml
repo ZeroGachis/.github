@@ -1,0 +1,65 @@
+name: Create release notes on Notion
+
+description: |
+  Create a Notion release notes page from merge commits between two git
+  refs, resolving any Linear issue keys (SORD-123, FOS-42, ...) referenced
+  in the commit messages.
+
+  Requires the repository to be checked out (actions/checkout with
+  fetch-depth: 0) before this action runs.
+
+inputs:
+  version:
+    description: "Full version string (e.g. 1.4.4.23588748828)"
+    required: true
+  release_type:
+    description: "Release type (value stored in the 'Mobile app release type' Notion property)"
+    required: true
+  pr_source:
+    description: "Go-to-prod PR number, used to build the 'Go to prod' link in the release notes"
+    required: true
+  notion_database_id:
+    description: "Notion database ID to create the release notes page into"
+    required: true
+  linear_api_key:
+    description: "Linear API token"
+    required: true
+  notion_api_key:
+    description: "Notion integration token"
+    required: true
+  linear_workspace:
+    description: "Linear workspace slug, used to build issue URLs when Linear does not return one"
+    required: false
+    default: "smartway"
+  linear_issue_pattern:
+    description: "Linear team prefix(es) of the issues to look for, e.g. 'FWMS' (matches FWMS-1234) or an alternation 'FWMS|MAS'. The '-<number>' suffix is appended automatically. Matched case-insensitively in commit scopes and PR branch names. Leave at the default to match any team."
+    required: false
+    default: '[A-Z]{2,10}'
+
+outputs:
+  page_url:
+    description: "URL of the created Notion page"
+    value: ${{ steps.create_release_notes.outputs.page_url }}
+  page_id:
+    description: "ID of the created Notion page"
+    value: ${{ steps.create_release_notes.outputs.page_id }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create Notion release notes
+      id: create_release_notes
+      shell: bash
+      env:
+        LINEAR_API_KEY: ${{ inputs.linear_api_key }}
+        NOTION_API_KEY: ${{ inputs.notion_api_key }}
+        VERSION: ${{ inputs.version }}
+        RELEASE_TYPE: ${{ inputs.release_type }}
+        PR_SOURCE: ${{ inputs.pr_source }}
+        NOTION_DATABASE_ID: ${{ inputs.notion_database_id }}
+        LINEAR_WORKSPACE: ${{ inputs.linear_workspace }}
+        LINEAR_ISSUE_PATTERN: ${{ inputs.linear_issue_pattern }}
+        REPO: ${{ github.repository }}
+        FROM_REF: ${{ github.event.pull_request.base.ref || 'main' }}
+        TO_REF: ${{ github.event.pull_request.head.ref || 'develop' }}
+      run: python "${{ github.action_path }}/create_release_notes.py"
