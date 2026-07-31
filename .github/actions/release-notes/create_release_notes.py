@@ -13,6 +13,8 @@ Usage (env vars):
     NOTION_API_KEY        - Notion integration token
     VERSION               - Full version string (e.g. 1.4.4.23588748828)
     RELEASE_TYPE          - Value stored in the "Mobile app release type" Notion property
+    PROJECT               - Project the release notes come from (e.g. fwms-app, smartapp,
+                            tasking-app), stored in the "Project" Notion property
     PR_SOURCE             - Go-to-prod PR number
     REPO                  - GitHub repository (owner/name), used to build PR links
     NOTION_DATABASE_ID    - Notion database ID to create the release notes page into
@@ -326,6 +328,7 @@ def build_notion_payload(
     categorized: CategorizedIssues,
     version: str,
     release_type: str,
+    project: str,
     repo: str,
     pr_source: str,
     notion_database_id: str,
@@ -368,14 +371,20 @@ def build_notion_payload(
         },
     ]
 
+    properties: dict = {
+        "Version": {"title": [{"type": "text", "text": {"content": version}}]},
+        "Mobile app release type": {"select": {"name": release_type}},
+        "Release date": {"date": {"start": today}},
+        "Web plaftorm changes": {"checkbox": False},
+    }
+    # An empty select name is rejected by Notion, so leave the property unset
+    # when no project was provided.
+    if project:
+        properties["Project"] = {"select": {"name": project}}
+
     return {
         "parent": {"database_id": notion_database_id},
-        "properties": {
-            "Version": {"title": [{"type": "text", "text": {"content": version}}]},
-            "Mobile app release type": {"select": {"name": release_type}},
-            "Release date": {"date": {"start": today}},
-            "Web plaftorm changes": {"checkbox": False},
-        },
+        "properties": properties,
         "children": children,
     }
 
@@ -439,7 +448,9 @@ def append_blocks_to_page(page_id: str, blocks: list[dict], api_key: str) -> Non
         sys.exit(1)
 
 
-def write_github_summary(version: str, release_type: str, today: str, page_url: str) -> None:
+def write_github_summary(
+    version: str, release_type: str, project: str, today: str, page_url: str
+) -> None:
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY", "")
     if not summary_path:
         return
@@ -448,6 +459,7 @@ def write_github_summary(version: str, release_type: str, today: str, page_url: 
         f.write("### Release notes created\n\n")
         f.write(f"**Version**: {version}\n")
         f.write(f"**Release type**: {release_type}\n")
+        f.write(f"**Project**: {project}\n")
         f.write(f"**Date**: {today}\n\n")
         f.write(f"[Open in Notion]({page_url})\n")
 
@@ -467,6 +479,7 @@ def main() -> None:
     notion_api_key = os.environ["NOTION_API_KEY"]
     version = os.environ["VERSION"]
     release_type = os.environ["RELEASE_TYPE"]
+    project = os.environ.get("PROJECT", "")
     pr_source = os.environ["PR_SOURCE"]
     repo = os.environ["REPO"]
     notion_database_id = os.environ["NOTION_DATABASE_ID"]
@@ -497,7 +510,7 @@ def main() -> None:
 
     print("Building Notion page...")
     payload = build_notion_payload(
-        categorized, version, release_type, repo, pr_source, notion_database_id, today
+        categorized, version, release_type, project, repo, pr_source, notion_database_id, today
     )
 
     all_children = payload.pop("children", [])
@@ -513,7 +526,7 @@ def main() -> None:
 
     print(f"::notice::Release notes created: {page_url}")
 
-    write_github_summary(version, release_type, today, page_url)
+    write_github_summary(version, release_type, project, today, page_url)
     write_github_output(page_id, page_url)
 
 
