@@ -91,7 +91,7 @@ jobs:
 
       - name: ♻️ Restore Cache Android SDK
         id: cache-android-sdk
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: |
             ${{ env.ANDROID_HOME }}/system-images
@@ -103,14 +103,14 @@ jobs:
 
       - name: ♻️ Restore Cache Android AVD
         id: cache-avd
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: ${{ env.ANDROID_AVD_HOME }}
           key: android-avd-${{ inputs.api-version }}
 
       - name: ♻️ Restore Cache Appium Dependencies
         id: cache-appium
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: TestsAutomation/node_modules
           key: appium-node-modules-${{ hashFiles('TestsAutomation/package-lock.json') }}
@@ -118,7 +118,7 @@ jobs:
 
       - name: ♻️ Restore Cache Command Line Tools
         id: cache-cmdline-tools
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: ${{ env.ANDROID_HOME }}/cmdline-tools/latest
           key: cmdline-tools-14742923
@@ -255,7 +255,7 @@ jobs:
 
       - name: ♻️ Save Cache Android SDK
         if: steps.cache-android-sdk.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: |
             ${{ env.ANDROID_HOME }}/system-images
@@ -267,21 +267,21 @@ jobs:
 
       - name: ♻️ Save Cache Android AVD
         if: steps.cache-avd.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: ${{ env.ANDROID_AVD_HOME }}
           key: android-avd-${{ inputs.api-version }}
 
       - name: ♻️ Save Cache Command Line Tools
         if: steps.cache-cmdline-tools.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: ${{ env.ANDROID_HOME }}/cmdline-tools/latest
           key: cmdline-tools-14742923
 
       - name: ♻️ Save Appium Cache
         if: steps.cache-appium.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: TestsAutomation/node_modules
           key: appium-node-modules-${{ hashFiles('TestsAutomation/package-lock.json') }}
