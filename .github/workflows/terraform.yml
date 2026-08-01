@@ -156,7 +156,7 @@ jobs:
       - name: Import Secrets
         if: inputs.vault_enabled
         id: secrets
-        uses: hashicorp/vault-action@v3
+        uses: hashicorp/vault-action@v4
         with:
           url: ${{ env.VAULT_ADDR }}
           role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
@@ -168,7 +168,7 @@ jobs:
             ${{ inputs.vault_secrets }}
 
       - name: ArgoCD Secrets
-        uses: hashicorp/vault-action@v3
+        uses: hashicorp/vault-action@v4
         if: inputs.argocd_enabled && inputs.vault_enabled
         id: argocd_secrets
         with:

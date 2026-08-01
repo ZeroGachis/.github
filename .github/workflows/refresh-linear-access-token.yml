@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Get Linear client secret
         id: vault
-        uses: hashicorp/vault-action@v3
+        uses: hashicorp/vault-action@v4
         with:
           url: ${{ env.VAULT_ADDR }}
           role: ${{ env.VAULT_GITHUB_ACTIONS_ROLE }}
