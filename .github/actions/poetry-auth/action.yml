@@ -1,0 +1,25 @@
+name: Poetry CodeArtifact auth
+description: |
+  Configure Poetry credentials for Smartway's private packages on AWS CodeArtifact.
+
+  Credentials are written to Poetry's auth.toml, so they stay available to every
+  subsequent step of the job.
+
+  Prerequisites: python, poetry and swcli must be installed, and the repository
+  must be checked-out.
+
+inputs:
+  aws_account_id:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Authenticate on AWS
+      uses: aws-actions/configure-aws-credentials@v6
+      with:
+        aws-region: eu-west-3
+        role-to-assume: arn:aws:iam::${{ inputs.aws_account_id }}:role/github_oidc_readonly
+    - name: Setup private repository credentials
+      run: ./scripts/setup_private_repo_credentials.sh
+      shell: bash
