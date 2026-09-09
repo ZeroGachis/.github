@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.5.0](https://github.com/ZeroGachis/.github/compare/v7.4.12...v7.5.0) (2026-09-09)
+
+
+### Features
+
+* Add a poetry-auth composite action ([d886fd2](https://github.com/ZeroGachis/.github/commit/d886fd2d42cb6d7955aa15ddbfd7b29d6ae20f1b))
+
 ## [7.4.12](https://github.com/ZeroGachis/.github/compare/v7.4.11...v7.4.12) (2026-07-08)
 
 
