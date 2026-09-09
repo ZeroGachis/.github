@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.5.1](https://github.com/ZeroGachis/.github/compare/v7.5.0...v7.5.1) (2026-09-09)
+
+
+### Miscellaneous Chores
+
+* Bump googleapis/release-please-action from v4 to v5 to use node 24 instead of the deprecated node 20 ([a33ec84](https://github.com/ZeroGachis/.github/commit/a33ec848b640d4d90d3b2511f7999624b1ef6df8))
+
 ## [7.5.0](https://github.com/ZeroGachis/.github/compare/v7.4.12...v7.5.0) (2026-09-09)
 
 
