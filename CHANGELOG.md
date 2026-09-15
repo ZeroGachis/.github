@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.5.2](https://github.com/ZeroGachis/.github/compare/v7.5.1...v7.5.2) (2026-09-15)
+
+
+### Bug Fixes
+
+* **argocd_sync:** point the Homebrew action at its renamed default branch ([7bdc9ce](https://github.com/ZeroGachis/.github/commit/7bdc9cef89f235e206d24578ee7884be063182e6))
+
 ## [7.5.1](https://github.com/ZeroGachis/.github/compare/v7.5.0...v7.5.1) (2026-09-09)
 
 
