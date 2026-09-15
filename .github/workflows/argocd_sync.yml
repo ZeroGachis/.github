@@ -74,7 +74,7 @@ jobs:
 
       - name: Set up Homebrew
         id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+        uses: Homebrew/actions/setup-homebrew@main
 
       - name: Install ArgoCD CLI
         run: /home/linuxbrew/.linuxbrew/bin/brew install argocd
