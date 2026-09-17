@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.6.0](https://github.com/ZeroGachis/.github/compare/v7.5.2...v7.6.0) (2026-09-17)
+
+
+### Features
+
+* **build-image:** expose the job token for GitHub Packages registries ([615a2aa](https://github.com/ZeroGachis/.github/commit/615a2aa25d25d4826ae53be71751f2701ddfd15a))
+
 ## [7.5.2](https://github.com/ZeroGachis/.github/compare/v7.5.1...v7.5.2) (2026-09-15)
 
 
