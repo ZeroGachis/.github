@@ -238,3 +238,4 @@ jobs:
             aws-session-token=${{ steps.aws.outputs.aws-session-token }}
             github-token=${{ inputs.vault_enabled && steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }}
             GIT_AUTH_TOKEN=${{ inputs.vault_enabled && steps.secrets.outputs.GH_ORG_READ_REPO_TOKEN }}
+            github-packages-token=${{ secrets.GITHUB_TOKEN }}
