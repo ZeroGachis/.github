@@ -80,7 +80,7 @@ jobs:
               secret/data/${{ inputs.vault-path }} QA_CODE_PUSH_KEY_NAME | QA_CODE_PUSH_KEY_NAME ;
               secret/data/${{ inputs.vault-path }} CODE_PUSH_TOKEN | CODE_PUSH_TOKEN ;
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node-version }}
           registry-url: "https://npm.pkg.github.com"
