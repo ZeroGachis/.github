@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.7.0](https://github.com/ZeroGachis/.github/compare/v7.6.0...v7.7.0) (2026-10-13)
+
+
+### Features
+
+* remove package tables from dbt tests ci ([b9b97fb](https://github.com/ZeroGachis/.github/commit/b9b97fbce7f4edc97228ea16a2527c24be7e82d2))
+
 ## [7.6.0](https://github.com/ZeroGachis/.github/compare/v7.5.2...v7.6.0) (2026-09-17)
 
 
