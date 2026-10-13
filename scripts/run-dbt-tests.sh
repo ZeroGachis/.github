@@ -43,7 +43,8 @@ BUILD_STANDARD="dbt \
     --state $REMOTE_FOLDER \
     --threads $NB_THREADS \
     --exclude source:* \
-    --exclude elementary "
+    --exclude elementary \
+    --exclude dbt_snowflake_monitoring "
 echo $BUILD_STANDARD
 eval $BUILD_STANDARD || { echo 'Running or testing standard models failed'; exit 1; }
 
@@ -59,6 +60,7 @@ BUILD_INCREMENTAL="dbt \
     --state $REMOTE_FOLDER \
     --threads $NB_THREADS \
     --exclude source:* \
-    --exclude elementary "
+    --exclude elementary \
+    --exclude dbt_snowflake_monitoring "
 echo $BUILD_INCREMENTAL
 eval $BUILD_INCREMENTAL || { echo 'Running or testing incremental models failed' ; exit 1; }
