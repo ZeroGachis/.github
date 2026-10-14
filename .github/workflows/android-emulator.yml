@@ -171,7 +171,7 @@ jobs:
         run: appium driver install espresso@${{ inputs.espresso-version }}
 
       - name: Download Artifact
-        uses: actions/Download-artifact@v7
+        uses: actions/Download-artifact@v8
         with:
           name: app-e2e.apk
           path: TestsAutomation/
@@ -288,7 +288,7 @@ jobs:
 
       - name: 📋 Upload Appium Server Logs
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: Appium-Server-Logs-${{ inputs.test-suite }}
           path: ./TestsAutomation/appium-server.log
@@ -296,7 +296,7 @@ jobs:
 
       - name: 📋 Upload Tests Report
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: RobotFramework-TestReport-${{ inputs.test-suite }}
           path: ${{ env.robot_output_folder }}
