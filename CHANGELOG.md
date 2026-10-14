@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.7.1](https://github.com/ZeroGachis/.github/compare/v7.7.0...v7.7.1) (2026-10-14)
+
+
+### Bug Fixes
+
+* still keep warn test failure as non blocking warning message ([f0f5a59](https://github.com/ZeroGachis/.github/commit/f0f5a5966538c45a42294ebaa85e3f9760280c04))
+* still keep warn test failure as non blocking warning message ([6b78eaf](https://github.com/ZeroGachis/.github/commit/6b78eaff7daf0bc8176f20cc160c907374b0ba30))
+
 ## [7.7.0](https://github.com/ZeroGachis/.github/compare/v7.6.0...v7.7.0) (2026-10-13)
 
 
