@@ -29,6 +29,10 @@ on:
         required: false
         type: string
         default: "true"
+      include_commit_authors:
+        required: false
+        type: string
+        default: "true"
     outputs:
       release_created:
         description: "Whether a release was created"
@@ -56,6 +60,7 @@ jobs:
     env:
       major_and_minor_tags: ${{ inputs.major_and_minor_tags || true }}
       create_gh_release: ${{ inputs.create_gh_release || 'true' }}
+      include_commit_authors: ${{ inputs.include_commit_authors || 'true' }}
     steps:
       - name: Generate GitHub App Token
         id: generate-token
@@ -67,6 +72,18 @@ jobs:
       - uses: actions/checkout@v6
         with:
           token: ${{ steps.generate-token.outputs.token }}
+
+      - name: Credit commit authors in the changelog
+        if: ${{ env.include_commit_authors == 'true' }}
+        env:
+          CONFIG_FILE: ${{ inputs.release_please_config_file || 'release-please-config.json' }}
+        run: |
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "::notice::$CONFIG_FILE not found, skipping include-commit-authors"
+            exit 0
+          fi
+          jq '. + {"include-commit-authors": true}' "$CONFIG_FILE" > "$CONFIG_FILE.tmp"
+          mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
 
       - uses: googleapis/release-please-action@v5
         id: release

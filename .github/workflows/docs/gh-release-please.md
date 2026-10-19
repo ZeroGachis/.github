@@ -30,6 +30,7 @@ jobs:
 | `release_please_config_file`   | `release-please-config.json`    | Path to Release Please config file             |
 | `release_please_manifest_file` | `.release-please-manifest.json` | Path to Release Please manifest file           |
 | `target_branch`                | `main`                          | Target branch for the release                  |
+| `include_commit_authors`       | `true`                          | Append each commit author to its changelog entry |
 
 ## Outputs
 
@@ -47,6 +48,7 @@ jobs:
 - 🤖 Pull request creation
 - 📦 Release automation
 - 🔐 GitHub App authentication
+- 👥 Commit author attribution in the changelog
 
 ## Technical Details
 
@@ -61,8 +63,27 @@ The workflow uses GitHub App authentication for enhanced security and rate limit
 
 1. **Token Generation**: Creates a GitHub App token with appropriate permissions
 2. **Code Checkout**: Checks out the repository with the generated token
-3. **Release Please**: Runs the Release Please action with the specified configuration
-4. **Version Tagging**: Optionally creates major and minor version tags
+3. **Commit Authors**: Sets `include-commit-authors` in the Release Please config file (see below)
+4. **Release Please**: Runs the Release Please action with the specified configuration
+5. **Version Tagging**: Optionally creates major and minor version tags
+
+### Commit Author Attribution
+
+When `include_commit_authors` is `true` (the default), the workflow adds
+`"include-commit-authors": true` to the Release Please config file before running
+the action. Release Please then appends the author to every changelog entry:
+
+```
+* **api:** list a shop's terminals (@sGeeK44) ([52b7ba4](https://github.com/ZeroGachis/backoffice/commit/52b7ba4))
+```
+
+The GitHub username is used when Release Please can resolve it, the commit author
+name otherwise. The config file is only patched in the runner's working copy, it is
+never committed. The step is skipped when the config file does not exist.
+
+Requires `release-please` >= 17.5.0, which `release-please-action@v5` ships.
+
+Set `include_commit_authors: false` to keep the previous changelog format.
 
 ### Major and Minor Version Tagging
 
