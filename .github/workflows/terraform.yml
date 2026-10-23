@@ -33,9 +33,10 @@ on:
         type: string
         default: "~1.14.0"
       terraform_save_output:
+        description: "Deprecated, no-op: outputs are read from the S3 state by fetch-terraform-output.yml. Kept so existing callers don't break."
         required: false
         type: boolean
-        default: true
+        default: false
       aws_account_id:
         required: false
         type: string
@@ -236,17 +237,3 @@ jobs:
         if: ${{ inputs.terraform_check_only == false }}
         working-directory: ${{ inputs.workdir || github.workspace	}}
         run: terraform apply -auto-approve -input=false -parallelism=${{ inputs.terraform_parallelism }} tfplan
-
-      - name: Terraform Get Output
-        working-directory: ${{ inputs.workdir || github.workspace	}}
-        run: terraform output -json > tf-output.json
-
-      - name: Save Output
-        uses: actions/upload-artifact@v7
-        if: inputs.terraform_save_output
-        with:
-          name: tf-output-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
-          path: ${{ inputs.workdir || github.workspace }}/tf-output.json
-          if-no-files-found: error
-          overwrite: true
-          retention-days: 1
