@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.8.1](https://github.com/ZeroGachis/.github/compare/v7.8.0...v7.8.1) (2026-10-26)
+
+
+### Code Refactoring
+
+* Remove deprecated terraform step to upload terraform output to github artifact ([2d7788e](https://github.com/ZeroGachis/.github/commit/2d7788eab1d477ee6d2c2db3c2bcb77b5bdf9a94))
+
 ## [7.8.0](https://github.com/ZeroGachis/.github/compare/v7.7.1...v7.8.0) (2026-10-20)
 
 
