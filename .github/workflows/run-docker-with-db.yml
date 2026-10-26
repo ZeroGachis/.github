@@ -95,6 +95,11 @@ jobs:
           POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -h localhost -U postgres"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 15
 
     steps:
       - name: Tailscale
