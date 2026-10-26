@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.8.2](https://github.com/ZeroGachis/.github/compare/v7.8.1...v7.8.2) (2026-10-26)
+
+
+### Bug Fixes
+
+* **run-docker-with-db:** wait for postgres to accept TCP connections ([bbc5c15](https://github.com/ZeroGachis/.github/commit/bbc5c15b99bce3edc049405bf6663021c26124f5))
+
 ## [7.8.1](https://github.com/ZeroGachis/.github/compare/v7.8.0...v7.8.1) (2026-10-26)
 
 
