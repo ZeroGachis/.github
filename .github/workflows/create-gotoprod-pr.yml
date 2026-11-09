@@ -29,7 +29,7 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
 
       - name: Create Pull Request
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ steps.generate-token.outputs.token }}
           script: |

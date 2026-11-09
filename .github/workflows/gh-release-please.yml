@@ -88,7 +88,7 @@ jobs:
       # every time release-please regenerates the PR.
       - name: Add commit authors to the release PR
         if: ${{ steps.release.outputs.pr && env.include_commit_authors == 'true' }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           RELEASE_PR: ${{ steps.release.outputs.pr }}
         with:
