@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.8.4](https://github.com/ZeroGachis/.github/compare/v7.8.3...v7.8.4) (2026-11-09)
+
+
+### Bug Fixes
+
+* **argocd_check_kube_enabled:** call argocd_sync at v7 ([284a984](https://github.com/ZeroGachis/.github/commit/284a984c391ee39c7b7a87940758711124699415))
+
 ## [7.8.3](https://github.com/ZeroGachis/.github/compare/v7.8.2...v7.8.3) (2026-11-09)
 
 
