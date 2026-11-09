@@ -57,6 +57,7 @@ jobs:
       release_created: ${{ steps.release.outputs.releases_created }}
       release_number: ${{ steps.release.outputs.tag_name }}
       paths_released: ${{ steps.release.outputs.paths_released }}
+    # Input defaults don't apply on `push`, so fall back explicitly.
     env:
       major_and_minor_tags: ${{ inputs.major_and_minor_tags || true }}
       create_gh_release: ${{ inputs.create_gh_release || 'true' }}
