@@ -74,18 +74,6 @@ jobs:
         with:
           token: ${{ steps.generate-token.outputs.token }}
 
-      - name: Credit commit authors in the changelog
-        if: ${{ env.include_commit_authors == 'true' }}
-        env:
-          CONFIG_FILE: ${{ inputs.release_please_config_file || 'release-please-config.json' }}
-        run: |
-          if [ ! -f "$CONFIG_FILE" ]; then
-            echo "::notice::$CONFIG_FILE not found, skipping include-commit-authors"
-            exit 0
-          fi
-          jq '. + {"include-commit-authors": true}' "$CONFIG_FILE" > "$CONFIG_FILE.tmp"
-          mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
-
       - uses: googleapis/release-please-action@v5
         id: release
         with:
@@ -94,6 +82,38 @@ jobs:
           manifest-file: ${{ inputs.release_please_manifest_file }}
           target-branch: ${{ inputs.target_branch }}
           token: ${{ steps.generate-token.outputs.token }}
+
+      # release-please cannot list commit authors, so we append them to each changelog line
+      # of the release PR description. Authors are wrapped in backticks to avoid pinging them
+      # every time release-please regenerates the PR.
+      - name: Add commit authors to the release PR
+        if: ${{ steps.release.outputs.pr && env.include_commit_authors == 'true' }}
+        uses: actions/github-script@v8
+        env:
+          RELEASE_PR: ${{ steps.release.outputs.pr }}
+        with:
+          github-token: ${{ steps.generate-token.outputs.token }}
+          script: |
+            const { owner, repo } = context.repo;
+            const pull_number = JSON.parse(process.env.RELEASE_PR).number;
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number });
+
+            // Matches "[abc1234](https://.../commit/abc1234))" in a changelog line, plus the
+            // " by `author`" suffix of a previous run so it is replaced, not duplicated.
+            const commitLink = /(\[(?<sha>[0-9a-f]{7,})\]\([^)]*\)\))(?: by `[^`]*`)?/g;
+            const shas = new Set([...pr.body.matchAll(commitLink)].map((match) => match.groups.sha));
+
+            const authorBySha = new Map();
+            for (const sha of shas) {
+              const { data: commit } = await github.rest.repos.getCommit({ owner, repo, ref: sha });
+              authorBySha.set(sha, commit.author?.login ?? commit.commit.author.name);
+            }
+
+            const body = pr.body.replace(
+              commitLink,
+              (_match, link, sha) => `${link} by \`${authorBySha.get(sha)}\``,
+            );
+            await github.rest.pulls.update({ owner, repo, pull_number, body });
 
       - name: tag major and minor versions
         if: ${{ steps.release.outputs.release_created == 'true' && env.major_and_minor_tags == 'true' && env.create_gh_release == 'true' }}
