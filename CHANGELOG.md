@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.8.3](https://github.com/ZeroGachis/.github/compare/v7.8.2...v7.8.3) (2026-11-09)
+
+
+### Bug Fixes
+
+* Add commiters name on release-please PR description ([d210f1e](https://github.com/ZeroGachis/.github/commit/d210f1ec332fee6630e43c593f5311a1bc74858f))
+
+
+### Documentation
+
+* Add explanation on why inputs are stored as env variables ([b7bf719](https://github.com/ZeroGachis/.github/commit/b7bf7196837f8495a0d7abf4f75173dc0af695c1))
+
+
+### Code Refactoring
+
+* make default value consistent with the others ([91bd26c](https://github.com/ZeroGachis/.github/commit/91bd26ca3a0b3b8ace01d53faed743bf08fe4686))
+
 ## [7.8.2](https://github.com/ZeroGachis/.github/compare/v7.8.1...v7.8.2) (2026-10-26)
 
 
