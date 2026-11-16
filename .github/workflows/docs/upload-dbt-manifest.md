@@ -29,7 +29,7 @@ None - All inputs have default values.
 | `project_dir`            | `smartway`        | Project directory containing DBT files         |
 | `aws_github_role_name`   | `github_oidc`     | AWS IAM role name for GitHub Actions          |
 | `aws_account_id`         | -                 | AWS account ID                                 |
-| `environment_name`       | -                 | Target environment name                        |
+| `environment_name`       | - (required)      | Target environment name. Also used as the dbt profile name and as the `dbtdocs/` S3 prefix. |
 | `python_version`         | `"3.12"`          | Python version to use                         |
 
 ## Features
@@ -51,7 +51,7 @@ jobs:
     uses: ZeroGachis/.github/.github/workflows/upload-dbt-manifest.yml@v4
     with:
       project_dir: smartway
-      environment_name: ${{ github.ref_name }}
+      environment_name: develop
 ```
 
 ### With AWS Credentials and Custom Environment
