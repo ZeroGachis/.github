@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.10.0](https://github.com/ZeroGachis/.github/compare/v7.9.0...v7.10.0) (2026-11-16)
+
+
+### Features
+
+* **gh-release-please:** forward the versioning strategy to release-please ([fbc3fc4](https://github.com/ZeroGachis/.github/commit/fbc3fc4fdc76349d7a1dd63813039c80b44acc4a))
+
 ## [7.9.0](https://github.com/ZeroGachis/.github/compare/v7.8.4...v7.9.0) (2026-11-16)
 
 
