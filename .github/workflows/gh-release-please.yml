@@ -9,6 +9,10 @@ on:
       release_type:
         required: false
         type: string
+      versioning_strategy:
+        description: Versioning strategy passed to release-please, e.g. always-bump-major. Empty keeps release-please's own semantic bump.
+        required: false
+        type: string
       release_please_command:
         required: false
         type: string
@@ -78,6 +82,7 @@ jobs:
         id: release
         with:
           release-type: ${{ inputs.release_type }}
+          versioning-strategy: ${{ inputs.versioning_strategy }}
           config-file: ${{ inputs.release_please_config_file }}
           manifest-file: ${{ inputs.release_please_manifest_file }}
           target-branch: ${{ inputs.target_branch }}

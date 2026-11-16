@@ -27,6 +27,7 @@ jobs:
 | ------------------------------ | ------------------------------- | ---------------------------------------------- |
 | `major_and_minor_tags`         | `true`                          | Whether to create major and minor version tags |
 | `release_type`                 | -                               | Type of release (e.g., node, python)           |
+| `versioning_strategy`          | -                               | Versioning strategy, e.g. `always-bump-major`  |
 | `release_please_config_file`   | `release-please-config.json`    | Path to Release Please config file             |
 | `release_please_manifest_file` | `.release-please-manifest.json` | Path to Release Please manifest file           |
 | `target_branch`                | `main`                          | Target branch for the release                  |
@@ -84,6 +85,37 @@ never committed. The step is skipped when the config file does not exist.
 Requires `release-please` >= 17.5.0, which `release-please-action@v5` ships.
 
 Set `include_commit_authors: false` to keep the previous changelog format.
+
+### Versioning Strategy
+
+By default Release Please derives the bump from the Conventional Commits in the range:
+`fix` bumps the patch, `feat` the minor, a breaking change the major. Setting
+`versioning_strategy` overrides that decision for the run.
+
+```yaml
+with:
+  versioning_strategy: always-bump-major
+```
+
+Accepted values are those of Release Please itself: `default`, `always-bump-patch`,
+`always-bump-minor`, `always-bump-major`, `service-pack` and `prerelease`. Leave the input
+empty to keep the semantic bump.
+
+The strategy is read on every run, so a caller can decide it from the state of the repository
+rather than hardcode it. A project whose releases ship a native binary, for instance, can force
+a major whenever that binary changes:
+
+```yaml
+jobs:
+  release:
+    uses: ZeroGachis/.github/.github/workflows/gh-release-please.yml@v7
+    secrets: inherit
+    with:
+      versioning_strategy: ${{ needs.detect-native-change.outputs.changed == 'true' && 'always-bump-major' || 'default' }}
+```
+
+Because the override applies to the whole release, every commit accumulated in that window
+lands in the same major, no matter how many `feat` and `fix` commits it holds.
 
 ### Major and Minor Version Tagging
 
