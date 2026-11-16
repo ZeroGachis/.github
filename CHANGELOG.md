@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.9.0](https://github.com/ZeroGachis/.github/compare/v7.8.4...v7.9.0) (2026-11-16)
+
+
+### Features
+
+* derive dbt profile and docs path from environment_name ([#651](https://github.com/ZeroGachis/.github/issues/651)) ([ae83bc8](https://github.com/ZeroGachis/.github/commit/ae83bc8fe33416984029cfc40f10931d9314768b))
+
 ## [7.8.4](https://github.com/ZeroGachis/.github/compare/v7.8.3...v7.8.4) (2026-11-09)
 
 
