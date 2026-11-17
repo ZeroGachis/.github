@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.10.1](https://github.com/ZeroGachis/.github/compare/v7.10.0...v7.10.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* add fail-fast parameter for all dbt-test workflows ([30b28d6](https://github.com/ZeroGachis/.github/commit/30b28d6d394ec9100aadcb8a06a4451696e78c8b))
+
+
+### Miscellaneous Chores
+
+* rename dbt variable for clarity ([7bea092](https://github.com/ZeroGachis/.github/commit/7bea092da161460e882d0c603ed231cf203a8a31))
+
 ## [7.10.0](https://github.com/ZeroGachis/.github/compare/v7.9.0...v7.10.0) (2026-11-16)
 
 
