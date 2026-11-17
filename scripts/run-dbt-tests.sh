@@ -8,14 +8,13 @@ REMOTE_FOLDER="${PROJECT_DIR}/remote"
 COMPARE_STATE="state:modified.body+1"
 NB_THREADS="15"
 WARN_ERROR_EXCLUDE='{"error": "all", "warn": ["NoNodesForSelectionCriteria", "NothingToDo", "PackageMaterializationOverrideDeprecation", "DeprecationsSummary", "LogTestResult", "CustomTopLevelKeyDeprecation", "RunResultWarning", "RunResultWarningMessage"]}'
+FAIL_FAST="--fail-fast"
 
 if [ "$ENVIRONMENT_NAME" = "main" ]
 then
   COMMAND="build"
-  FAIL_FAST=""
 else
   COMMAND="run"
-  FAIL_FAST="--fail-fast"
 fi
 
 printf "\nCleaning dbt project...\n"
