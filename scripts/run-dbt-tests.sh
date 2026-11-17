@@ -1,5 +1,5 @@
 #!/bin/bash
-BASE_REF=$1
+ENVIRONMENT_NAME=$1
 BACKUP_BUCKET_NAME=$2
 PROJECT_DIR=$3
 REPO_NAME=$4
@@ -9,7 +9,7 @@ COMPARE_STATE="state:modified.body+1"
 NB_THREADS="15"
 WARN_ERROR_EXCLUDE='{"error": "all", "warn": ["NoNodesForSelectionCriteria", "NothingToDo", "PackageMaterializationOverrideDeprecation", "DeprecationsSummary", "LogTestResult", "CustomTopLevelKeyDeprecation", "RunResultWarning", "RunResultWarningMessage"]}'
 
-if [ "$BASE_REF" = "main" ]
+if [ "$ENVIRONMENT_NAME" = "main" ]
 then
   COMMAND="build"
   FAIL_FAST=""
