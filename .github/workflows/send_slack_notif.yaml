@@ -74,7 +74,7 @@ jobs:
             secret/data/github-actions-common/slack SLACK_BOT_TOKEN | SLACK_BOT_TOKEN ;
 
       - name: Send Slack Notification
-        uses: slackapi/slack-github-action@v2
+        uses: slackapi/slack-github-action@v3
         with:
           method: chat.postMessage
           token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
