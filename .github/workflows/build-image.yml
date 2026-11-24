@@ -221,7 +221,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           # A tag ref makes the GHA cache backend write to refs/heads/refs/tags/<tag>, which no run can read back
-          cache-to: ${{ !startsWith(github.ref, 'refs/tags/') && 'type=gha,mode=max' || '' }}
+          cache-to: ${{ github.ref_type != 'tag' && 'type=gha,mode=max' || '' }}
           target: ${{ inputs.image_target }}
           build-args: |
             ${{ inputs.build-args }}
